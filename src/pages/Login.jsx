@@ -16,7 +16,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5555/auth/request-login', { email });
+      await axios.post('/auth/request-login', { email });
       setStatus('Check your email for the login link!');
     } catch (err) {
       setStatus('Error sending email.');

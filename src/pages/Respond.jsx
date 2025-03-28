@@ -17,12 +17,12 @@ export default function Respond() {
 
     const verifyToken = async (tokenToVerify) => {
       try {
-        const res = await axios.post('http://localhost:5555/auth/verify', { token: tokenToVerify });
+        const res = await axios.post('/auth/verify', { token: tokenToVerify });
         localStorage.setItem('token', res.data.token);
         setTokenValid(true);
 
         // Check if already submitted today
-        const checkRes = await axios.get('http://localhost:5555/api/responses/today', {
+        const checkRes = await axios.get('/api/responses/today', {
           headers: { Authorization: `Bearer ${res.data.token}` }
         });
 
@@ -53,7 +53,7 @@ export default function Respond() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        'http://localhost:5555/api/response',
+        '/api/response',
         {
           content: goal,
           mode: 'goal',

@@ -14,7 +14,7 @@ export default function Dashboard() {
       return;
     }
 
-    axios.get('http://localhost:5555/api/me', {
+    axios.get('/api/me', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setUser(res.data))
@@ -23,7 +23,7 @@ export default function Dashboard() {
         window.location.href = '/';
       });
 
-    axios.get('http://localhost:5555/api/responses/all', {
+    axios.get('/api/responses/all', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setResponses(res.data))
