@@ -14,7 +14,7 @@ export default function Dashboard() {
       return;
     }
 
-    axios.get('/api/me', {
+    axios.get('https://api.dailyping.org/api/me', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setUser(res.data))
@@ -23,7 +23,7 @@ export default function Dashboard() {
         window.location.href = '/';
       });
 
-    axios.get('/api/responses/all', {
+    axios.get('https://api.dailyping.org/api/responses/all', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setResponses(res.data))

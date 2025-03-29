@@ -17,12 +17,12 @@ export default function Respond() {
 
     const verifyToken = async (tokenToVerify) => {
       try {
-        const res = await axios.post('/auth/verify', { token: tokenToVerify });
+        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: tokenToVerify });
         localStorage.setItem('token', res.data.token);
         setTokenValid(true);
 
         // Check if already submitted today
-        const checkRes = await axios.get('/api/responses/today', {
+        const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
           headers: { Authorization: `Bearer ${res.data.token}` }
         });
 
@@ -53,7 +53,7 @@ export default function Respond() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        '/api/response',
+        `https://api.dailyping.org/api/response`,
         {
           content: goal,
           mode: 'goal',

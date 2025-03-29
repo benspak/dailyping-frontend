@@ -10,7 +10,7 @@ export default function Verify() {
   useEffect(() => {
     const token = params.get('token');
     if (token) {
-      axios.post('/auth/verify', { token })
+      axios.post(`https://api.dailyping.org/auth/verify`, { token })
         .then(res => {
           localStorage.setItem('token', res.data.token);
           navigate('/dashboard');
