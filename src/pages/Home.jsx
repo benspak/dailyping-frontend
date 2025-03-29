@@ -2,7 +2,7 @@ import React from 'react';
 
 const Home = () => {
   return (
-    <div>
+    <div className="container mt-5 px-3">
       <style>{`
         body {
           font-family: sans-serif;

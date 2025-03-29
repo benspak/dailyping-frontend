@@ -34,16 +34,21 @@ export default function Dashboard() {
   if (loading) return <div className="container mt-5">Loading...</div>;
 
   return (
-    <div className="container mt-5">
-      <h1 className="mb-3">Welcome, {user?.email}</h1>
-      <p><strong>Streak:</strong> {user?.streak?.current ?? 0} days</p>
-      <p><strong>Pro status:</strong> {user?.pro ? '✅ Active' : '❌ Not active'}</p>
+    <div className="container mt-4">
+      <h1 className="mb-4">Welcome, {user.email}</h1>
 
-      <h3 className="mt-5">Past Goals</h3>
-      <ul className="list-group mt-3">
-        {responses.map((r) => (
-          <li key={r._id} className="list-group-item">
-            <strong>{r.date}:</strong> {r.content}
+      <div className="mb-4">
+        <strong>Streak:</strong> {user.streak.current} days
+        <br />
+        <strong>Pro Status:</strong> {user.pro ? '✅' : '❌'}
+      </div>
+
+      <h4 className="mt-4">Past Goals</h4>
+      <ul className="list-group">
+        {goals.map(goal => (
+          <li key={goal._id} className="list-group-item">
+            <small>{goal.date}</small><br />
+            {goal.content}
           </li>
         ))}
       </ul>
