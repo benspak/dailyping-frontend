@@ -24,5 +24,5 @@ export default function Verify() {
     }
   }, [params, navigate]);
 
-  return <div className="container mt-5 px-3">Verifying...</div>;
+  return <div className="container mt-5">Verifying...</div>;
 }

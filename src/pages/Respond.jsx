@@ -81,22 +81,18 @@ export default function Respond() {
   }
 
   return (
-    <div className="container mt-5 px-3">
-        <div className="card shadow-sm">
-          <div className="card-body">
-            <h2 className="card-title mb-3">What’s your #1 goal today?</h2>
-            <form onSubmit={submitResponse}>
-              <textarea
-                value={goal}
-                onChange={(e) => setGoal(e.target.value)}
-                className="form-control mb-3"
-                rows="4"
-                required
-              />
-              <button type="submit" className="btn btn-primary">Submit</button>
-            </form>
-          </div>
-        </div>
+    <div className="container mt-5">
+      <h2 className="mb-3">What’s your #1 goal today?</h2>
+      <form onSubmit={submitResponse}>
+        <textarea
+          value={goal}
+          onChange={(e) => setGoal(e.target.value)}
+          className="form-control mb-3"
+          rows="4"
+          required
+        />
+        <button type="submit" className="btn btn-primary">Submit</button>
+      </form>
     </div>
   );
 }
