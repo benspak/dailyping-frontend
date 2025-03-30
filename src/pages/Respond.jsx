@@ -31,7 +31,7 @@ export default function Respond() {
           setSubmittedGoal(checkRes.data.content);
         }
       } catch (err) {
-        console.error('Token verification failed');
+        console.error('Token verification failed:', err.response?.data || err.message);
         alert('Login link is invalid or expired.');
         navigate('/');
       }
@@ -49,22 +49,27 @@ export default function Respond() {
 
   const submitResponse = async (e) => {
     e.preventDefault();
+    const payload = { content: goal, mode: 'goal' };
+    const token = localStorage.getItem('token');
+
     try {
-      const token = localStorage.getItem('token');
+      console.log('Submitting:', payload);
       await axios.post(
-        `https://api.dailyping.org/api/responses`,
-        {
-          content: goal,
-          mode: 'goal',
-        },
+        `https://api.dailyping.org/api/response`, // ✅ correct singular endpoint
+        payload,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
       setSubmitted(true);
     } catch (err) {
-      console.error('Submission error:', err.response?.data || err.message);
-      alert('Error submitting your goal.');
+      const msg =
+        err.response?.data?.error ||
+        err.response?.data ||
+        err.message ||
+        'Unknown error';
+      console.error('Submission error:', msg);
+      alert(`Error submitting your goal: ${msg}`);
     }
   };
 
