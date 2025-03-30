@@ -30,7 +30,6 @@ export default function Respond() {
           setAlreadySubmitted(true);
           setSubmittedGoal(checkRes.data.content);
         }
-
       } catch (err) {
         console.error('Token verification failed');
         alert('Login link is invalid or expired.');
@@ -53,7 +52,7 @@ export default function Respond() {
     try {
       const token = localStorage.getItem('token');
       await axios.post(
-        `https://api.dailyping.org/api/response`,
+        `https://api.dailyping.org/api/responses`,
         {
           content: goal,
           mode: 'goal',
@@ -69,30 +68,49 @@ export default function Respond() {
     }
   };
 
-  if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
+  if (!tokenValid) {
+    return (
+      <div className="container py-5">
+        <p>Verifying token...</p>
+      </div>
+    );
+  }
 
   if (submitted || alreadySubmitted) {
     return (
-      <div className="container mt-5 alert alert-info">
-        ✅ You already submitted your goal today:
-        <blockquote className="mt-2">{submittedGoal}</blockquote>
+      <div className="container py-5">
+        <div className="alert alert-success text-center">
+          ✅ You already submitted your goal today.
+          <blockquote className="blockquote mt-3">
+            <p className="mb-0">{submittedGoal}</p>
+          </blockquote>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mt-5">
-      <h2 className="mb-3">What’s your #1 goal today?</h2>
-      <form onSubmit={submitResponse}>
-        <textarea
-          value={goal}
-          onChange={(e) => setGoal(e.target.value)}
-          className="form-control mb-3"
-          rows="4"
-          required
-        />
-        <button type="submit" className="btn btn-primary">Submit</button>
-      </form>
+    <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+      <div className="w-100" style={{ maxWidth: '600px' }}>
+        <div className="card shadow-sm p-4">
+          <h3 className="mb-4 text-center">What’s your #1 goal today?</h3>
+          <form onSubmit={submitResponse}>
+            <div className="mb-3">
+              <textarea
+                value={goal}
+                onChange={(e) => setGoal(e.target.value)}
+                className="form-control"
+                rows="4"
+                placeholder="Write your goal here..."
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary w-100">
+              Submit Goal
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

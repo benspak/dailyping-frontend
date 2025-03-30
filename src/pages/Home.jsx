@@ -1,68 +1,42 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Home = () => {
+export default function Home() {
+  const navigate = useNavigate();
+
   return (
-    <div>
-      <style>{`
-        body {
-          font-family: sans-serif;
-          margin: 0;
-          padding: 0;
-          background: #f9f9f9;
-          color: #222;
-        }
-        header, section, footer {
-          max-width: 800px;
-          margin: auto;
-          padding: 2rem;
-        }
-        h1, h2, h3 {
-          color: #111;
-        }
-        .button {
-          display: inline-block;
-          padding: 0.75rem 1.5rem;
-          background: #111;
-          color: #fff;
-          text-decoration: none;
-          border-radius: 5px;
-          margin: 0.5rem 0.25rem;
-        }
-        ul {
-          padding-left: 1.2rem;
-        }
-        blockquote {
-          font-style: italic;
-          margin: 1rem 0;
-          padding-left: 1rem;
-          border-left: 4px solid #ccc;
-        }
-      `}</style>
-
-      <header>
-        <h1>Start your day with clarity.</h1>
-        <p>
+    <div className="container py-5">
+      {/* Header */}
+      <section className="text-center mb-5">
+        <h1 className="display-4 fw-bold">Start your day with clarity.</h1>
+        <p className="lead mt-3">
           DailyPing asks you one simple question every morning:<br />
           <strong>“What’s your #1 goal today?”</strong><br />
           You reply. You commit. You get it done.
         </p>
-        <a href="/login" className="button">Start Free</a>
-        <a href="/login" className="button">View Demo</a>
-      </header>
-
-      <section>
-        <h2>How It Works</h2>
-        <ul>
-          <li><strong>Every morning</strong>, we ping you by email (or text).</li>
-          <li>You answer with your top goal for the day.</li>
-          <li>Your streak grows. Your mind clears. You focus.</li>
-        </ul>
-        <blockquote>No dashboards to obsess over. Just momentum.</blockquote>
+        <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">
+          <button className="btn btn-dark btn-lg" onClick={() => navigate('/login')}>Start Free</button>
+          <button className="btn btn-outline-dark btn-lg" onClick={() => navigate('/login')}>View Demo</button>
+        </div>
       </section>
 
-      <section>
-        <h2>Why It Works</h2>
-        <ul>
+      {/* How It Works */}
+      <section className="mb-5">
+        <h2 className="h4 fw-bold mb-3">How It Works</h2>
+        <ul className="list-unstyled">
+          <li>• <strong>Every morning</strong>, we ping you by email (or text).</li>
+          <li>• You answer with your top goal for the day.</li>
+          <li>• Your streak grows. Your mind clears. You focus.</li>
+        </ul>
+        <blockquote className="blockquote mt-3">
+          <p className="fst-italic">No dashboards to obsess over. Just momentum.</p>
+        </blockquote>
+      </section>
+
+      {/* Why It Works */}
+      <section className="mb-5">
+        <h2 className="h4 fw-bold mb-3">Why It Works</h2>
+        <ul className="list-unstyled">
           <li>✅ Clarity over clutter</li>
           <li>🧠 Builds daily intention</li>
           <li>🔁 Turns goals into habits</li>
@@ -70,55 +44,69 @@ const Home = () => {
         </ul>
       </section>
 
-      <section>
-        <h2>Built for humans, not hustle culture</h2>
+      {/* Built For Humans */}
+      <section className="mb-5">
+        <h2 className="h4 fw-bold mb-3">Built for humans, not hustle culture</h2>
         <p>DailyPing is for indie makers, creatives, students, and anyone who wants to move forward without burnout.</p>
       </section>
 
-      <section>
-        <h2>Pricing</h2>
-        <h3>Free Forever</h3>
-        <ul>
-          <li>✔️ 1 daily ping (email)</li>
-          <li>✔️ Private dashboard</li>
-          <li>✔️ Streak tracker</li>
-        </ul>
+      {/* Pricing */}
+      <section className="mb-5">
+        <h2 className="h4 fw-bold mb-3">Pricing</h2>
 
-        <h3>Pro — $5/mo</h3>
-        <ul>
-          <li>⭐ Custom ping time</li>
-          <li>⭐ Choose tone (motivational, gentle, snarky)</li>
-          <li>⭐ Weekly summary reports</li>
-          <li>⭐ SMS or Telegram delivery</li>
-          <li>⭐ Notion + Calendar integration (coming soon)</li>
-        </ul>
-        <a href="/login" className="button">Start Free</a>
-        <a href="/login" className="button">Go Pro</a>
+        <div className="row">
+          <div className="col-md-6 mb-4">
+            <h3 className="h5 fw-semibold">Free Forever</h3>
+            <ul className="list-unstyled">
+              <li>✔️ 1 daily ping (email)</li>
+              <li>✔️ Private dashboard</li>
+              <li>✔️ Streak tracker</li>
+            </ul>
+          </div>
+          <div className="col-md-6 mb-4">
+            <h3 className="h5 fw-semibold">Pro — $5/mo</h3>
+            <ul className="list-unstyled">
+              <li>⭐ Custom ping time</li>
+              <li>⭐ Choose tone (motivational, gentle, snarky)</li>
+              <li>⭐ Weekly summary reports</li>
+              <li>⭐ SMS or Telegram delivery</li>
+              <li>⭐ Notion + Calendar integration (coming soon)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="d-flex flex-wrap justify-content-center gap-3">
+          <button className="btn btn-dark btn-lg" onClick={() => navigate('/login')}>Start Free</button>
+          <button className="btn btn-outline-dark btn-lg" onClick={() => navigate('/login')}>Go Pro</button>
+        </div>
       </section>
 
-      <section>
-        <h2>Join early makers getting s#!t done.</h2>
-        <blockquote>
-          "DailyPing got me out of bed and back into focus."<br />
-          — <em>Lena, solo founder</em>
+      {/* Testimonials */}
+      <section className="mb-5">
+        <h2 className="h4 fw-bold mb-4">Join early makers getting s#!t done.</h2>
+        <blockquote className="blockquote">
+          <p className="mb-1">"DailyPing got me out of bed and back into focus."</p>
+          <footer className="blockquote-footer">Lena, solo founder</footer>
         </blockquote>
-        <blockquote>
-          "I finally have a system that doesn’t stress me out."<br />
-          — <em>James, ADHD coach</em>
+        <blockquote className="blockquote mt-4">
+          <p className="mb-1">"I finally have a system that doesn’t stress me out."</p>
+          <footer className="blockquote-footer">James, ADHD coach</footer>
         </blockquote>
       </section>
 
-      <section>
-        <h2>Try it. You’ll love it.</h2>
+      {/* Final CTA */}
+      <section className="text-center mb-5">
+        <h2 className="h4 fw-bold mb-3">Try it. You’ll love it.</h2>
         <p>No spam. No noise. Just one mindful moment each morning.</p>
-        <a href="/login" className="button">Start Now – It’s Free</a>
+        <button className="btn btn-primary btn-lg mt-3" onClick={() => navigate('/login')}>
+          Start Now – It’s Free
+        </button>
       </section>
 
-      <footer>
-        <p>Built indie-style with ❤️ by Ben Spak</p>
+      {/* Footer */}
+      <footer className="text-center border-top pt-3">
+        <p className="text-muted">Built indie-style with ❤️ by Ben Spak</p>
       </footer>
     </div>
   );
-};
-
-export default Home;
+}
