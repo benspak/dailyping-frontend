@@ -7,28 +7,43 @@ export default function Dashboard() {
   const [responses, setResponses] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = '/login';
-      return;
-    }
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = '/login';
+    return;
+  }
 
-    axios.get('https://api.dailyping.org/api/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => setUser(res.data))
-      .catch(() => {
-        localStorage.removeItem('token');
-        window.location.href = '/';
+  const fetchUserData = async () => {
+    try {
+      const res = await axios.get('https://api.dailyping.org/api/me', {
+        headers: { Authorization: `Bearer ${token}` }
       });
+      setUser(res.data);
+    } catch {
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    }
+  };
 
-    axios.get('https://api.dailyping.org/api/responses/all', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => setResponses(res.data))
-      .catch(() => setResponses([]))
-      .finally(() => setLoading(false));
-  }, []);
+  fetchUserData();
+
+  axios.get('https://api.dailyping.org/api/responses/all', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+    .then(res => setResponses(res.data))
+    .catch(() => setResponses([]))
+    .finally(() => setLoading(false));
+
+  // ✅ If user came back from Stripe, re-fetch after delay
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('session_id')) {
+    setTimeout(() => {
+      fetchUserData(); // re-check for updated Pro status
+    }, 3000);
+  }
+
+}, []);
+
 
   const upgradeToPro = async () => {
     const token = localStorage.getItem('token');
