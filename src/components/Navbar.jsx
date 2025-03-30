@@ -1,10 +1,10 @@
-// components/Navbar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -12,21 +12,37 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
       <div className="container">
-        <Link className="navbar-brand" to="/">DailyPing</Link>
-        <div className="collapse navbar-collapse">
-          <ul className="navbar-nav ms-auto">
+        <Link className="navbar-brand fw-bold" to="/">DailyPing</Link>
+        <button
+          className="navbar-toggler"
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          aria-controls="navbarSupportedContent"
+          aria-expanded={expanded}
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon" />
+        </button>
+
+        <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`} id="navbarSupportedContent">
+          <ul className="navbar-nav ms-auto align-items-center gap-2">
             {token && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard">Dashboard</Link>
+                  <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/respond">Respond</Link>
+                  <Link className="nav-link" to="/respond" onClick={() => setExpanded(false)}>Respond</Link>
                 </li>
                 <li className="nav-item">
-                  <button onClick={handleLogout} className="btn btn-outline-secondary btn-sm ms-2">Logout</button>
+                  <button
+                    onClick={handleLogout}
+                    className="btn btn-outline-secondary btn-sm"
+                  >
+                    Logout
+                  </button>
                 </li>
               </>
             )}
