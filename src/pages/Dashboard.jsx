@@ -77,15 +77,15 @@ export default function Dashboard() {
           </div>
           <div>
             <p className="mb-1 fw-bold text-muted text-center">Pro Status</p>
-            <span className={`badge fs-5 ${user?.pro ? 'bg-primary' : 'bg-secondary'}`}>
-              {user?.pro ? '✅ Active' : '❌ Not active'}
+            <span className={`badge fs-5 ${user?.preferences?.pro ? 'bg-primary' : 'bg-secondary'}`}>
+              {user?.preferences?.pro ? '✅ Active' : '❌ Not active'}
             </span>
           </div>
         </div>
       </div>
 
       {/* 🚀 Call to Action for Pro Upgrade */}
-      {!user?.pro && (
+      {!user?.preferences?.pro && (
         <div className="alert alert-warning shadow-sm mb-4 text-center">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
           <p className="mb-3">Customize your ping time, choose a tone, get weekly reports & more.</p>
