@@ -32,11 +32,10 @@ export default function Respond() {
           setSubmittedGoal(checkRes.data.content);
           setGoal(checkRes.data.content || '');
 
-          if (Array.isArray(checkRes.data.subTasks)) {
-            const taskTexts = checkRes.data.subTasks.map((t) => t.text || '');
-            const filled = [...taskTexts, '', '', ''].slice(0, 3); // ensure 3 fields
-            setSubTasks(filled);
-          }
+          // ✅ Load and normalize subTasks
+          const tasks = (checkRes.data.subTasks || []).map(t => t?.text || '');
+          while (tasks.length < 3) tasks.push('');
+          setSubTasks(tasks.slice(0, 3));
         }
       } catch {
         alert('Login link is invalid or expired.');
