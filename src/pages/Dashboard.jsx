@@ -9,6 +9,34 @@ export default function Dashboard() {
   const [responses, setResponses] = useState([]);
   const [preferences, setPreferences] = useState({ pingTime: '', tone: '', timezone: '' });
   const [saveStatus, setSaveStatus] = useState('');
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  // Capture PWA install prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  // Auto-trigger prompt after delay
+  useEffect(() => {
+    if (deferredPrompt) {
+      const timer = setTimeout(() => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(choice => {
+          console.log('📲 Install outcome:', choice.outcome);
+          setDeferredPrompt(null);
+        });
+      }, 5000); // 5 seconds delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [deferredPrompt]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -30,7 +58,6 @@ export default function Dashboard() {
           timezone: res.data.timezone || 'UTC'
         });
 
-        // ✅ Register push once user is loaded
         await registerPush();
         console.log('📲 Push registration triggered after user load.');
       } catch {
@@ -55,7 +82,6 @@ export default function Dashboard() {
     fetchUserData();
     fetchResponses();
 
-    // ✅ Re-check user data after Stripe redirect
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('session_id')) {
       setTimeout(() => {
@@ -74,7 +100,7 @@ export default function Dashboard() {
     const token = localStorage.getItem('token');
     try {
       setSaveStatus('Saving...');
-      const res = await axios.post(
+      await axios.post(
         'https://api.dailyping.org/api/preferences',
         {
           pingTime: preferences.pingTime,
