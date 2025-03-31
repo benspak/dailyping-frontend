@@ -7,7 +7,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [responses, setResponses] = useState([]);
-  const [taskState, setTaskState] = useState({}); // local checkbox state
+  const [taskState, setTaskState] = useState({});
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -35,6 +35,15 @@ export default function Dashboard() {
           headers: { Authorization: `Bearer ${token}` }
         });
         setResponses(res.data);
+
+        // Initialize taskState based on current subTask check state
+        const state = {};
+        res.data.forEach(resp => {
+          if (Array.isArray(resp.subTasks)) {
+            state[resp._id] = resp.subTasks.map(t => t.checked);
+          }
+        });
+        setTaskState(state);
       } catch {
         setResponses([]);
       } finally {
@@ -46,14 +55,26 @@ export default function Dashboard() {
     fetchResponses();
   }, []);
 
-  const toggleTask = (responseId, index) => {
-    setTaskState(prev => ({
-      ...prev,
-      [responseId]: {
-        ...(prev[responseId] || {}),
-        [index]: !prev[responseId]?.[index]
-      }
-    }));
+  const toggleTask = async (responseId, taskIndex) => {
+    const current = taskState[responseId]?.[taskIndex] || false;
+    const updated = {
+      ...taskState,
+      [responseId]: [...(taskState[responseId] || [])]
+    };
+    updated[responseId][taskIndex] = !current;
+    setTaskState(updated);
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.patch(`https://api.dailyping.org/api/response/${responseId}/subtasks`, {
+        index: taskIndex,
+        checked: !current
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+    } catch (err) {
+      console.error('❌ Failed to update subtask:', err.message);
+    }
   };
 
   if (loading) {
@@ -66,6 +87,7 @@ export default function Dashboard() {
 
   return (
     <div className="container py-5">
+      {/* Welcome */}
       <div className="card shadow-sm p-4 mb-4">
         <h2 className="mb-3 text-center">Welcome, {user?.email}</h2>
         <div className="d-flex flex-wrap justify-content-center gap-4">
@@ -82,7 +104,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 🚀 Pro CTA */}
+      {/* CTA */}
       {!user?.pro && (
         <div className="alert alert-warning text-center mb-4">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
@@ -102,18 +124,18 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* 📝 Past Goals + Tasks */}
+      {/* Responses */}
       <h4 className="mb-3">Your Past Goals</h4>
       {responses.length === 0 ? (
         <p className="text-muted">No responses yet.</p>
       ) : (
         <ul className="list-group">
-          {responses.map(r => (
+          {responses.map((r) => (
             <li key={r._id} className="list-group-item">
               <strong>{r.date}:</strong> {r.content}
-              <ul className="mt-2">
-                {[r.task1, r.task2, r.task3].map((task, idx) => (
-                  task && (
+              {Array.isArray(r.subTasks) && r.subTasks.length > 0 && (
+                <ul className="mt-2">
+                  {r.subTasks.map((task, idx) => (
                     <li key={idx} className="form-check">
                       <input
                         className="form-check-input me-2"
@@ -123,18 +145,18 @@ export default function Dashboard() {
                         id={`task-${r._id}-${idx}`}
                       />
                       <label htmlFor={`task-${r._id}-${idx}`} className="form-check-label">
-                        {task}
+                        {task.text}
                       </label>
                     </li>
-                  )
-                ))}
-              </ul>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
       )}
 
-      {/* Admin Panel */}
+      {/* Admin */}
       {user?.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
