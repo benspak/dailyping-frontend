@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { registerPush } from '../utils/registerPush';
+import { usePushNotifications } from '../hooks/usePushNotification';
 
 export default function Dashboard() {
+  usePushNotifications();
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [responses, setResponses] = useState([]);
@@ -14,6 +18,8 @@ export default function Dashboard() {
       window.location.href = '/login';
       return;
     }
+
+    registerPush();
 
     const fetchUserData = async () => {
       try {
