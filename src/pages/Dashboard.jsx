@@ -10,7 +10,7 @@ export default function Dashboard() {
   const [preferences, setPreferences] = useState({ pingTime: '', tone: '', timezone: '' });
   const [saveStatus, setSaveStatus] = useState('');
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallButton, setShowInstallButton] = useState(true);
+  const [showInstallButton, setShowInstallButton] = useState(false);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
@@ -152,13 +152,11 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
-        {showInstallButton && (
-          <div className="text-center mt-3">
-            <button className="btn btn-outline-primary btn-sm" onClick={handleInstallClick}>
-              📲 Install DailyPing App
-            </button>
-          </div>
-        )}
+        <div className="text-center mt-3">
+          <button className="btn btn-outline-primary btn-sm" onClick={handleInstallClick}>
+            📲 Install DailyPing App
+          </button>
+        </div>
       </div>
 
       {!user?.pro && (
