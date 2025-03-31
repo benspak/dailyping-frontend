@@ -21,6 +21,17 @@ export default function Dashboard() {
 
     registerPush();
 
+    fetch('https://api.dailyping.org/test/send-push', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    })
+  .then(res => res.json())
+  .then(data => console.log('✅ Push result:', data))
+  .catch(err => console.error('❌ Push error:', err));
+
     const fetchUserData = async () => {
       try {
         const res = await axios.get('https://api.dailyping.org/api/me', {
