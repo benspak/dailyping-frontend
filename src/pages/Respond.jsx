@@ -12,6 +12,7 @@ export default function Respond() {
   const [submittedGoal, setSubmittedGoal] = useState('');
   const [subTasks, setSubTasks] = useState(['', '', '']);
   const [isEditing, setIsEditing] = useState(false);
+  const [responseId, setResponseId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,11 +32,13 @@ export default function Respond() {
           setAlreadySubmitted(true);
           setSubmittedGoal(checkRes.data.content);
           setGoal(checkRes.data.content || '');
+          setResponseId(checkRes.data._id || null);
 
-          // ✅ Load and normalize subTasks
-          const tasks = (checkRes.data.subTasks || []).map(t => t?.text || '');
-          while (tasks.length < 3) tasks.push('');
-          setSubTasks(tasks.slice(0, 3));
+          if (Array.isArray(checkRes.data.subTasks)) {
+            const taskTexts = checkRes.data.subTasks.map((t) => t.text || '');
+            const filled = [...taskTexts, '', '', ''].slice(0, 3);
+            setSubTasks(filled);
+          }
         }
       } catch {
         alert('Login link is invalid or expired.');
@@ -69,17 +72,30 @@ export default function Respond() {
         .filter((text) => text !== '')
         .map((text) => ({ text }));
 
-      await axios.post(
-        `https://api.dailyping.org/api/response`,
-        {
-          content: goal,
-          mode: 'goal',
-          subTasks: filteredSubTasks
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      if (alreadySubmitted && isEditing && responseId) {
+        await axios.put(
+          `https://api.dailyping.org/api/response/${responseId}`,
+          {
+            content: goal,
+            subTasks: filteredSubTasks
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+      } else {
+        await axios.post(
+          `https://api.dailyping.org/api/response`,
+          {
+            content: goal,
+            mode: 'goal',
+            subTasks: filteredSubTasks
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+      }
 
       setSubmitted(true);
       setIsEditing(false);
@@ -113,7 +129,9 @@ export default function Respond() {
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="w-100" style={{ maxWidth: '600px' }}>
         <div className="card shadow-sm p-4">
-          <h3 className="mb-4 text-center">{alreadySubmitted ? 'Edit your goal for today' : 'What’s your #1 goal today?'}</h3>
+          <h3 className="mb-4 text-center">
+            {alreadySubmitted ? 'Edit your goal for today' : 'What’s your #1 goal today?'}
+          </h3>
           <form onSubmit={submitResponse}>
             <div className="mb-3">
               <textarea
