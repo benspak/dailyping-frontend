@@ -10,7 +10,7 @@ export default function Dashboard() {
   const [preferences, setPreferences] = useState({ pingTime: '', tone: '', timezone: '' });
   const [saveStatus, setSaveStatus] = useState('');
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
+  const [showInstallButton, setShowInstallButton] = useState(true);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
