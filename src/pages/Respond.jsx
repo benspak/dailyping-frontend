@@ -7,13 +7,13 @@ export default function Respond() {
   const navigate = useNavigate();
   const [tokenValid, setTokenValid] = useState(false);
   const [goal, setGoal] = useState('');
-  const [subtasks, setSubtasks] = useState(['', '', '']);
   const [submitted, setSubmitted] = useState(false);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [submittedGoal, setSubmittedGoal] = useState('');
+  const [subTasks, setSubTasks] = useState(['', '', '']);
 
   useEffect(() => {
-    const localToken = localStorage.getItem('token');
+    const token = localStorage.getItem('token');
     const urlToken = params.get('token');
 
     const verifyToken = async (tokenToVerify) => {
@@ -22,7 +22,6 @@ export default function Respond() {
         localStorage.setItem('token', res.data.token);
         setTokenValid(true);
 
-        // Check if already submitted today
         const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
           headers: { Authorization: `Bearer ${res.data.token}` }
         });
@@ -31,15 +30,14 @@ export default function Respond() {
           setAlreadySubmitted(true);
           setSubmittedGoal(checkRes.data.content);
         }
-      } catch (err) {
-        console.error('Token verification failed:', err.response?.data || err.message);
+      } catch {
         alert('Login link is invalid or expired.');
         navigate('/');
       }
     };
 
-    if (localToken) {
-      verifyToken(localToken);
+    if (token) {
+      verifyToken(token);
     } else if (urlToken) {
       verifyToken(urlToken);
     } else {
@@ -48,40 +46,42 @@ export default function Respond() {
     }
   }, [params, navigate]);
 
+  const handleSubTaskChange = (index, value) => {
+    const updated = [...subTasks];
+    updated[index] = value;
+    setSubTasks(updated);
+  };
+
   const submitResponse = async (e) => {
     e.preventDefault();
-    const payload = { content: goal, subtasks: subtasks.filter(Boolean), mode: 'goal' };
-    const token = localStorage.getItem('token');
-
     try {
-      console.log('Submitting:', payload);
+      const token = localStorage.getItem('token');
+
+      const filteredSubTasks = subTasks
+        .map((text) => text.trim())
+        .filter((text) => text !== '')
+        .map((text) => ({ text }));
+
       await axios.post(
-        `https://api.dailyping.org/api/response`, // ✅ correct singular endpoint
-        payload,
+        `https://api.dailyping.org/api/response`,
+        {
+          content: goal,
+          mode: 'goal',
+          subTasks: filteredSubTasks
+        },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
       setSubmitted(true);
     } catch (err) {
-      const msg =
-        err.response?.data?.error ||
-        err.response?.data ||
-        err.message ||
-        'Unknown error';
-      console.error('Submission error:', msg);
-      alert(`Error submitting your goal: ${msg}`);
+      console.error('Submission error:', err.response?.data || err.message);
+      alert('Error submitting your goal.');
     }
   };
 
-  if (!tokenValid) {
-    return (
-      <div className="container py-5">
-        <p>Verifying token...</p>
-      </div>
-    );
-  }
-
+  if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
   if (submitted || alreadySubmitted) {
     return (
       <div className="container py-5">
@@ -105,29 +105,27 @@ export default function Respond() {
               <textarea
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="form-control mb-3"
+                className="form-control"
                 rows="4"
-                placeholder="What’s your #1 goal today?"
+                placeholder="Write your goal here..."
                 required
               />
-
-                {[0, 1, 2].map((i) => (
-                  <input
-                    key={i}
-                    type="text"
-                    className="form-control mb-2"
-                    placeholder={`Subtask ${i + 1}`}
-                    value={subtasks[i]}
-                    onChange={(e) => {
-                      const newSubs = [...subtasks];
-                      newSubs[i] = e.target.value;
-                      setSubtasks(newSubs);
-                    }}
-                  />
-                ))}
             </div>
-            <button type="submit" className="btn btn-primary w-100">
-              Submit
+
+            <h6 className="text-muted">Optional sub-tasks:</h6>
+            {[0, 1, 2].map((i) => (
+              <input
+                key={i}
+                type="text"
+                className="form-control mb-2"
+                placeholder={`Sub-task ${i + 1}`}
+                value={subTasks[i]}
+                onChange={(e) => handleSubTaskChange(i, e.target.value)}
+              />
+            ))}
+
+            <button type="submit" className="btn btn-primary w-100 mt-3">
+              Submit Goal
             </button>
           </form>
         </div>

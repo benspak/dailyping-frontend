@@ -1,38 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { registerPush } from '../utils/registerPush';
 import AdminPanel from '../components/AdminPanel';
+import { registerPush } from '../utils/registerPush';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [responses, setResponses] = useState([]);
-  const [preferences, setPreferences] = useState({ pingTime: '', tone: '', timezone: '' });
-  const [saveStatus, setSaveStatus] = useState('');
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showInstallButton, setShowInstallButton] = useState(false);
-
-  useEffect(() => {
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setShowInstallButton(true);
-    };
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      console.log('📲 User choice:', choice.outcome);
-      setDeferredPrompt(null);
-      setShowInstallButton(false);
-    }
-  };
+  const [taskState, setTaskState] = useState({}); // local checkbox state
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -46,16 +21,8 @@ export default function Dashboard() {
         const res = await axios.get('https://api.dailyping.org/api/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
-
         setUser(res.data);
-        setPreferences({
-          pingTime: res.data.preferences?.pingTime || '08:00',
-          tone: res.data.preferences?.tone || 'gentle',
-          timezone: res.data.timezone || 'UTC'
-        });
-
         await registerPush();
-        console.log('📲 Push registration triggered after user load.');
       } catch {
         localStorage.removeItem('token');
         window.location.href = '/';
@@ -77,54 +44,16 @@ export default function Dashboard() {
 
     fetchUserData();
     fetchResponses();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('session_id')) {
-      setTimeout(() => {
-        fetchUserData();
-        window.history.replaceState({}, document.title, '/dashboard');
-      }, 3000);
-    }
   }, []);
 
-  const handlePrefChange = (e) => {
-    const { name, value } = e.target;
-    setPreferences(prev => ({ ...prev, [name]: value }));
-  };
-
-  const savePreferences = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      setSaveStatus('Saving...');
-      await axios.post(
-        'https://api.dailyping.org/api/preferences',
-        {
-          pingTime: preferences.pingTime,
-          tone: preferences.tone,
-          timezone: preferences.timezone
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
-      setSaveStatus('✅ Preferences saved!');
-      setTimeout(() => setSaveStatus(''), 2000);
-    } catch (err) {
-      console.error(err);
-      setSaveStatus('❌ Failed to save preferences.');
-    }
-  };
-
-  const upgradeToPro = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      const res = await axios.post('https://api.dailyping.org/billing/create-checkout-session', {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      window.location.href = res.data.url;
-    } catch {
-      alert('Error starting checkout session.');
-    }
+  const toggleTask = (responseId, index) => {
+    setTaskState(prev => ({
+      ...prev,
+      [responseId]: {
+        ...(prev[responseId] || {}),
+        [index]: !prev[responseId]?.[index]
+      }
+    }));
   };
 
   if (loading) {
@@ -137,7 +66,6 @@ export default function Dashboard() {
 
   return (
     <div className="container py-5">
-      {/* Welcome Card */}
       <div className="card shadow-sm p-4 mb-4">
         <h2 className="mb-3 text-center">Welcome, {user?.email}</h2>
         <div className="d-flex flex-wrap justify-content-center gap-4">
@@ -152,38 +80,61 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
-        {showInstallButton && (
-          <div className="text-center mt-3">
-            <button className="btn btn-outline-primary btn-sm" onClick={handleInstallClick}>
-              📲 Install DailyPing App
-            </button>
-          </div>
-        )}
       </div>
 
+      {/* 🚀 Pro CTA */}
       {!user?.pro && (
-        <div className="alert alert-warning shadow-sm mb-4 text-center">
+        <div className="alert alert-warning text-center mb-4">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
-          <p className="mb-3">Customize your ping time, choose a tone, get weekly reports & more.</p>
-          <button className="btn btn-primary btn-sm" onClick={upgradeToPro}>Go Pro for $5/month</button>
+          <p>Customize your ping time, choose a tone, get weekly reports & more.</p>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={async () => {
+              const token = localStorage.getItem('token');
+              const res = await axios.post('https://api.dailyping.org/billing/create-checkout-session', {}, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              window.location.href = res.data.url;
+            }}
+          >
+            Go Pro for $5/month
+          </button>
         </div>
       )}
 
-      <div>
-        <h4 className="mb-3">Your Past Goals</h4>
-        {responses.length === 0 ? (
-          <p className="text-muted">No responses yet.</p>
-        ) : (
-          <ul className="list-group">
-            {responses.map((r) => (
-              <li key={r._id} className="list-group-item">
-                <strong>{r.date}:</strong> {r.content}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {/* 📝 Past Goals + Tasks */}
+      <h4 className="mb-3">Your Past Goals</h4>
+      {responses.length === 0 ? (
+        <p className="text-muted">No responses yet.</p>
+      ) : (
+        <ul className="list-group">
+          {responses.map(r => (
+            <li key={r._id} className="list-group-item">
+              <strong>{r.date}:</strong> {r.content}
+              <ul className="mt-2">
+                {[r.task1, r.task2, r.task3].map((task, idx) => (
+                  task && (
+                    <li key={idx} className="form-check">
+                      <input
+                        className="form-check-input me-2"
+                        type="checkbox"
+                        checked={taskState[r._id]?.[idx] || false}
+                        onChange={() => toggleTask(r._id, idx)}
+                        id={`task-${r._id}-${idx}`}
+                      />
+                      <label htmlFor={`task-${r._id}-${idx}`} className="form-check-label">
+                        {task}
+                      </label>
+                    </li>
+                  )
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      )}
 
+      {/* Admin Panel */}
       {user?.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
