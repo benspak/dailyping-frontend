@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 export default function Navbar() {
-  const token = localStorage.getItem('token');
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [isPro, setIsPro] = useState(false);
   const navigate = useNavigate();
-  const [expanded, setExpanded] = useState(false);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!token) return;
-
-    axios.get('https://api.dailyping.org/api/me', {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-      .then(res => setUser(res.data))
-      .catch(() => {
-        localStorage.removeItem('token');
-        navigate('/');
-      });
-  }, [token, navigate]);
+    if (token) {
+      fetch('https://api.dailyping.org/api/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data?.pro) setIsPro(true);
+        })
+        .catch(() => {});
+    }
+  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    setToken(null);
     navigate('/');
   };
 
@@ -30,39 +29,29 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">DailyPing</Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          aria-controls="navbarSupportedContent"
-          aria-expanded={expanded}
-          aria-label="Toggle navigation"
-        >
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span className="navbar-toggler-icon" />
         </button>
-
-        <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`} id="navbarSupportedContent">
-          <ul className="navbar-nav ms-auto align-items-center gap-2">
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto gap-2">
             {token && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Link>
+                  <Link className="nav-link" to="/dashboard">Dashboard</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/respond" onClick={() => setExpanded(false)}>Respond</Link>
+                  <Link className="nav-link" to="/respond">Respond</Link>
                 </li>
-                {user?.pro && (
+                {isPro && (
                   <li className="nav-item">
-                    <Link className="nav-link" to="/pro-settings" onClick={() => setExpanded(false)}>Pro Settings</Link>
+                    <Link className="nav-link" to="/pro-settings">Pro Settings</Link>
                   </li>
                 )}
                 <li className="nav-item">
-                  <button
-                    onClick={handleLogout}
-                    className="btn btn-outline-secondary btn-sm"
-                  >
-                    Logout
-                  </button>
+                  <Link className="nav-link" to="/feedback">Feedback</Link>
+                </li>
+                <li className="nav-item">
+                  <button onClick={handleLogout} className="btn btn-outline-secondary btn-sm">Logout</button>
                 </li>
               </>
             )}
