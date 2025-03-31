@@ -29,10 +29,13 @@ export default function Respond() {
 
         if (checkRes.data.alreadySubmitted) {
           setAlreadySubmitted(true);
-          setGoal(checkRes.data.content || '');
           setSubmittedGoal(checkRes.data.content);
-          if (checkRes.data.subTasks?.length) {
-            setSubTasks(checkRes.data.subTasks.map((t) => t.text));
+          setGoal(checkRes.data.content || '');
+
+          if (Array.isArray(checkRes.data.subTasks)) {
+            const taskTexts = checkRes.data.subTasks.map((t) => t.text || '');
+            const filled = [...taskTexts, '', '', ''].slice(0, 3); // ensure 3 fields
+            setSubTasks(filled);
           }
         }
       } catch {
@@ -131,7 +134,7 @@ export default function Respond() {
                 type="text"
                 className="form-control mb-2"
                 placeholder={`Sub-task ${i + 1}`}
-                value={subTasks[i] || ''}
+                value={subTasks[i]}
                 onChange={(e) => handleSubTaskChange(i, e.target.value)}
               />
             ))}
