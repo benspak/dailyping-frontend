@@ -35,7 +35,7 @@ export async function registerPush() {
       applicationServerKey: convertedKey
     });
 
-    console.log('🔐 Push subscription created:', subscription);
+    console.log('🔐 subscription:', subscription);
 
     const token = localStorage.getItem('token');
     if (!token) {
