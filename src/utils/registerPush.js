@@ -35,7 +35,7 @@ export async function registerPush() {
       applicationServerKey: convertedKey
     });
 
-    console.log('🔐 subscription:', subscription);
+    // console.log('🔐 subscription:', subscription);
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -50,7 +50,7 @@ export async function registerPush() {
       }
     });
 
-    console.log('📬 Subscription sent to server');
+    // console.log('📬 Subscription sent to server');
 
   } catch (err) {
     console.error('❌ Push registration failed:', err.message);
