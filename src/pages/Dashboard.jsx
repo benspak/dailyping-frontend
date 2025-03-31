@@ -152,11 +152,13 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
-        <div className="text-center mt-3">
-          <button className="btn btn-outline-primary btn-sm" onClick={handleInstallClick}>
-            📲 Install DailyPing App
-          </button>
-        </div>
+        {showInstallButton && (
+          <div className="text-center mt-3">
+            <button className="btn btn-outline-primary btn-sm" onClick={handleInstallClick}>
+              📲 Install DailyPing App
+            </button>
+          </div>
+        )}
       </div>
 
       {!user?.pro && (
