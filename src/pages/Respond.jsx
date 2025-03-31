@@ -7,6 +7,7 @@ export default function Respond() {
   const navigate = useNavigate();
   const [tokenValid, setTokenValid] = useState(false);
   const [goal, setGoal] = useState('');
+  const [subtasks, setSubtasks] = useState(['', '', '']);
   const [submitted, setSubmitted] = useState(false);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [submittedGoal, setSubmittedGoal] = useState('');
@@ -49,7 +50,7 @@ export default function Respond() {
 
   const submitResponse = async (e) => {
     e.preventDefault();
-    const payload = { content: goal, mode: 'goal' };
+    const payload = { content: goal, subtasks: subtasks.filter(Boolean), mode: 'goal' };
     const token = localStorage.getItem('token');
 
     try {
@@ -104,14 +105,29 @@ export default function Respond() {
               <textarea
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="form-control"
+                className="form-control mb-3"
                 rows="4"
-                placeholder="Write your goal here..."
+                placeholder="What’s your #1 goal today?"
                 required
               />
+
+                {[0, 1, 2].map((i) => (
+                  <input
+                    key={i}
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder={`Subtask ${i + 1}`}
+                    value={subtasks[i]}
+                    onChange={(e) => {
+                      const newSubs = [...subtasks];
+                      newSubs[i] = e.target.value;
+                      setSubtasks(newSubs);
+                    }}
+                  />
+                ))}
             </div>
             <button type="submit" className="btn btn-primary w-100">
-              Submit Goal
+              Submit
             </button>
           </form>
         </div>
