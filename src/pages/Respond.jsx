@@ -11,8 +11,6 @@ export default function Respond() {
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [submittedGoal, setSubmittedGoal] = useState('');
   const [subTasks, setSubTasks] = useState(['', '', '']);
-  const [isEditing, setIsEditing] = useState(false);
-  const [responseId, setResponseId] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,14 +29,6 @@ export default function Respond() {
         if (checkRes.data.alreadySubmitted) {
           setAlreadySubmitted(true);
           setSubmittedGoal(checkRes.data.content);
-          setGoal(checkRes.data.content || '');
-          setResponseId(checkRes.data._id || null);
-
-          if (Array.isArray(checkRes.data.subTasks)) {
-            const taskTexts = checkRes.data.subTasks.map((t) => t.text || '');
-            const filled = [...taskTexts, '', '', ''].slice(0, 3);
-            setSubTasks(filled);
-          }
         }
       } catch {
         alert('Login link is invalid or expired.');
@@ -72,35 +62,19 @@ export default function Respond() {
         .filter((text) => text !== '')
         .map((text) => ({ text }));
 
-      if (alreadySubmitted && isEditing && responseId) {
-        await axios.put(
-          `https://api.dailyping.org/api/response/${responseId}`,
-          {
-            content: goal,
-            subTasks: filteredSubTasks
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-      } else {
-        await axios.post(
-          `https://api.dailyping.org/api/response`,
-          {
-            content: goal,
-            mode: 'goal',
-            subTasks: filteredSubTasks
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
-      }
+      await axios.post(
+        `https://api.dailyping.org/api/response`,
+        {
+          content: goal,
+          mode: 'goal',
+          subTasks: filteredSubTasks
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       setSubmitted(true);
-      setIsEditing(false);
-      setAlreadySubmitted(true);
-      setSubmittedGoal(goal);
     } catch (err) {
       console.error('Submission error:', err.response?.data || err.message);
       alert('Error submitting your goal.');
@@ -109,7 +83,7 @@ export default function Respond() {
 
   if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
 
-  if ((submitted || alreadySubmitted) && !isEditing) {
+  if (submitted || alreadySubmitted) {
     return (
       <div className="container py-5">
         <div className="alert alert-success text-center">
@@ -117,9 +91,6 @@ export default function Respond() {
           <blockquote className="blockquote mt-3">
             <p className="mb-0">{submittedGoal}</p>
           </blockquote>
-          <button className="btn btn-outline-secondary mt-3" onClick={() => setIsEditing(true)}>
-            Edit Goal
-          </button>
         </div>
       </div>
     );
@@ -129,9 +100,7 @@ export default function Respond() {
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="w-100" style={{ maxWidth: '600px' }}>
         <div className="card shadow-sm p-4">
-          <h3 className="mb-4 text-center">
-            {alreadySubmitted ? 'Edit your goal for today' : 'What’s your #1 goal today?'}
-          </h3>
+          <h3 className="mb-4 text-center">What’s your #1 goal today?</h3>
           <form onSubmit={submitResponse}>
             <div className="mb-3">
               <textarea
@@ -157,7 +126,7 @@ export default function Respond() {
             ))}
 
             <button type="submit" className="btn btn-primary w-100 mt-3">
-              {alreadySubmitted ? 'Update Goal' : 'Submit Goal'}
+              Submit Goal
             </button>
           </form>
         </div>
