@@ -11,6 +11,7 @@ export default function Respond() {
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [submittedGoal, setSubmittedGoal] = useState('');
   const [subTasks, setSubTasks] = useState(['', '', '']);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -28,7 +29,11 @@ export default function Respond() {
 
         if (checkRes.data.alreadySubmitted) {
           setAlreadySubmitted(true);
+          setGoal(checkRes.data.content || '');
           setSubmittedGoal(checkRes.data.content);
+          if (checkRes.data.subTasks?.length) {
+            setSubTasks(checkRes.data.subTasks.map((t) => t.text));
+          }
         }
       } catch {
         alert('Login link is invalid or expired.');
@@ -75,6 +80,9 @@ export default function Respond() {
       );
 
       setSubmitted(true);
+      setIsEditing(false);
+      setAlreadySubmitted(true);
+      setSubmittedGoal(goal);
     } catch (err) {
       console.error('Submission error:', err.response?.data || err.message);
       alert('Error submitting your goal.');
@@ -82,7 +90,8 @@ export default function Respond() {
   };
 
   if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
-  if (submitted || alreadySubmitted) {
+
+  if ((submitted || alreadySubmitted) && !isEditing) {
     return (
       <div className="container py-5">
         <div className="alert alert-success text-center">
@@ -90,6 +99,9 @@ export default function Respond() {
           <blockquote className="blockquote mt-3">
             <p className="mb-0">{submittedGoal}</p>
           </blockquote>
+          <button className="btn btn-outline-secondary mt-3" onClick={() => setIsEditing(true)}>
+            Edit Goal
+          </button>
         </div>
       </div>
     );
@@ -99,7 +111,7 @@ export default function Respond() {
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="w-100" style={{ maxWidth: '600px' }}>
         <div className="card shadow-sm p-4">
-          <h3 className="mb-4 text-center">What’s your #1 goal today?</h3>
+          <h3 className="mb-4 text-center">{alreadySubmitted ? 'Edit your goal for today' : 'What’s your #1 goal today?'}</h3>
           <form onSubmit={submitResponse}>
             <div className="mb-3">
               <textarea
@@ -119,13 +131,13 @@ export default function Respond() {
                 type="text"
                 className="form-control mb-2"
                 placeholder={`Sub-task ${i + 1}`}
-                value={subTasks[i]}
+                value={subTasks[i] || ''}
                 onChange={(e) => handleSubTaskChange(i, e.target.value)}
               />
             ))}
 
             <button type="submit" className="btn btn-primary w-100 mt-3">
-              Submit Goal
+              {alreadySubmitted ? 'Update Goal' : 'Submit Goal'}
             </button>
           </form>
         </div>
