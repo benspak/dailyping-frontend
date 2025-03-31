@@ -36,6 +36,11 @@ export default function Navbar() {
                 <li className="nav-item">
                   <Link className="nav-link" to="/respond" onClick={() => setExpanded(false)}>Respond</Link>
                 </li>
+                {user?.pro && (
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/pro-settings">Pro Settings</Link>
+                  </li>
+                )}
                 <li className="nav-item">
                   <button
                     onClick={handleLogout}

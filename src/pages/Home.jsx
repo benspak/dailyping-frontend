@@ -16,7 +16,6 @@ export default function Home() {
         </p>
         <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">
           <button className="btn btn-dark btn-lg" onClick={() => navigate('/login')}>Start Free</button>
-          <button className="btn btn-outline-dark btn-lg" onClick={() => navigate('/login')}>View Demo</button>
         </div>
       </section>
 
@@ -69,15 +68,12 @@ export default function Home() {
               <li>⭐ Custom ping time</li>
               <li>⭐ Choose tone (motivational, gentle, snarky)</li>
               <li>⭐ Weekly summary reports</li>
-              <li>⭐ SMS or Telegram delivery</li>
-              <li>⭐ Notion + Calendar integration (coming soon)</li>
             </ul>
           </div>
         </div>
 
         <div className="d-flex flex-wrap justify-content-center gap-3">
           <button className="btn btn-dark btn-lg" onClick={() => navigate('/login')}>Start Free</button>
-          <button className="btn btn-outline-dark btn-lg" onClick={() => navigate('/login')}>Go Pro</button>
         </div>
       </section>
 
