@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { registerPush } from '../utils/registerPush';
-import { usePushNotifications } from '../hooks/usePushNotification';
-import AdminPanel from '../components/AdminPanel'
+import AdminPanel from '../components/AdminPanel';
 
 export default function Dashboard() {
-  usePushNotifications();
-
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [responses, setResponses] = useState([]);
@@ -20,30 +17,22 @@ export default function Dashboard() {
       return;
     }
 
-    registerPush();
-
-    fetch('https://api.dailyping.org/test/send-push', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    })
-  .then(res => res.json())
-  .then(data => console.log('✅ Push result:', data))
-  .catch(err => console.error('❌ Push error:', err));
-
     const fetchUserData = async () => {
       try {
         const res = await axios.get('https://api.dailyping.org/api/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
+
         setUser(res.data);
         setPreferences({
           pingTime: res.data.preferences?.pingTime || '08:00',
           tone: res.data.preferences?.tone || 'gentle',
           timezone: res.data.timezone || 'UTC'
         });
+
+        // ✅ Register push once user is loaded
+        await registerPush();
+        console.log('📲 Push registration triggered after user load.');
       } catch {
         localStorage.removeItem('token');
         window.location.href = '/';
@@ -66,10 +55,11 @@ export default function Dashboard() {
     fetchUserData();
     fetchResponses();
 
+    // ✅ Re-check user data after Stripe redirect
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('session_id')) {
       setTimeout(() => {
-        fetchUserData(); // re-fetch after Stripe return
+        fetchUserData();
         window.history.replaceState({}, document.title, '/dashboard');
       }, 3000);
     }
@@ -166,13 +156,13 @@ export default function Dashboard() {
           </ul>
         )}
       </div>
+
       {/* Admin Panel */}
       {user?.isAdmin && (
-        <div>
+        <div className="mt-5">
           <AdminPanel />
         </div>
       )}
-
     </div>
   );
 }
