@@ -7,6 +7,7 @@ import Verify from './pages/Verify';
 import Respond from './pages/Respond';
 import Dashboard from './pages/Dashboard';
 import ProSettings from './pages/ProSettings';
+import RequirePro from './components/RequirePro';
 import Navbar from './components/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -20,7 +21,7 @@ function App() {
         <Route path="/auth/verify" element={<Verify />} />
         <Route path="/respond" element={<Respond />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/pro-settings" element={<ProSettings />} />
+        <Route path="/pro-settings" element={<RequirePro><ProSettings /></RequirePro>}/>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
