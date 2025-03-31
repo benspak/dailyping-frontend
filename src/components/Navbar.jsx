@@ -29,7 +29,15 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">DailyPing</Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
           <span className="navbar-toggler-icon" />
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
