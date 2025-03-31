@@ -168,7 +168,7 @@ export default function Dashboard() {
       </div>
 
       <div>
-        {user?.isAdmin && <AdminPanel />}
+        {user?.isAdmin (<AdminPanel />)}
     </div>
     </div>
   );
