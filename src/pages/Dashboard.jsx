@@ -166,10 +166,13 @@ export default function Dashboard() {
           </ul>
         )}
       </div>
+      {/* Admin Panel */}
+      {user?.isAdmin (
+        <div>
+          <AdminPanel />
+        </div>
+        )}
 
-      <div>
-        {user?.isAdmin (<AdminPanel />)}
-    </div>
     </div>
   );
 }
