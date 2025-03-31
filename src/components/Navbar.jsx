@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Navbar() {
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (!token) return;
+
+    axios.get('https://api.dailyping.org/api/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(res => setUser(res.data))
+      .catch(() => {
+        localStorage.removeItem('token');
+        navigate('/');
+      });
+  }, [token, navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -38,7 +53,7 @@ export default function Navbar() {
                 </li>
                 {user?.pro && (
                   <li className="nav-item">
-                    <Link className="nav-link" to="/pro-settings">Pro Settings</Link>
+                    <Link className="nav-link" to="/pro-settings" onClick={() => setExpanded(false)}>Pro Settings</Link>
                   </li>
                 )}
                 <li className="nav-item">
