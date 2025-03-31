@@ -96,12 +96,12 @@ export default function Respond() {
       <div className="container py-5">
         <div className="alert alert-success text-center">
           ✅ You already submitted your goal today.
-          <blockquote className="blockquote mt-3">
-            <p className="mb-0">{submittedGoal}</p>
-          </blockquote>
           <button className="btn btn-outline-secondary mt-3" onClick={() => setIsEditing(true)}>
             Edit Goal
           </button>
+          <blockquote className="blockquote mt-3">
+            <p className="mb-0">{submittedGoal}</p>
+          </blockquote>
         </div>
       </div>
     );
