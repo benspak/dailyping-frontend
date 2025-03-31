@@ -5,7 +5,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [responses, setResponses] = useState([]);
-  const [preferences, setPreferences] = useState({ pingTime: '', tone: '' });
+  const [preferences, setPreferences] = useState({ pingTime: '', tone: '', timezone: '' });
   const [saveStatus, setSaveStatus] = useState('');
 
   useEffect(() => {
@@ -24,6 +24,7 @@ export default function Dashboard() {
         setPreferences({
           pingTime: res.data.preferences?.pingTime || '08:00',
           tone: res.data.preferences?.tone || 'gentle',
+          timezone: res.data.timezone || 'UTC'
         });
       } catch {
         localStorage.removeItem('token');
@@ -69,7 +70,8 @@ export default function Dashboard() {
         'https://api.dailyping.org/api/preferences',
         {
           pingTime: preferences.pingTime,
-          tone: preferences.tone
+          tone: preferences.tone,
+          timezone: preferences.timezone
         },
         {
           headers: { Authorization: `Bearer ${token}` }
@@ -135,6 +137,19 @@ export default function Dashboard() {
       {user?.pro && (
         <div className="card shadow-sm p-4 mb-4">
           <h4 className="mb-3">Pro Settings</h4>
+          <div className="mb-3">
+            <label className="form-label">Timezone</label>
+            <select
+              className="form-select"
+              name="timezone"
+              value={preferences.timezone}
+              onChange={handlePrefChange}
+            >
+              {Intl.supportedValuesOf('timeZone').map((tz) => (
+                <option key={tz} value={tz}>{tz}</option>
+              ))}
+            </select>
+          </div>
           <div className="mb-3">
             <label className="form-label">Ping Time (24h format)</label>
             <input
