@@ -167,11 +167,11 @@ export default function Dashboard() {
         )}
       </div>
       {/* Admin Panel */}
-      {user?.isAdmin (
+      {user?.isAdmin && (
         <div>
           <AdminPanel />
         </div>
-        )}
+      )}
 
     </div>
   );
