@@ -8,14 +8,14 @@ self.addEventListener('push', event => {
       data = event.data.json();
     } catch (err) {
       console.error('❌ Push data JSON parse error:', err);
-      data.body = event.data.text();
+      data.body = event.data?.text() || 'You have a new ping!';
     }
   }
 
   const options = {
     body: data.body,
-    icon: '/icon-192.png',
-    badge: '/badge-72.png'
+    // icon: '/icon-192.png',
+    // badge: '/badge-72.png'
   };
 
   event.waitUntil(
