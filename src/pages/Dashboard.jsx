@@ -133,53 +133,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ⚙️ Pro Preferences */}
-      {user?.pro && (
-        <div className="card shadow-sm p-4 mb-4">
-          <h4 className="mb-3">Pro Settings</h4>
-          <div className="mb-3">
-            <label className="form-label">Timezone</label>
-            <select
-              className="form-select"
-              name="timezone"
-              value={preferences.timezone}
-              onChange={handlePrefChange}
-            >
-              {Intl.supportedValuesOf('timeZone').map((tz) => (
-                <option key={tz} value={tz}>{tz}</option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Ping Time (24h format)</label>
-            <input
-              type="time"
-              className="form-control"
-              name="pingTime"
-              value={preferences.pingTime}
-              onChange={handlePrefChange}
-            />
-          </div>
-          <div className="mb-3">
-            <label className="form-label">Tone</label>
-            <select
-              className="form-select"
-              name="tone"
-              value={preferences.tone}
-              onChange={handlePrefChange}
-            >
-              <option value="gentle">Gentle</option>
-              <option value="motivational">Motivational</option>
-              <option value="snarky">Snarky</option>
-            </select>
-          </div>
-          <button className="btn btn-dark" onClick={savePreferences}>
-            Save Preferences
-          </button>
-          {saveStatus && <div className="mt-2 text-muted">{saveStatus}</div>}
-        </div>
-      )}
-
       {/* Past Goals */}
       <div>
         <h4 className="mb-3">Your Past Goals</h4>
