@@ -10,12 +10,13 @@ export default function Dashboard() {
   const [preferences, setPreferences] = useState({ pingTime: '', tone: '', timezone: '' });
   const [saveStatus, setSaveStatus] = useState('');
   const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallButton, setShowInstallButton] = useState(false);
 
-  // Capture PWA install prompt
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
+      setShowInstallButton(true);
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     return () => {
@@ -23,20 +24,15 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Auto-trigger prompt after delay
-  useEffect(() => {
+  const handleInstallClick = async () => {
     if (deferredPrompt) {
-      const timer = setTimeout(() => {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(choice => {
-          console.log('📲 Install outcome:', choice.outcome);
-          setDeferredPrompt(null);
-        });
-      }, 5000); // 5 seconds delay
-
-      return () => clearTimeout(timer);
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      console.log('📲 User choice:', choice.outcome);
+      setDeferredPrompt(null);
+      setShowInstallButton(false);
     }
-  }, [deferredPrompt]);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -156,9 +152,15 @@ export default function Dashboard() {
             </span>
           </div>
         </div>
+        {showInstallButton && (
+          <div className="text-center mt-3">
+            <button className="btn btn-outline-primary btn-sm" onClick={handleInstallClick}>
+              📲 Install DailyPing App
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* 🚀 Call to Action for Pro Upgrade */}
       {!user?.pro && (
         <div className="alert alert-warning shadow-sm mb-4 text-center">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
@@ -167,7 +169,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Past Goals */}
       <div>
         <h4 className="mb-3">Your Past Goals</h4>
         {responses.length === 0 ? (
@@ -183,7 +184,6 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Admin Panel */}
       {user?.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
