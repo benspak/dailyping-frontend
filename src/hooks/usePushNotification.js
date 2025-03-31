@@ -25,7 +25,7 @@ export function usePushNotifications() {
         });
 
         const token = localStorage.getItem('token');
-        await axios.post('/api/push/subscribe', subscription, {
+        await axios.post('https://api.dailyping.org/api/push/subscribe', subscription, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
