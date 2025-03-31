@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { registerPush } from '../utils/registerPush';
 import { usePushNotifications } from '../hooks/usePushNotification';
+import AdminPanel from '../components/AdminPanel'
 
 export default function Dashboard() {
   usePushNotifications();
@@ -165,6 +166,10 @@ export default function Dashboard() {
           </ul>
         )}
       </div>
+
+      <div>
+        {user?.isAdmin && <AdminPanel />}
+    </div>
     </div>
   );
 }
