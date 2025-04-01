@@ -1,69 +1,60 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
 
 export default function Respond() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { token, setToken } = useAuth();
-
   const [tokenValid, setTokenValid] = useState(false);
   const [goal, setGoal] = useState('');
-  const [subTasks, setSubTasks] = useState(['', '', '']);
   const [submitted, setSubmitted] = useState(false);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [submittedGoal, setSubmittedGoal] = useState('');
-  const [submittedTasks, setSubmittedTasks] = useState([]);
+  const [subTasks, setSubTasks] = useState(['', '', '']);
+  const [isEditing, setIsEditing] = useState(false);
   const [responseId, setResponseId] = useState(null);
 
- useEffect(() => {
-  const urlToken = params.get('token');
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const urlToken = params.get('token');
 
-  const verifyAndFetch = async () => {
-    const rawToken = token || urlToken || localStorage.getItem('token');
-    if (!rawToken) {
+    const verifyToken = async (tokenToVerify) => {
+      try {
+        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: tokenToVerify });
+        localStorage.setItem('token', res.data.token);
+        setTokenValid(true);
+
+        const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
+          headers: { Authorization: `Bearer ${res.data.token}` }
+        });
+
+        if (checkRes.data.alreadySubmitted) {
+          setAlreadySubmitted(true);
+          setSubmittedGoal(checkRes.data.content);
+          setGoal(checkRes.data.content || '');
+          setResponseId(checkRes.data._id || null);
+
+          if (Array.isArray(checkRes.data.subTasks)) {
+            const taskTexts = checkRes.data.subTasks.map((t) => t.text || '');
+            const filled = [...taskTexts, '', '', ''].slice(0, 3); // ensure 3 fields
+            setSubTasks(filled);
+          }
+        }
+      } catch {
+        alert('Login link is invalid or expired.');
+        navigate('/');
+      }
+    };
+
+    if (token) {
+      verifyToken(token);
+    } else if (urlToken) {
+      verifyToken(urlToken);
+    } else {
       alert('No token found. Please log in again.');
       navigate('/');
-      return;
     }
-
-    // If coming from magic link, verify and store the new access token
-    if (urlToken) {
-      try {
-        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: urlToken });
-        localStorage.setItem('token', res.data.token);
-        setToken(res.data.token);
-      } catch {
-        alert('Invalid or expired link.');
-        navigate('/');
-        return;
-      }
-    }
-
-    setTokenValid(true);
-
-    try {
-      const authToken = urlToken ? localStorage.getItem('token') : rawToken;
-
-      const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
-
-      if (checkRes.data.alreadySubmitted) {
-        setAlreadySubmitted(true);
-        setSubmittedGoal(checkRes.data.content || '');
-        setSubmittedTasks(checkRes.data.subTasks || []);
-        setResponseId(checkRes.data._id);
-      }
-    } catch (err) {
-      console.error('❌ Error checking response:', err.message);
-    }
-  };
-
-  verifyAndFetch();
-}, [params, navigate, token]);
-
+  }, [params, navigate]);
 
   const handleSubTaskChange = (index, value) => {
     const updated = [...subTasks];
@@ -71,64 +62,55 @@ export default function Respond() {
     setSubTasks(updated);
   };
 
-const submitResponse = async (e) => {
-  e.preventDefault();
+  const submitResponse = async (e) => {
+    e.preventDefault();
 
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert('No token found. Please log in again.');
-    navigate('/login');
-    return;
-  }
-
-  try {
-    const filteredSubTasks = subTasks
-      .map((text) => text.trim())
-      .filter((text) => text !== '')
-      .map((text, i) => ({
-        text,
-        completed: false
-      }));
-
-    const payload = {
-      content: goal,
-      mode: 'goal',
-      subTasks: filteredSubTasks
-    };
-
-    if (alreadySubmitted && responseId) {
-      payload.responseId = responseId; // include for update
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('No token found. Please log in again.');
+      navigate('/login');
+      return;
     }
 
-    await axios.post(
-      'https://api.dailyping.org/api/response',
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+    try {
+      const filteredSubTasks = subTasks
+        .map((text) => text.trim())
+        .filter((text) => text !== '')
+        .map((text) => ({ text, completed: false }));
+
+      const payload = {
+        content: goal,
+        mode: 'goal',
+        subTasks: filteredSubTasks
+      };
+
+      if (alreadySubmitted && responseId) {
+        payload.responseId = responseId; // necessary for update
       }
-    );
 
-    setSubmitted(true);
-    setIsEditing(false);
-    setAlreadySubmitted(true);
-    setSubmittedGoal(goal);
-  } catch (err) {
-    console.error('❌ Submission error:', err.response?.data || err.message);
-    alert('Error submitting your goal.');
-  }
-};
+      await axios.post(
+        `https://api.dailyping.org/api/response`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-  if (!tokenValid) {
-    return (
-      <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" role="status" />
-      </div>
-    );
-  }
+      setSubmitted(true);
+      setIsEditing(false);
+      setAlreadySubmitted(true);
+      setSubmittedGoal(goal);
+    } catch (err) {
+      console.error('❌ Submission error:', err.response?.data || err.message);
+      alert('Error submitting your goal.');
+    }
+  };
 
-  if (alreadySubmitted || submitted) {
+  if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
+
+  if ((submitted || alreadySubmitted) && !isEditing) {
     return (
       <div className="container py-5">
         <div className="alert alert-success text-center">
@@ -136,13 +118,15 @@ const submitResponse = async (e) => {
           <blockquote className="blockquote mt-3">
             <p className="mb-0">{submittedGoal}</p>
           </blockquote>
-          {submittedTasks.length > 0 && (
-            <ul className="list-group mt-3">
-              {submittedTasks.map((task, i) => (
-                <li key={i} className="list-group-item">
-                  📝 {task.text}
-                </li>
-              ))}
+          {subTasks.some(Boolean) && (
+            <ul className="list-group mt-3 text-start">
+              {subTasks.map((task, idx) =>
+                task ? (
+                  <li className="list-group-item" key={idx}>
+                    📝 {task}
+                  </li>
+                ) : null
+              )}
             </ul>
           )}
         </div>
@@ -154,7 +138,9 @@ const submitResponse = async (e) => {
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="w-100" style={{ maxWidth: '600px' }}>
         <div className="card shadow-sm p-4">
-          <h3 className="mb-4 text-center">What’s your #1 goal today?</h3>
+          <h3 className="mb-4 text-center">
+            {alreadySubmitted ? 'Edit your goal for today' : 'What’s your #1 goal today?'}
+          </h3>
           <form onSubmit={submitResponse}>
             <div className="mb-3">
               <textarea
@@ -180,7 +166,7 @@ const submitResponse = async (e) => {
             ))}
 
             <button type="submit" className="btn btn-primary w-100 mt-3">
-              Submit Goal
+              {alreadySubmitted ? 'Update Goal' : 'Submit Goal'}
             </button>
           </form>
         </div>
