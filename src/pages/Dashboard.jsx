@@ -7,7 +7,8 @@ import { useAuth } from '../context/AuthContext';
 export default function Dashboard() {
   const { user, loading } = useAuth();
   const [responses, setResponses] = useState([]);
-  const [taskState, setTaskState] = useState({}); // checkbox state
+  const [taskState, setTaskState] = useState({});
+  const [activeAccordion, setActiveAccordion] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -20,7 +21,6 @@ export default function Dashboard() {
         });
         setResponses(res.data);
 
-        // Pre-fill taskState with completed values
         const initialState = {};
         res.data.forEach((r) => {
           initialState[r._id] = {};
@@ -118,31 +118,46 @@ export default function Dashboard() {
       {responses.length === 0 ? (
         <p className="text-muted">No responses yet.</p>
       ) : (
-        <ul className="list-group">
-          {responses.map(r => (
-            <li key={r._id} className="list-group-item">
-              <strong>{r.date}:</strong> {r.content}
-              <ul className="mt-2">
-                {(r.subTasks || []).map((task, idx) => (
-                  task.text && (
-                    <li key={idx} className="form-check">
-                      <input
-                        className="form-check-input me-2"
-                        type="checkbox"
-                        checked={taskState[r._id]?.[idx] || false}
-                        onChange={() => toggleTask(r._id, idx)}
-                        id={`task-${r._id}-${idx}`}
-                      />
-                      <label htmlFor={`task-${r._id}-${idx}`} className="form-check-label">
-                        {task.text}
-                      </label>
-                    </li>
-                  )
-                ))}
-              </ul>
-            </li>
+        <div className="accordion" id="goalsAccordion">
+          {responses.map((r, index) => (
+            <div className="accordion-item" key={r._id}>
+              <h2 className="accordion-header" id={`heading-${r._id}`}>
+                <button
+                  className={`accordion-button ${activeAccordion === index ? '' : 'collapsed'}`}
+                  type="button"
+                  onClick={() =>
+                    setActiveAccordion(activeAccordion === index ? null : index)
+                  }
+                >
+                  <strong>{r.date}</strong>: {r.content}
+                </button>
+              </h2>
+              <div
+                id={`collapse-${r._id}`}
+                className={`accordion-collapse collapse ${activeAccordion === index ? 'show' : ''}`}
+              >
+                <div className="accordion-body">
+                  {(r.subTasks || []).map((task, idx) => (
+                    task.text && (
+                      <div className="form-check mb-2" key={idx}>
+                        <input
+                          className="form-check-input me-2"
+                          type="checkbox"
+                          id={`task-${r._id}-${idx}`}
+                          checked={taskState[r._id]?.[idx] || false}
+                          onChange={() => toggleTask(r._id, idx)}
+                        />
+                        <label className="form-check-label" htmlFor={`task-${r._id}-${idx}`}>
+                          {task.text}
+                        </label>
+                      </div>
+                    )
+                  ))}
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       {user.isAdmin && (
