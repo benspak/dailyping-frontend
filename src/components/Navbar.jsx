@@ -1,16 +1,13 @@
-// src/components/Navbar.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
-  const { user, setUser } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [expanded, setExpanded] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+    logout();
     navigate('/');
   };
 
@@ -18,42 +15,32 @@ export default function Navbar() {
     <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">DailyPing</Link>
-        <button
-          className="navbar-toggler"
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          aria-controls="navbarSupportedContent"
-          aria-expanded={expanded}
-          aria-label="Toggle navigation"
-        >
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
           <span className="navbar-toggler-icon" />
         </button>
 
-        <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`} id="navbarSupportedContent">
-          <ul className="navbar-nav ms-auto align-items-center gap-2">
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto gap-2">
             {user && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Link>
+                  <Link className="nav-link" to="/dashboard">Dashboard</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/respond" onClick={() => setExpanded(false)}>Respond</Link>
+                  <Link className="nav-link" to="/respond">Respond</Link>
                 </li>
                 {user.pro && (
                   <li className="nav-item">
-                    <Link className="nav-link" to="/pro-settings" onClick={() => setExpanded(false)}>Pro Settings</Link>
+                    <Link className="nav-link" to="/pro-settings">Pro Settings</Link>
+                  </li>
+                )}
+                {user.isAdmin && (
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/feedback">Feedback</Link>
                   </li>
                 )}
                 <li className="nav-item">
-                  <Link className="nav-link" to="/feedback" onClick={() => setExpanded(false)}>Feedback</Link>
-                </li>
-                <li className="nav-item">
-                  <button
-                    onClick={handleLogout}
-                    className="btn btn-outline-secondary btn-sm"
-                  >
-                    Logout
-                  </button>
+                  <button className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>Logout</button>
                 </li>
               </>
             )}

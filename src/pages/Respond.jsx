@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function Respond() {
+  const { token } = useAuth();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const [tokenValid, setTokenValid] = useState(false);
   const [goal, setGoal] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
@@ -13,22 +14,26 @@ export default function Respond() {
   const [subTasks, setSubTasks] = useState(['', '', '']);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
     const urlToken = params.get('token');
 
-    const verifyToken = async (tokenToVerify) => {
+    const verifyAndLoad = async (authToken) => {
       try {
-        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: tokenToVerify });
+        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: authToken });
         localStorage.setItem('token', res.data.token);
-        setTokenValid(true);
 
         const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
-          headers: { Authorization: `Bearer ${res.data.token}` }
+          headers: { Authorization: `Bearer ${res.data.token}` },
         });
 
         if (checkRes.data.alreadySubmitted) {
           setAlreadySubmitted(true);
           setSubmittedGoal(checkRes.data.content);
+          setGoal(checkRes.data.content || '');
+          if (Array.isArray(checkRes.data.subTasks)) {
+            const texts = checkRes.data.subTasks.map(t => t.text || '');
+            const filled = [...texts, '', '', ''].slice(0, 3);
+            setSubTasks(filled);
+          }
         }
       } catch {
         alert('Login link is invalid or expired.');
@@ -36,15 +41,15 @@ export default function Respond() {
       }
     };
 
-    if (token) {
-      verifyToken(token);
-    } else if (urlToken) {
-      verifyToken(urlToken);
+    if (!token && urlToken) {
+      verifyAndLoad(urlToken);
+    } else if (token) {
+      verifyAndLoad(token);
     } else {
       alert('No token found. Please log in again.');
       navigate('/');
     }
-  }, [params, navigate]);
+  }, [token, params, navigate]);
 
   const handleSubTaskChange = (index, value) => {
     const updated = [...subTasks];
@@ -55,24 +60,18 @@ export default function Respond() {
   const submitResponse = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-
       const filteredSubTasks = subTasks
-        .map((text) => text.trim())
-        .filter((text) => text !== '')
-        .map((text) => ({ text }));
+        .map(text => text.trim())
+        .filter(Boolean)
+        .map(text => ({ text }));
 
-      await axios.post(
-        `https://api.dailyping.org/api/response`,
-        {
-          content: goal,
-          mode: 'goal',
-          subTasks: filteredSubTasks
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await axios.post(`https://api.dailyping.org/api/response`, {
+        content: goal,
+        mode: 'goal',
+        subTasks: filteredSubTasks,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setSubmitted(true);
     } catch (err) {
@@ -80,8 +79,6 @@ export default function Respond() {
       alert('Error submitting your goal.');
     }
   };
-
-  if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
 
   if (submitted || alreadySubmitted) {
     return (
@@ -91,6 +88,15 @@ export default function Respond() {
           <blockquote className="blockquote mt-3">
             <p className="mb-0">{submittedGoal}</p>
           </blockquote>
+
+          {/* Show sub-tasks if any */}
+          {subTasks.filter(Boolean).length > 0 && (
+            <ul className="list-group mt-3">
+              {subTasks.map((task, i) => (
+                task && <li key={i} className="list-group-item">{task}</li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     );
@@ -114,7 +120,7 @@ export default function Respond() {
             </div>
 
             <h6 className="text-muted">Optional sub-tasks:</h6>
-            {[0, 1, 2].map((i) => (
+            {[0, 1, 2].map(i => (
               <input
                 key={i}
                 type="text"
