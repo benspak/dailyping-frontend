@@ -17,6 +17,9 @@ export default function Respond() {
     const verify = async () => {
       if (!token) return;
 
+      // const token = localStorage.getItem('token');
+      console.log('🔐 Token:', token);
+
       try {
         const res = await axios.get('https://api.dailyping.org/api/responses/today', {
           headers: { Authorization: `Bearer ${token}` },
