@@ -22,7 +22,7 @@ export default function ProSettings() {
       setPreferences({
         pingTime: prefs.pingTime || '08:00',
         tone: prefs.tone || 'gentle',
-        timezone: res.data.timezone || 'UTC', // ✅ Correct timezone handling
+        timezone: res.data.timezone || 'America/New_York', // ✅ Correct timezone handling
         weeklySummary: prefs.weeklySummary !== false // default to true
       });
     }).catch(() => {
