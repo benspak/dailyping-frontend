@@ -5,45 +5,74 @@ import { registerPush } from '../utils/registerPush';
 import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
-  const { user, token } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useAuth();
   const [responses, setResponses] = useState([]);
-  const [taskState, setTaskState] = useState({});
+  const [taskState, setTaskState] = useState({}); // checkbox state
 
   useEffect(() => {
-    if (!token) return;
+    if (!user) return;
 
     const fetchResponses = async () => {
       try {
+        const token = localStorage.getItem('token');
         const res = await axios.get('https://api.dailyping.org/api/responses/all', {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }
         });
         setResponses(res.data);
+
+        // Pre-fill taskState with completed values
+        const initialState = {};
+        res.data.forEach((r) => {
+          initialState[r._id] = {};
+          r.subTasks?.forEach((t, i) => {
+            initialState[r._id][i] = t.completed;
+          });
+        });
+        setTaskState(initialState);
       } catch {
         setResponses([]);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchResponses();
     registerPush();
-  }, [token]);
+  }, [user]);
 
-  const toggleTask = (responseId, index) => {
-    setTaskState(prev => ({
-      ...prev,
+  const toggleTask = async (responseId, index) => {
+    const token = localStorage.getItem('token');
+
+    const updated = {
+      ...taskState,
       [responseId]: {
-        ...(prev[responseId] || {}),
-        [index]: !prev[responseId]?.[index],
-      },
-    }));
+        ...(taskState[responseId] || {}),
+        [index]: !taskState[responseId]?.[index]
+      }
+    };
+    setTaskState(updated);
+
+    try {
+      await axios.post(
+        'https://api.dailyping.org/api/response/toggle-subtask',
+        { responseId, index, completed: updated[responseId][index] },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error('❌ Failed to update subtask:', err);
+    }
   };
 
-  if (!user || loading) {
+  if (loading) {
     return (
       <div className="container py-5 text-center">
         <div className="spinner-border text-primary" role="status" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="container py-5 text-center">
+        <p>Please log in to view your dashboard.</p>
       </div>
     );
   }
@@ -66,7 +95,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Call to Action */}
       {!user.pro && (
         <div className="alert alert-warning text-center mb-4">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
@@ -74,6 +102,7 @@ export default function Dashboard() {
           <button
             className="btn btn-primary btn-sm"
             onClick={async () => {
+              const token = localStorage.getItem('token');
               const res = await axios.post('https://api.dailyping.org/billing/create-checkout-session', {}, {
                 headers: { Authorization: `Bearer ${token}` }
               });
@@ -85,7 +114,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Goal History */}
       <h4 className="mb-3">Your Past Goals</h4>
       {responses.length === 0 ? (
         <p className="text-muted">No responses yet.</p>
@@ -95,8 +123,8 @@ export default function Dashboard() {
             <li key={r._id} className="list-group-item">
               <strong>{r.date}:</strong> {r.content}
               <ul className="mt-2">
-                {[r.task1, r.task2, r.task3].map((task, idx) => (
-                  task && (
+                {(r.subTasks || []).map((task, idx) => (
+                  task.text && (
                     <li key={idx} className="form-check">
                       <input
                         className="form-check-input me-2"
@@ -106,7 +134,7 @@ export default function Dashboard() {
                         id={`task-${r._id}-${idx}`}
                       />
                       <label htmlFor={`task-${r._id}-${idx}`} className="form-check-label">
-                        {task}
+                        {task.text}
                       </label>
                     </li>
                   )
