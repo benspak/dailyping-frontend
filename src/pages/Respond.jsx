@@ -4,52 +4,43 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
 export default function Respond() {
-  const { token } = useAuth();
+  const { token, loading } = useAuth();
   const [params] = useSearchParams();
   const navigate = useNavigate();
+
   const [goal, setGoal] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [subTasks, setSubTasks] = useState(['', '', '']);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [submittedGoal, setSubmittedGoal] = useState('');
-  const [subTasks, setSubTasks] = useState(['', '', '']);
 
   useEffect(() => {
-    const urlToken = params.get('token');
+    const verify = async () => {
+      if (!token) return;
 
-    const verifyAndLoad = async (authToken) => {
       try {
-        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: authToken });
-        localStorage.setItem('token', res.data.token);
-
-        const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
-          headers: { Authorization: `Bearer ${res.data.token}` },
+        const res = await axios.get('https://api.dailyping.org/api/responses/today', {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (checkRes.data.alreadySubmitted) {
+        if (res.data.alreadySubmitted) {
           setAlreadySubmitted(true);
-          setSubmittedGoal(checkRes.data.content);
-          setGoal(checkRes.data.content || '');
-          if (Array.isArray(checkRes.data.subTasks)) {
-            const texts = checkRes.data.subTasks.map(t => t.text || '');
-            const filled = [...texts, '', '', ''].slice(0, 3);
-            setSubTasks(filled);
+          setSubmittedGoal(res.data.content);
+          setGoal(res.data.content || '');
+
+          if (Array.isArray(res.data.subTasks)) {
+            const texts = res.data.subTasks.map((t) => t.text || '');
+            setSubTasks([...texts, '', '', ''].slice(0, 3));
           }
         }
-      } catch {
-        alert('Login link is invalid or expired.');
+      } catch (err) {
+        console.error('❌ Verification error:', err);
+        alert('Login expired. Please log in again.');
         navigate('/');
       }
     };
 
-    if (!token && urlToken) {
-      verifyAndLoad(urlToken);
-    } else if (token) {
-      verifyAndLoad(token);
-    } else {
-      alert('No token found. Please log in again.');
-      navigate('/');
-    }
-  }, [token, params, navigate]);
+    if (!loading) verify();
+  }, [token, loading, navigate]);
 
   const handleSubTaskChange = (index, value) => {
     const updated = [...subTasks];
@@ -57,30 +48,43 @@ export default function Respond() {
     setSubTasks(updated);
   };
 
-  const submitResponse = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const filteredSubTasks = subTasks
-        .map(text => text.trim())
-        .filter(Boolean)
-        .map(text => ({ text }));
+      const filtered = subTasks
+        .map((text) => text.trim())
+        .filter((text) => text !== '')
+        .map((text) => ({ text }));
 
-      await axios.post(`https://api.dailyping.org/api/response`, {
-        content: goal,
-        mode: 'goal',
-        subTasks: filteredSubTasks,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        'https://api.dailyping.org/api/response',
+        {
+          content: goal,
+          mode: 'goal',
+          subTasks: filtered,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      setSubmitted(true);
+      setAlreadySubmitted(true);
+      setSubmittedGoal(goal);
     } catch (err) {
-      console.error('Submission error:', err.response?.data || err.message);
+      console.error('❌ Submit error:', err);
       alert('Error submitting your goal.');
     }
   };
 
-  if (submitted || alreadySubmitted) {
+  if (loading) {
+    return (
+      <div className="container py-5 text-center">
+        <div className="spinner-border text-primary" role="status" />
+      </div>
+    );
+  }
+
+  if (alreadySubmitted) {
     return (
       <div className="container py-5">
         <div className="alert alert-success text-center">
@@ -89,12 +93,11 @@ export default function Respond() {
             <p className="mb-0">{submittedGoal}</p>
           </blockquote>
 
-          {/* Show sub-tasks if any */}
-          {subTasks.filter(Boolean).length > 0 && (
+          {subTasks.some((t) => t) && (
             <ul className="list-group mt-3">
-              {subTasks.map((task, i) => (
-                task && <li key={i} className="list-group-item">{task}</li>
-              ))}
+              {subTasks.map((task, i) =>
+                task ? <li key={i} className="list-group-item">{task}</li> : null
+              )}
             </ul>
           )}
         </div>
@@ -107,20 +110,20 @@ export default function Respond() {
       <div className="w-100" style={{ maxWidth: '600px' }}>
         <div className="card shadow-sm p-4">
           <h3 className="mb-4 text-center">What’s your #1 goal today?</h3>
-          <form onSubmit={submitResponse}>
+          <form onSubmit={handleSubmit}>
             <div className="mb-3">
               <textarea
+                className="form-control"
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
-                className="form-control"
-                rows="4"
+                rows={4}
                 placeholder="Write your goal here..."
                 required
               />
             </div>
 
             <h6 className="text-muted">Optional sub-tasks:</h6>
-            {[0, 1, 2].map(i => (
+            {[0, 1, 2].map((i) => (
               <input
                 key={i}
                 type="text"
