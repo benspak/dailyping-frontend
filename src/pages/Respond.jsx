@@ -15,6 +15,7 @@ export default function Respond() {
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
   const [submittedGoal, setSubmittedGoal] = useState('');
   const [submittedTasks, setSubmittedTasks] = useState([]);
+  const [responseId, setResponseId] = useState(null);
 
  useEffect(() => {
   const urlToken = params.get('token');
@@ -53,6 +54,7 @@ export default function Respond() {
         setAlreadySubmitted(true);
         setSubmittedGoal(checkRes.data.content || '');
         setSubmittedTasks(checkRes.data.subTasks || []);
+        setResponseId(checkRes.data._id);
       }
     } catch (err) {
       console.error('❌ Error checking response:', err.message);
@@ -69,34 +71,54 @@ export default function Respond() {
     setSubTasks(updated);
   };
 
-  const submitResponse = async (e) => {
-    e.preventDefault();
-    try {
-      const filteredSubTasks = subTasks
-        .map((text) => text.trim())
-        .filter((text) => text !== '')
-        .map((text) => ({ text }));
+const submitResponse = async (e) => {
+  e.preventDefault();
 
-      await axios.post(
-        `https://api.dailyping.org/api/response`,
-        {
-          content: goal,
-          mode: 'goal',
-          subTasks: filteredSubTasks
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('No token found. Please log in again.');
+    navigate('/login');
+    return;
+  }
 
-      setSubmitted(true);
-      setSubmittedGoal(goal);
-      setSubmittedTasks(filteredSubTasks);
-    } catch (err) {
-      console.error('❌ Submission error:', err.response?.data || err.message);
-      alert('Error submitting your goal.');
+  try {
+    const filteredSubTasks = subTasks
+      .map((text) => text.trim())
+      .filter((text) => text !== '')
+      .map((text, i) => ({
+        text,
+        completed: false
+      }));
+
+    const payload = {
+      content: goal,
+      mode: 'goal',
+      subTasks: filteredSubTasks
+    };
+
+    if (alreadySubmitted && responseId) {
+      payload.responseId = responseId; // include for update
     }
-  };
+
+    await axios.post(
+      'https://api.dailyping.org/api/response',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    setSubmitted(true);
+    setIsEditing(false);
+    setAlreadySubmitted(true);
+    setSubmittedGoal(goal);
+  } catch (err) {
+    console.error('❌ Submission error:', err.response?.data || err.message);
+    alert('Error submitting your goal.');
+  }
+};
 
   if (!tokenValid) {
     return (
