@@ -6,10 +6,10 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
 
   useEffect(() => {
     const fetchMe = async () => {
-      const token = localStorage.getItem('token');
       if (!token) return;
 
       try {
@@ -19,15 +19,21 @@ export function AuthProvider({ children }) {
         setUser(res.data);
       } catch {
         localStorage.removeItem('token');
+        setToken(null);
         setUser(null);
       }
     };
 
     fetchMe();
-  }, []);
+  }, [token]);
+
+  const handleSetToken = (newToken) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken }}>
       {children}
     </AuthContext.Provider>
   );

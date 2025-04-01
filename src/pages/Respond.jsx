@@ -16,43 +16,52 @@ export default function Respond() {
   const [submittedGoal, setSubmittedGoal] = useState('');
   const [submittedTasks, setSubmittedTasks] = useState([]);
 
-  useEffect(() => {
-    const urlToken = params.get('token');
+ useEffect(() => {
+  const urlToken = params.get('token');
 
-    const verifyToken = async (t) => {
-      try {
-        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: t });
-        const accessToken = res.data.token;
-        localStorage.setItem('token', accessToken);
-        setToken(accessToken);
-        setTokenValid(true);
-
-        // Now check if response exists
-        const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        });
-
-        if (checkRes.data.alreadySubmitted) {
-          setAlreadySubmitted(true);
-          setSubmittedGoal(checkRes.data.content || '');
-          setSubmittedTasks(checkRes.data.subTasks || []);
-        }
-      } catch (err) {
-        console.error('❌ Token verification failed:', err.message);
-        alert('Login link is invalid or expired.');
-        navigate('/');
-      }
-    };
-
-    if (token) {
-      verifyToken(token);
-    } else if (urlToken) {
-      verifyToken(urlToken);
-    } else {
+  const verifyAndFetch = async () => {
+    const rawToken = token || urlToken || localStorage.getItem('token');
+    if (!rawToken) {
       alert('No token found. Please log in again.');
       navigate('/');
+      return;
     }
-  }, [params, navigate, token, setToken]);
+
+    // If coming from magic link, verify and store the new access token
+    if (urlToken) {
+      try {
+        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: urlToken });
+        localStorage.setItem('token', res.data.token);
+        setToken(res.data.token);
+      } catch {
+        alert('Invalid or expired link.');
+        navigate('/');
+        return;
+      }
+    }
+
+    setTokenValid(true);
+
+    try {
+      const authToken = urlToken ? localStorage.getItem('token') : rawToken;
+
+      const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+
+      if (checkRes.data.alreadySubmitted) {
+        setAlreadySubmitted(true);
+        setSubmittedGoal(checkRes.data.content || '');
+        setSubmittedTasks(checkRes.data.subTasks || []);
+      }
+    } catch (err) {
+      console.error('❌ Error checking response:', err.message);
+    }
+  };
+
+  verifyAndFetch();
+}, [params, navigate, token]);
+
 
   const handleSubTaskChange = (index, value) => {
     const updated = [...subTasks];
