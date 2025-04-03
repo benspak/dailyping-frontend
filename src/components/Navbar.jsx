@@ -8,6 +8,7 @@ export default function Navbar() {
   const [expanded, setExpanded] = useState(false);
 
   const handleLogout = () => {
+    const token = localStorage.getItem('token');
     localStorage.removeItem('token');
     setUser(null);
     navigate('/');

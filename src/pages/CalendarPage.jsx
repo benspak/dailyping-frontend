@@ -31,7 +31,6 @@ export default function CalendarPage() {
 
   return (
     <div className="container py-5">
-      <h2 className="mb-4">🗓 Your Calendar</h2>
       <Calendar
         localizer={localizer}
         events={events}
