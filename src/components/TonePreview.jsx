@@ -39,7 +39,6 @@ export default function TonePreview({ selectedTone, onToneChange }) {
 
   return (
     <div className="tone-preview">
-      <h5 className="mb-3">📬 Preview Your Ping Style</h5>
       <div className="btn-group mb-3">
         {Object.entries(TONE_SAMPLES).map(([key, { label }]) => (
           <button
