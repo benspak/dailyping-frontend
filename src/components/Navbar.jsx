@@ -32,7 +32,7 @@ export default function Navbar() {
                     <Link className="nav-link" to="/pro-settings">Pro Settings</Link>
                   </li>
                 )}
-                {user.isAdmin && (
+                {(
                   <li className="nav-item">
                     <Link className="nav-link" to="/feedback">Feedback</Link>
                   </li>
