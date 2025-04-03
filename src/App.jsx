@@ -11,6 +11,7 @@ import Navbar from './components/Navbar';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CalendarPage from './pages/CalendarPage';
+import Changelog from './pages/Changelog';
 
 
 // 🔐 A simple wrapper to protect routes
@@ -68,6 +69,7 @@ function App() {
           <Route path="/calendar" element={<PrivateRoute>
             <CalendarPage />
           </PrivateRoute>} />
+          <Route path="/changelog" element={<Changelog />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
