@@ -8,7 +8,7 @@ export default function Navbar() {
   const [expanded, setExpanded] = useState(false);
 
   const handleLogout = () => {
-    const token = localStorage.getItem('token');
+    // const token = localStorage.getItem('token');
     localStorage.removeItem('token');
     setUser(null);
     navigate('/');
@@ -39,9 +39,9 @@ export default function Navbar() {
                 <li className="nav-item">
                   <Link className="nav-link" to="/respond" onClick={() => setExpanded(false)}>Respond</Link>
                 </li>
-                <li className="nav-item">
+                {/*<li className="nav-item">
                   <Link className="nav-link" to="/calendar" onClick={() => setExpanded(false)}>Calendar</Link>
-                </li>
+                </li>*/}
                 <li className="nav-item">
                   <Link className="nav-link" to="/feedback" onClick={() => setExpanded(false)}>Feedback</Link>
                 </li>
