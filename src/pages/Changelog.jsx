@@ -8,11 +8,16 @@ const typeBadge = {
 };
 
 export default function Changelog() {
+  // Sort by descending date
+  const sortedEntries = [...changelogEntries].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
+
   return (
     <div className="container py-5">
       <h2 className="mb-4 text-center">DailyPing Change Log</h2>
       <ul className="list-group">
-        {changelogEntries.map((entry, idx) => (
+        {sortedEntries.map((entry, idx) => (
           <li key={idx} className="list-group-item">
             <div className="d-flex justify-content-between align-items-center">
               <h5 className="mb-1">{entry.title}</h5>
