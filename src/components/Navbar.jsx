@@ -44,6 +44,11 @@ export default function Navbar() {
                 <li className="nav-item">
                   <Link className="nav-link" to="/respond" onClick={handleNavClick}>Respond</Link>
                 </li>
+                {token && (
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/calendar" onClick={() => setExpanded(false)}>Calendar</Link>
+                  </li>
+                )}
                 <li className="nav-item">
                   <Link className="nav-link" to="/feedback" onClick={handleNavClick}>Feedback</Link>
                 </li>

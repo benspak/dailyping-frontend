@@ -10,6 +10,8 @@ import ProSettings from './pages/ProSettings';
 import Navbar from './components/Navbar';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CalendarPage from './pages/CalendarPage';
+
 
 // 🔐 A simple wrapper to protect routes
 function PrivateRoute({ children, proOnly = false }) {
@@ -63,6 +65,9 @@ function App() {
               <ProSettings />
             </PrivateRoute>
           } />
+          <Route path="/calendar" element={<PrivateRoute>
+            <CalendarPage />
+          </PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
