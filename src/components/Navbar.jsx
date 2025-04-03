@@ -11,61 +11,53 @@ export default function Navbar() {
     localStorage.removeItem('token');
     setUser(null);
     navigate('/');
-    setExpanded(false);
-  };
-
-  const handleNavClick = () => {
-    setExpanded(false); // Collapse menu after click
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
       <div className="container">
-        <Link className="navbar-brand fw-bold" to="/" onClick={handleNavClick}>DailyPing</Link>
-
+        <Link className="navbar-brand fw-bold" to="/">DailyPing</Link>
         <button
           className="navbar-toggler"
           type="button"
-          onClick={() => setExpanded(prev => !prev)}
-          aria-controls="navbarNav"
+          onClick={() => setExpanded(!expanded)}
+          aria-controls="navbarSupportedContent"
           aria-expanded={expanded}
           aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon" />
         </button>
 
-        <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`} id="navbarNav">
-          <ul className="navbar-nav ms-auto gap-2">
+        <div className={`collapse navbar-collapse ${expanded ? 'show' : ''}`} id="navbarSupportedContent">
+          <ul className="navbar-nav ms-auto align-items-center gap-2">
             {user ? (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard" onClick={handleNavClick}>Dashboard</Link>
+                  <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/respond" onClick={handleNavClick}>Respond</Link>
+                  <Link className="nav-link" to="/respond" onClick={() => setExpanded(false)}>Respond</Link>
                 </li>
-                {token && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/calendar" onClick={() => setExpanded(false)}>Calendar</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/feedback" onClick={() => setExpanded(false)}>Feedback</Link>
+                </li>
+                {user?.pro && (
                   <li className="nav-item">
-                    <Link className="nav-link" to="/calendar" onClick={() => setExpanded(false)}>Calendar</Link>
+                    <Link className="nav-link" to="/pro-settings" onClick={() => setExpanded(false)}>Pro Settings</Link>
                   </li>
                 )}
                 <li className="nav-item">
-                  <Link className="nav-link" to="/feedback" onClick={handleNavClick}>Feedback</Link>
-                </li>
-                {user.pro && (
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/pro-settings" onClick={handleNavClick}>Pro Settings</Link>
-                  </li>
-                )}
-                <li className="nav-item">
-                  <button className="btn btn-outline-secondary btn-sm" onClick={handleLogout}>
+                  <button onClick={handleLogout} className="btn btn-outline-secondary btn-sm">
                     Logout
                   </button>
                 </li>
               </>
             ) : (
               <li className="nav-item">
-                <Link className="nav-link" to="/login" onClick={handleNavClick}>Login</Link>
+                <Link className="nav-link" to="/login" onClick={() => setExpanded(false)}>Login</Link>
               </li>
             )}
           </ul>
