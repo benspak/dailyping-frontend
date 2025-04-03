@@ -17,7 +17,7 @@ export default function Dashboard() {
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data?.action === 'play-ping-sound') {
           const audio = new Audio('/Done.mp3');
-          audio.play().catch(err => console.warn('🔇 Unable to autoplay sound:', err));
+          audio.play().catch(err => console.warn('Unable to autoplay sound:', err));
         }
       });
     }
