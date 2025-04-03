@@ -1,20 +1,13 @@
+// sw.js
 self.addEventListener('push', event => {
-  console.log('📨 Push event received:', event);
-
-  let data = {
-    title: 'DailyPing',
-    body: 'You have a new ping!'
-  };
+  let data = { title: 'DailyPing', body: 'You have a new ping!' };
 
   if (event.data) {
     try {
-      const parsed = event.data.json();
-      data.title = parsed.title || data.title;
-      data.body = parsed.body || data.body;
+      data = event.data.json();
     } catch (err) {
-      console.error('❌ Push data parse error:', err);
-      const fallback = event.data.text();
-      data.body = typeof fallback === 'string' ? fallback : 'You have a new ping!';
+      console.error('❌ Push data JSON parse error:', err);
+      data.body = event.data?.text() || 'You have a new ping!';
     }
   }
 
@@ -26,6 +19,26 @@ self.addEventListener('push', event => {
 
   event.waitUntil(
     self.registration.showNotification(data.title, options)
+  );
+});
+
+// Optional: open dashboard and play sound
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (const client of windowClients) {
+        // Focus the tab if it's already open
+        if (client.url.includes('/dashboard') && 'focus' in client) {
+          client.postMessage({ action: 'play-ping-sound' });
+          return client.focus();
+        }
+      }
+
+      // Otherwise open a new tab
+      return clients.openWindow('/dashboard');
+    })
   );
 });
 

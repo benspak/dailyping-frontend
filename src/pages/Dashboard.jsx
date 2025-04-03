@@ -13,6 +13,15 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data?.action === 'play-ping-sound') {
+          const audio = new Audio('/Done.mp3');
+          audio.play().catch(err => console.warn('🔇 Unable to autoplay sound:', err));
+        }
+      });
+    }
+
     const fetchResponses = async () => {
       try {
         const token = localStorage.getItem('token');
