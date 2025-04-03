@@ -76,16 +76,7 @@ export default function ProSettings() {
           selectedTone={preferences.tone}
           onToneChange={(newTone) => setPreferences((p) => ({ ...p, tone: newTone }))}
         />
-        <select
-          className="form-select"
-          name="tone"
-          value={preferences.tone}
-          onChange={handleChange}
-        >
-          <option value="gentle">Gentle</option>
-          <option value="motivational">Motivational</option>
-          <option value="snarky">Snarky</option>
-        </select>
+
       </div>
 
       <div className="mb-3">

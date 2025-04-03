@@ -54,13 +54,7 @@ export default function TonePreview({ selectedTone, onToneChange }) {
 
       <div className="preview-card border rounded p-3 bg-light" style={{ fontFamily: 'sans-serif' }}>
         <div dangerouslySetInnerHTML={{ __html: TONE_SAMPLES[tone].html }} />
-        <a
-          href="https://dailyping.org/respond"
-          className="btn btn-sm btn-primary mt-3"
-        >
-          Respond Now
-        </a>
-      </div>
+        </div>
     </div>
   );
 }
