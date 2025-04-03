@@ -1,12 +1,20 @@
 self.addEventListener('push', event => {
-  let data = { title: 'DailyPing', body: 'You have a new ping!' };
+  console.log('📨 Push event received:', event);
+
+  let data = {
+    title: 'DailyPing',
+    body: 'You have a new ping!'
+  };
 
   if (event.data) {
     try {
-      data = event.data.json();
+      const parsed = event.data.json();
+      data.title = parsed.title || data.title;
+      data.body = parsed.body || data.body;
     } catch (err) {
-      console.error('❌ Push data JSON parse error:', err);
-      data.body = event.data.text();
+      console.error('❌ Push data parse error:', err);
+      const fallback = event.data.text();
+      data.body = typeof fallback === 'string' ? fallback : 'You have a new ping!';
     }
   }
 
