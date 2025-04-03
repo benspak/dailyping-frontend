@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import TonePreview from '../components/TonePreview';
 
 export default function ProSettings() {
   const [preferences, setPreferences] = useState({
@@ -71,6 +72,10 @@ export default function ProSettings() {
 
       <div className="mb-3">
         <label className="form-label">Tone</label>
+        <TonePreview
+          selectedTone={preferences.tone}
+          onToneChange={(newTone) => setPreferences((p) => ({ ...p, tone: newTone }))}
+        />
         <select
           className="form-select"
           name="tone"
