@@ -6,7 +6,7 @@ import Verify from './pages/Verify';
 import Respond from './pages/Respond';
 import Dashboard from './pages/Dashboard';
 import Feedback from './pages/Feedback';
-import ProSettings from './pages/ProSettings';
+import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -61,8 +61,8 @@ function App() {
               <Feedback />
             </PrivateRoute>
           } />
-          <Route path="/pro-settings" element={
-            <PrivateRoute proOnly>
+          <Route path="/settings" element={
+            <PrivateRoute>
               <ProSettings />
             </PrivateRoute>
           } />

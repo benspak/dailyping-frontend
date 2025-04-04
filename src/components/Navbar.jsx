@@ -47,7 +47,7 @@ export default function Navbar() {
                 </li>
                 {user?.pro && (
                   <li className="nav-item">
-                    <Link className="nav-link" to="/pro-settings" onClick={() => setExpanded(false)}>Pro Settings</Link>
+                    <Link className="nav-link" to="/settings" onClick={() => setExpanded(false)}>Settings</Link>
                   </li>
                 )}
                 <li className="nav-item">
