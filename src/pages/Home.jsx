@@ -68,6 +68,7 @@ export default function Home() {
               <li>⭐ Custom ping time</li>
               <li>⭐ Choose tone (motivational, gentle, snarky)</li>
               <li>⭐ Weekly summary reports</li>
+              <li>⭐ Gravatar Support</li>
             </ul>
           </div>
         </div>
@@ -101,7 +102,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="text-center border-top pt-3">
-        <p className="text-muted">Built indie-style with ❤️ by Ben Spak</p>
+        <p className="text-muted">Built indie-style with ❤️ by <a href="https://benjaminspak.com" target="_blank">Ben Spak</a></p>
       </footer>
     </div>
   );

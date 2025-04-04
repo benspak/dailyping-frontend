@@ -3,6 +3,7 @@ import axios from 'axios';
 import AdminPanel from '../components/AdminPanel';
 import { registerPush } from '../utils/registerPush';
 import { useAuth } from '../context/AuthContext';
+import md5 from "md5"; // npm install md5
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -89,7 +90,22 @@ export default function Dashboard() {
   return (
     <div className="container py-5">
       <div className="card shadow-sm p-4 mb-4">
-        <h2 className="mb-3 text-center">Welcome, {user.email}</h2>
+        {/* User Avatar & App Info */}
+        <div className="d-flex align-items-center mb-3">
+          <img
+            src={`https://www.gravatar.com/avatar/${md5(user.email.trim().toLowerCase())}?s=60&d=identicon`}
+            alt="User Avatar"
+            className="rounded-circle me-3"
+            width="60"
+            height="60"
+          />
+          <div>
+            <h5 className="mb-1 fw-bold">Welcome, {user.email}</h5>
+            <p className="mb-0 text-muted" style={{ fontSize: "0.9rem" }}>
+              Track your goals, check off subtasks, and keep your streak alive.
+            </p>
+          </div>
+        </div>
         <div className="d-flex flex-wrap justify-content-center gap-4">
           <div>
             <p className="mb-1 fw-bold text-muted text-center">Current Streak</p>
