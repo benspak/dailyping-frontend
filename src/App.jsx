@@ -63,7 +63,7 @@ function App() {
           } />
           <Route path="/settings" element={
             <PrivateRoute>
-              <ProSettings />
+              <Settings />
             </PrivateRoute>
           } />
           <Route path="/calendar" element={<PrivateRoute>
