@@ -93,33 +93,36 @@ export default function Dashboard() {
   return (
     <div className="container py-5">
       <div className="card shadow-sm p-4 mb-4">
-        {/* Gravatar + Info */}
-        <div className="d-flex align-items-center mb-3">
-          <img
-            src={`https://www.gravatar.com/avatar/${md5(user.email?.trim().toLowerCase())}?s=60&d=identicon`}
-            alt="User Avatar"
-            className="rounded-circle me-3"
-            width="60"
-            height="60"
-          />
-          <div>
-            <h5 className="mb-1 fw-bold">Welcome, {user.email}</h5>
-            <p className="mb-0 text-muted" style={{ fontSize: "0.9rem" }}>
-              Track your goals, check off subtasks, and keep your streak alive.
-            </p>
+        <div className="row align-items-center">
+          {/* Avatar */}
+          <div className="col-md-auto text-center mb-3 mb-md-0">
+            <img
+              src={`https://www.gravatar.com/avatar/${md5(user.email?.trim().toLowerCase())}?s=80&d=identicon`}
+              alt="User Avatar"
+              className="rounded-circle"
+              width="80"
+              height="80"
+            />
           </div>
-        </div>
 
-        <div className="d-flex flex-wrap justify-content-center gap-4">
-          <div>
-            <p className="mb-1 fw-bold text-muted text-center">Current Streak</p>
-            <span className="badge bg-success fs-5">{user.streak?.current ?? 0} days</span>
+          {/* Welcome Text + App Description */}
+          <div className="col-md">
+            <h5 className="fw-bold mb-1">Welcome, {user.email}</h5>
+            <p className="text-muted mb-0">Track your goals, check off subtasks, and keep your streak alive.</p>
           </div>
-          <div>
-            <p className="mb-1 fw-bold text-muted text-center">Pro Status</p>
-            <span className={`badge fs-5 ${user.pro ? "bg-primary" : "bg-secondary"}`}>
-              {user.pro ? "✅ Active" : "❌ Not active"}
-            </span>
+
+          {/* Streak + Pro Status */}
+          <div className="col-md-auto text-center mt-3 mt-md-0">
+            <div className="mb-2">
+              <p className="mb-1 fw-bold text-muted">Current Streak</p>
+              <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
+            </div>
+            <div>
+              <p className="mb-1 fw-bold text-muted">Pro Status</p>
+              <span className={`badge fs-6 ${user.pro ? 'bg-primary' : 'bg-secondary'}`}>
+                {user.pro ? '✅ Active' : '❌ Not active'}
+              </span>
+            </div>
           </div>
         </div>
       </div>
