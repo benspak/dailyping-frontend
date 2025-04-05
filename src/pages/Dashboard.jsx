@@ -10,11 +10,11 @@ export default function Dashboard() {
   const [responses, setResponses] = useState([]);
   const [taskState, setTaskState] = useState({});
   const [activeAccordion, setActiveAccordion] = useState(null);
+  const todayDate = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     if (!user) return;
 
-    // Play sound on push from service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data?.action === "play-ping-sound") {
@@ -31,19 +31,16 @@ export default function Dashboard() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setResponses(res.data);
-
-        const updatedTaskState = {};
+        const updatedState = {};
         res.data.forEach((r) => {
-          updatedTaskState[r._id] = {
-            goalCompleted: r.completed || false,
-          };
+          updatedState[r._id] = { goalCompleted: r.completed || false };
           r.subTasks?.forEach((t, i) => {
-            updatedTaskState[r._id][i] = t.completed;
+            updatedState[r._id][i] = t.completed;
           });
         });
-        setTaskState(updatedTaskState);
 
+        setResponses(res.data);
+        setTaskState(updatedState);
         await registerPush();
       } catch {
         setResponses([]);
@@ -83,23 +80,6 @@ export default function Dashboard() {
     }
   };
 
-  const toggleGoalComplete = async (responseId, completed) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-goal",
-        { responseId, completed },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setResponses((prev) =>
-        prev.map((r) => (r._id === responseId ? { ...r, completed } : r))
-      );
-    } catch (err) {
-      console.error("❌ Failed to toggle goal completion:", err);
-    }
-  };
-
   if (loading) {
     return (
       <div className="container py-5 text-center">
@@ -116,9 +96,14 @@ export default function Dashboard() {
     );
   }
 
+  const activeGoals = responses.filter((r) => !r.completed);
+  const completedGoals = responses.filter((r) => r.completed);
+  const todayGoal = activeGoals.find((r) => r.date === todayDate);
+  const otherActiveGoals = activeGoals.filter((r) => r.date !== todayDate);
+
   return (
     <div className="container py-5">
-      {/* Welcome */}
+      {/* Header */}
       <div className="card shadow-sm p-4 mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mb-3 mb-md-0">
@@ -151,7 +136,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* CTA */}
+      {/* Pro CTA */}
       {!user.pro && (
         <div className="alert alert-warning text-center mb-4">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
@@ -173,13 +158,52 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Past Goals */}
-      <h4 className="mb-3">Your Past Goals</h4>
-      {responses.length === 0 ? (
-        <p className="text-muted">No responses yet.</p>
+      {/* Active Goals */}
+      <h4 className="mb-3">Your Active Goals</h4>
+      {todayGoal && (
+        <div className="accordion mb-4">
+          <div className="accordion-item border border-success">
+            <h2 className="accordion-header">
+              <div className="d-flex align-items-center w-100 bg-success-subtle p-3">
+                <input
+                  type="checkbox"
+                  className="form-check-input me-2"
+                  checked={todayGoal.completed || false}
+                  onChange={() => toggleTask(todayGoal._id, "goalCompleted")}
+                />
+                <span className={todayGoal.completed ? "text-decoration-line-through text-muted" : ""}>
+                  <strong>{todayGoal.date}</strong>: {todayGoal.content}
+                </span>
+              </div>
+            </h2>
+            <div className="accordion-body">
+              {(todayGoal.subTasks || []).map((task, idx) => (
+                <div className="form-check mb-2" key={idx}>
+                  <input
+                    className="form-check-input me-2"
+                    type="checkbox"
+                    checked={taskState[todayGoal._id]?.[idx] || false}
+                    onChange={() => toggleTask(todayGoal._id, idx)}
+                  />
+                  <label
+                    className={`form-check-label ${
+                      taskState[todayGoal._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                    }`}
+                  >
+                    {task.text}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {otherActiveGoals.length === 0 ? (
+        <p className="text-muted">No additional active goals.</p>
       ) : (
-        <div className="accordion" id="goalsAccordion">
-          {responses.map((r, index) => (
+        <div className="accordion mb-5" id="goalsAccordion">
+          {otherActiveGoals.map((r, index) => (
             <div className="accordion-item" key={r._id}>
               <h2 className="accordion-header" id={`heading-${r._id}`}>
                 <div className="d-flex align-items-center w-100">
@@ -187,16 +211,16 @@ export default function Dashboard() {
                     type="checkbox"
                     className="form-check-input me-2"
                     checked={r.completed || false}
-                    onChange={() => toggleGoalComplete(r._id, !r.completed)}
+                    onChange={() => toggleTask(r._id, "goalCompleted")}
                   />
                   <button
                     className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
                     type="button"
-                    onClick={() =>
-                      setActiveAccordion(activeAccordion === index ? null : index)
-                    }
+                    onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
                   >
-                    <strong>{r.date}</strong>: {r.content}
+                    <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
+                      <strong>{r.date}</strong>: {r.content}
+                    </span>
                   </button>
                 </div>
               </h2>
@@ -205,23 +229,25 @@ export default function Dashboard() {
                 className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
               >
                 <div className="accordion-body">
-                  {(r.subTasks || []).map(
-                    (task, idx) =>
-                      task.text && (
-                        <div className="form-check mb-2" key={idx}>
-                          <input
-                            className="form-check-input me-2"
-                            type="checkbox"
-                            id={`task-${r._id}-${idx}`}
-                            checked={taskState[r._id]?.[idx] || false}
-                            onChange={() => toggleTask(r._id, idx)}
-                          />
-                          <label className="form-check-label" htmlFor={`task-${r._id}-${idx}`}>
-                            {task.text}
-                          </label>
-                        </div>
-                      )
-                  )}
+                  {(r.subTasks || []).map((task, idx) => (
+                    <div className="form-check mb-2" key={idx}>
+                      <input
+                        className="form-check-input me-2"
+                        type="checkbox"
+                        id={`task-${r._id}-${idx}`}
+                        checked={taskState[r._id]?.[idx] || false}
+                        onChange={() => toggleTask(r._id, idx)}
+                      />
+                      <label
+                        className={`form-check-label ${
+                          taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                        }`}
+                        htmlFor={`task-${r._id}-${idx}`}
+                      >
+                        {task.text}
+                      </label>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -229,7 +255,21 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Admin */}
+      {/* Completed Goals */}
+      {completedGoals.length > 0 && (
+        <>
+          <h4 className="mb-3">Completed Goals</h4>
+          <ul className="list-group mb-5">
+            {completedGoals.map((r) => (
+              <li key={r._id} className="list-group-item text-muted text-decoration-line-through">
+                <strong>{r.date}</strong>: {r.content}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {/* Admin Panel */}
       {user.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
