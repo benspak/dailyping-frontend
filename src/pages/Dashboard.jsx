@@ -201,12 +201,6 @@ export default function Dashboard() {
             <div className="accordion-item" key={r._id}>
               <h2 className="accordion-header" id={`heading-${r._id}`}>
                 <div className="d-flex align-items-center w-100">
-                  <input
-                    type="checkbox"
-                    className="form-check-input me-2"
-                    checked={r.completed || false}
-                    onChange={() => toggleTask(r._id, "goalCompleted")}
-                  />
                   <button
                     className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
                     type="button"
