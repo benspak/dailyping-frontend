@@ -165,12 +165,6 @@ export default function Dashboard() {
           <div className="accordion-item border border-success">
             <h2 className="accordion-header">
               <div className="d-flex align-items-center w-100 bg-success-subtle p-3">
-                <input
-                  type="checkbox"
-                  className="form-check-input me-2"
-                  checked={todayGoal.completed || false}
-                  onChange={() => toggleTask(todayGoal._id, "goalCompleted")}
-                />
                 <span className={todayGoal.completed ? "text-decoration-line-through text-muted" : ""}>
                   <strong>{todayGoal.date}</strong>: {todayGoal.content}
                 </span>
