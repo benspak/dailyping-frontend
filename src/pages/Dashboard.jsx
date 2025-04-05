@@ -32,16 +32,16 @@ export default function Dashboard() {
 
         setResponses(res.data);
 
-        const newState = {};
+        const updatedTaskState = {};
         res.data.forEach((r) => {
-          newState[r._id] = {
+          updatedTaskState[r._id] = {
             goalCompleted: r.completed || false,
           };
           r.subTasks?.forEach((t, i) => {
-            newState[r._id][i] = t.completed;
+            updatedTaskState[r._id][i] = t.completed;
           });
         });
-        setTaskState(newState);
+        setTaskState(updatedTaskState);
 
         await registerPush();
       } catch {
@@ -52,15 +52,38 @@ export default function Dashboard() {
     fetchData();
   }, [user]);
 
+  const toggleGoalComplete = async (responseId, completed) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "https://api.dailyping.org/api/response/toggle-goal",
+        { responseId, completed },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setTaskState((prev) => ({
+        ...prev,
+        [responseId]: {
+          ...prev[responseId],
+          goalCompleted: completed,
+        },
+      }));
+
+      setResponses((prev) =>
+        prev.map((r) => (r._id === responseId ? { ...r, completed } : r))
+      );
+    } catch (err) {
+      console.error("❌ Failed to toggle goal completion:", err);
+    }
+  };
+
   const toggleTask = async (responseId, index) => {
     const token = localStorage.getItem("token");
-    const current = taskState[responseId]?.[index] || false;
-
     const updated = {
       ...taskState,
       [responseId]: {
         ...(taskState[responseId] || {}),
-        [index]: !current,
+        [index]: !taskState[responseId]?.[index],
       },
     };
     setTaskState(updated);
@@ -68,35 +91,11 @@ export default function Dashboard() {
     try {
       await axios.post(
         "https://api.dailyping.org/api/response/toggle-subtask",
-        { responseId, index, completed: !current },
+        { responseId, index, completed: updated[responseId][index] },
         { headers: { Authorization: `Bearer ${token}` } }
       );
     } catch (err) {
       console.error("❌ Failed to update subtask:", err);
-    }
-  };
-
-  const toggleGoalComplete = async (responseId) => {
-    const current = taskState[responseId]?.goalCompleted || false;
-    const token = localStorage.getItem("token");
-
-    const updated = {
-      ...taskState,
-      [responseId]: {
-        ...(taskState[responseId] || {}),
-        goalCompleted: !current,
-      },
-    };
-    setTaskState(updated);
-
-    try {
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-goal",
-        { responseId, completed: !current },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } catch (err) {
-      console.error("❌ Failed to update goal:", err);
     }
   };
 
@@ -178,36 +177,32 @@ export default function Dashboard() {
         <p className="text-muted">No responses yet.</p>
       ) : (
         <div className="accordion" id="goalsAccordion">
-          {responses.map((r, index) => {
-            const isToday = r.date === today;
-            return (
-              <div className="accordion-item" key={r._id}>
-                <h2 className="accordion-header" id={`heading-${r._id}`}>
-                  <div className="d-flex align-items-center w-100 px-3 py-2">
-                    <input
-                      type="checkbox"
-                      className="form-check-input me-3"
-                      checked={taskState[r._id]?.goalCompleted || false}
-                      onChange={() => toggleGoalComplete(r._id)}
-                    />
-                    <button
-                      className={`accordion-button flex-grow-1 ${activeAccordion === index ? "" : "collapsed"}`}
-                      type="button"
-                      onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
-                    >
-                      <strong>{r.date}</strong>: {r.content}
-                      {isToday && (
-                        <span className="badge bg-info text-dark ms-3">Today</span>
-                      )}
-                    </button>
-                  </div>
-                </h2>
-                <div
-                  id={`collapse-${r._id}`}
-                  className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
-                >
-                  <div className="accordion-body">
-                    {(r.subTasks || []).map((task, idx) => (
+          {responses.map((r, index) => (
+            <div className="accordion-item" key={r._id}>
+              <h2 className="accordion-header" id={`heading-${r._id}`}>
+                <div className="d-flex align-items-center w-100">
+                  <input
+                    type="checkbox"
+                    className="form-check-input me-2"
+                    checked={taskState[r._id]?.goalCompleted || false}
+                    onChange={() => toggleGoalComplete(r._id, !taskState[r._id]?.goalCompleted)}
+                  />
+                  <button
+                    className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
+                    type="button"
+                    onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
+                  >
+                    <strong>{r.date}</strong>: {r.content}
+                  </button>
+                </div>
+              </h2>
+              <div
+                id={`collapse-${r._id}`}
+                className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
+              >
+                <div className="accordion-body">
+                  {(r.subTasks || []).map(
+                    (task, idx) =>
                       task.text && (
                         <div className="form-check mb-2" key={idx}>
                           <input
@@ -222,12 +217,11 @@ export default function Dashboard() {
                           </label>
                         </div>
                       )
-                    ))}
-                  </div>
+                  )}
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       )}
 
