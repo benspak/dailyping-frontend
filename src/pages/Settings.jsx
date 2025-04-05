@@ -114,7 +114,7 @@ export default function ProSettings() {
     </div>
     <div>
       {/* Admin Panel */}
-      {user.isAdmin && (
+      {res.data.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
         </div>
