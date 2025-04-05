@@ -164,7 +164,7 @@ export default function Dashboard() {
             <h2 className="accordion-header">
               <div className="d-flex align-items-center w-100 bg-success-subtle p-3">
                 <span className={todayGoal.completed ? "text-decoration-line-through text-muted" : ""}>
-                  <h3>{todayGoal.date}</h3>: {todayGoal.content}
+                  <h3>{todayGoal.date}: {todayGoal.content}</h3>
                 </span>
               </div>
             </h2>
