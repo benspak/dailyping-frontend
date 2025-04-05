@@ -14,6 +14,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
+    // Play sound on push from service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data?.action === "play-ping-sound") {
@@ -34,7 +35,9 @@ export default function Dashboard() {
 
         const updatedTaskState = {};
         res.data.forEach((r) => {
-          updatedTaskState[r._id] = { goalCompleted: r.completed || false };
+          updatedTaskState[r._id] = {
+            goalCompleted: r.completed || false,
+          };
           r.subTasks?.forEach((t, i) => {
             updatedTaskState[r._id][i] = t.completed;
           });
@@ -52,7 +55,6 @@ export default function Dashboard() {
 
   const toggleTask = async (responseId, index) => {
     const token = localStorage.getItem("token");
-
     const updated = {
       ...taskState,
       [responseId]: {
@@ -63,13 +65,21 @@ export default function Dashboard() {
     setTaskState(updated);
 
     try {
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-subtask",
-        { responseId, index, completed: updated[responseId][index] },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (index === "goalCompleted") {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-goal",
+          { responseId, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-subtask",
+          { responseId, index, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
     } catch (err) {
-      console.error("❌ Failed to update subtask:", err);
+      console.error("❌ Failed to update task:", err);
     }
   };
 
@@ -82,16 +92,9 @@ export default function Dashboard() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setResponses(prev =>
-        prev.map(r => r._id === responseId ? { ...r, completed } : r)
+      setResponses((prev) =>
+        prev.map((r) => (r._id === responseId ? { ...r, completed } : r))
       );
-      setTaskState(prev => ({
-        ...prev,
-        [responseId]: {
-          ...prev[responseId],
-          goalCompleted: completed
-        }
-      }));
     } catch (err) {
       console.error("❌ Failed to toggle goal completion:", err);
     }
@@ -113,11 +116,9 @@ export default function Dashboard() {
     );
   }
 
-  const activeResponses = responses.filter(r => !r.completed);
-
   return (
     <div className="container py-5">
-      {/* Header */}
+      {/* Welcome */}
       <div className="card shadow-sm p-4 mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mb-3 mb-md-0">
@@ -131,7 +132,9 @@ export default function Dashboard() {
           </div>
           <div className="col-md">
             <h5 className="fw-bold mb-1">Welcome, {user.email}</h5>
-            <p className="text-muted mb-0">Track your goals, check off subtasks, and keep your streak alive.</p>
+            <p className="text-muted mb-0">
+              Track your goals, check off subtasks, and keep your streak alive.
+            </p>
           </div>
           <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
@@ -140,15 +143,15 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="mb-1 fw-bold text-muted">Pro Status</p>
-              <span className={`badge fs-6 ${user.pro ? 'bg-primary' : 'bg-secondary'}`}>
-                {user.pro ? '✅ Active' : '❌ Not active'}
+              <span className={`badge fs-6 ${user.pro ? "bg-primary" : "bg-secondary"}`}>
+                {user.pro ? "✅ Active" : "❌ Not active"}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Pro CTA */}
+      {/* CTA */}
       {!user.pro && (
         <div className="alert alert-warning text-center mb-4">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
@@ -160,9 +163,7 @@ export default function Dashboard() {
               const res = await axios.post(
                 "https://api.dailyping.org/billing/create-checkout-session",
                 {},
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
               );
               window.location.href = res.data.url;
             }}
@@ -172,26 +173,28 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Goals */}
-      <h4 className="mb-3">Your Active Goals</h4>
-      {activeResponses.length === 0 ? (
-        <p className="text-muted">No active goals yet.</p>
+      {/* Past Goals */}
+      <h4 className="mb-3">Your Past Goals</h4>
+      {responses.length === 0 ? (
+        <p className="text-muted">No responses yet.</p>
       ) : (
         <div className="accordion" id="goalsAccordion">
-          {activeResponses.map((r, index) => (
+          {responses.map((r, index) => (
             <div className="accordion-item" key={r._id}>
               <h2 className="accordion-header" id={`heading-${r._id}`}>
                 <div className="d-flex align-items-center w-100">
                   <input
                     type="checkbox"
                     className="form-check-input me-2"
-                    checked={taskState[r._id]?.goalCompleted || false}
-                    onChange={() => toggleGoalComplete(r._id, !taskState[r._id]?.goalCompleted)}
+                    checked={r.completed || false}
+                    onChange={() => toggleGoalComplete(r._id, !r.completed)}
                   />
                   <button
                     className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
                     type="button"
-                    onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
+                    onClick={() =>
+                      setActiveAccordion(activeAccordion === index ? null : index)
+                    }
                   >
                     <strong>{r.date}</strong>: {r.content}
                   </button>
@@ -226,7 +229,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Admin Tools */}
+      {/* Admin */}
       {user.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
