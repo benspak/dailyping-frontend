@@ -14,7 +14,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
-    // Play sound on push from service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data?.action === "play-ping-sound") {
@@ -36,7 +35,7 @@ export default function Dashboard() {
         const updatedTaskState = {};
         res.data.forEach((r) => {
           updatedTaskState[r._id] = {
-            goalCompleted: r.completed || false
+            goalCompleted: r.completed || false,
           };
           r.subTasks?.forEach((t, i) => {
             updatedTaskState[r._id][i] = t.completed;
@@ -65,34 +64,21 @@ export default function Dashboard() {
     setTaskState(updated);
 
     try {
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-subtask",
-        { responseId, index, completed: updated[responseId][index] },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (index === "goalCompleted") {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-goal",
+          { responseId, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-subtask",
+          { responseId, index, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
     } catch (err) {
-      console.error("❌ Failed to update subtask:", err);
-    }
-  };
-
-  const toggleGoalComplete = async (responseId, completed) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-goal",
-        { responseId, completed },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setTaskState((prev) => ({
-        ...prev,
-        [responseId]: {
-          ...prev[responseId],
-          goalCompleted: completed,
-        },
-      }));
-    } catch (err) {
-      console.error("❌ Failed to toggle goal completion:", err);
+      console.error("❌ Failed to update task:", err);
     }
   };
 
@@ -112,13 +98,12 @@ export default function Dashboard() {
     );
   }
 
-  const todayDate = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split("T")[0];
 
   return (
     <div className="container py-5">
       <div className="card shadow-sm p-4 mb-4">
         <div className="row align-items-center">
-          {/* Avatar */}
           <div className="col-md-auto text-center mb-3 mb-md-0">
             <img
               src={`https://www.gravatar.com/avatar/${md5(user.email?.trim().toLowerCase())}?s=80&d=identicon`}
@@ -128,14 +113,10 @@ export default function Dashboard() {
               height="80"
             />
           </div>
-
-          {/* Welcome Text + App Description */}
           <div className="col-md">
             <h5 className="fw-bold mb-1">Welcome, {user.email}</h5>
             <p className="text-muted mb-0">Track your goals, check off subtasks, and keep your streak alive.</p>
           </div>
-
-          {/* Streak + Pro Status */}
           <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
               <p className="mb-1 fw-bold text-muted">Current Streak</p>
@@ -151,7 +132,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pro CTA */}
       {!user.pro && (
         <div className="alert alert-warning text-center mb-4">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
@@ -160,13 +140,9 @@ export default function Dashboard() {
             className="btn btn-primary btn-sm"
             onClick={async () => {
               const token = localStorage.getItem("token");
-              const res = await axios.post(
-                "https://api.dailyping.org/billing/create-checkout-session",
-                {},
-                {
-                  headers: { Authorization: `Bearer ${token}` },
-                }
-              );
+              const res = await axios.post("https://api.dailyping.org/billing/create-checkout-session", {}, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
               window.location.href = res.data.url;
             }}
           >
@@ -175,33 +151,33 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Goals */}
       <h4 className="mb-3">Your Past Goals</h4>
       {responses.length === 0 ? (
         <p className="text-muted">No responses yet.</p>
       ) : (
         <div className="accordion" id="goalsAccordion">
           {responses.map((r, index) => {
-            const isToday = r.date === todayDate;
-            const completed = taskState[r._id]?.goalCompleted;
+            const isToday = r.date === today;
+            const isCompleted = taskState[r._id]?.goalCompleted;
 
             return (
-              <div
-                className={`accordion-item ${isToday ? "border-primary border-2" : ""}`}
-                key={r._id}
-              >
+              <div className="accordion-item" key={r._id}>
                 <h2 className="accordion-header" id={`heading-${r._id}`}>
-                  <div className="d-flex align-items-center w-100 px-3 py-2">
+                  <div
+                    className={`d-flex align-items-center w-100 px-3 py-2 ${
+                      isToday ? "bg-light border-start border-4 border-primary" : ""
+                    }`}
+                  >
                     <input
                       type="checkbox"
                       className="form-check-input me-2"
-                      checked={completed || false}
-                      onChange={() => toggleGoalComplete(r._id, !completed)}
+                      checked={!!isCompleted}
+                      onChange={() => toggleTask(r._id, "goalCompleted")}
                     />
                     <button
-                      className={`accordion-button flex-grow-1 ${
-                        activeAccordion === index ? "" : "collapsed"
-                      } ${completed ? "text-muted text-decoration-line-through" : ""}`}
+                      className={`accordion-button ${activeAccordion === index ? "" : "collapsed"} ${
+                        isCompleted ? "text-muted text-decoration-line-through" : ""
+                      }`}
                       type="button"
                       onClick={() =>
                         setActiveAccordion(activeAccordion === index ? null : index)
@@ -213,32 +189,29 @@ export default function Dashboard() {
                 </h2>
                 <div
                   id={`collapse-${r._id}`}
-                  className={`accordion-collapse collapse ${
-                    activeAccordion === index ? "show" : ""
-                  }`}
+                  className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
-                    {(r.subTasks || []).map(
-                      (task, idx) =>
-                        task.text && (
-                          <div className="form-check mb-2" key={idx}>
-                            <input
-                              className="form-check-input me-2"
-                              type="checkbox"
-                              id={`task-${r._id}-${idx}`}
-                              checked={taskState[r._id]?.[idx] || false}
-                              onChange={() => toggleTask(r._id, idx)}
-                            />
-                            <label
-                              className={`form-check-label ${
-                                taskState[r._id]?.[idx] ? "text-muted text-decoration-line-through" : ""
-                              }`}
-                              htmlFor={`task-${r._id}-${idx}`}
-                            >
-                              {task.text}
-                            </label>
-                          </div>
-                        )
+                    {(r.subTasks || []).map((task, idx) =>
+                      task.text ? (
+                        <div className="form-check mb-2" key={idx}>
+                          <input
+                            className="form-check-input me-2"
+                            type="checkbox"
+                            id={`task-${r._id}-${idx}`}
+                            checked={taskState[r._id]?.[idx] || false}
+                            onChange={() => toggleTask(r._id, idx)}
+                          />
+                          <label
+                            className={`form-check-label ${
+                              taskState[r._id]?.[idx] ? "text-muted text-decoration-line-through" : ""
+                            }`}
+                            htmlFor={`task-${r._id}-${idx}`}
+                          >
+                            {task.text}
+                          </label>
+                        </div>
+                      ) : null
                     )}
                   </div>
                 </div>
@@ -248,7 +221,6 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Admin Tools */}
       {user.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
