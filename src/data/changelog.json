@@ -1,12 +1,6 @@
 [
   {
     "date": "2025-04-07",
-    "title": "Goal Completion State Persists",
-    "description": "Goals can now be marked complete and persist across sessions on the dashboard.",
-    "type": "feature"
-  },
-  {
-    "date": "2025-04-07",
     "title": "Dashboard Visual Enhancements",
     "description": "Today's goal is now visually separated and completed items show strikethrough and muted color.",
     "type": "update"
