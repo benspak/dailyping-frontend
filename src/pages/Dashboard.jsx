@@ -158,14 +158,13 @@ export default function Dashboard() {
       )}
 
       {/* Active Goals */}
-      <h4 className="mb-3">Your Active Goals</h4>
       {todayGoal && (
         <div className="accordion mb-4">
           <div className="accordion-item border border-success">
             <h2 className="accordion-header">
               <div className="d-flex align-items-center w-100 bg-success-subtle p-3">
                 <span className={todayGoal.completed ? "text-decoration-line-through text-muted" : ""}>
-                  <strong>{todayGoal.date}</strong>: {todayGoal.content}
+                  <h3>{todayGoal.date}</h3>: {todayGoal.content}
                 </span>
               </div>
             </h2>
@@ -195,6 +194,8 @@ export default function Dashboard() {
       {otherActiveGoals.length === 0 ? (
         <p className="text-muted">No additional active goals.</p>
       ) : (
+        <>
+        <h4 className="mb-3">Your Weekly Goals</h4>
         <div className="accordion mb-5" id="goalsAccordion">
           {otherActiveGoals.map((r, index) => (
             <div className="accordion-item" key={r._id}>
@@ -240,6 +241,7 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
+        </>
       )}
 
       {/* Completed Goals */}
@@ -256,7 +258,7 @@ export default function Dashboard() {
         </>
       )}
 
-      
+
     </div>
   );
 }
