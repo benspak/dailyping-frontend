@@ -60,14 +60,14 @@ export default function Home() {
               <li>✔️ 1 daily ping (email)</li>
               <li>✔️ Private dashboard</li>
               <li>✔️ Streak tracker</li>
+              <li>✔️ Custom ping time</li>
+              <li>✔️ Choose tone (motivational, gentle, snarky)</li>
+              <li>✔️ Weekly summary reports</li>
             </ul>
           </div>
           <div className="col-md-6 mb-4">
             <h3 className="h5 fw-semibold">Pro — $5/mo</h3>
             <ul className="list-unstyled">
-              <li>⭐ Custom ping time</li>
-              <li>⭐ Choose tone (motivational, gentle, snarky)</li>
-              <li>⭐ Weekly summary reports</li>
               <li>⭐ Gravatar Support</li>
             </ul>
           </div>
