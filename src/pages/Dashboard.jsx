@@ -99,6 +99,23 @@ export default function Dashboard() {
     );
   }
 
+  const toggleGoalComplete = async (responseId, completed) => {
+  try {
+    const token = localStorage.getItem("token");
+    await axios.post(
+      "https://api.dailyping.org/api/response/toggle-goal",
+      { responseId, completed },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    setResponses(prev =>
+      prev.map(r => r._id === responseId ? { ...r, completed } : r)
+    );
+  } catch (err) {
+    console.error("❌ Failed to toggle goal completion:", err);
+  }
+};
+
   return (
     <div className="container py-5">
       <div className="card shadow-sm p-4 mb-4">
