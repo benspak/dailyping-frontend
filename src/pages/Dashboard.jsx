@@ -32,14 +32,16 @@ export default function Dashboard() {
 
         setResponses(res.data);
 
-        const updatedTaskState = {};
+        const newState = {};
         res.data.forEach((r) => {
-          updatedTaskState[r._id] = { goalCompleted: r.completed || false };
+          newState[r._id] = {
+            goalCompleted: r.completed || false,
+          };
           r.subTasks?.forEach((t, i) => {
-            updatedTaskState[r._id][i] = t.completed;
+            newState[r._id][i] = t.completed;
           });
         });
-        setTaskState(updatedTaskState);
+        setTaskState(newState);
 
         await registerPush();
       } catch {
@@ -52,38 +54,49 @@ export default function Dashboard() {
 
   const toggleTask = async (responseId, index) => {
     const token = localStorage.getItem("token");
+    const current = taskState[responseId]?.[index] || false;
+
     const updated = {
       ...taskState,
       [responseId]: {
         ...(taskState[responseId] || {}),
-        [index]: !taskState[responseId]?.[index],
+        [index]: !current,
       },
     };
     setTaskState(updated);
 
     try {
-      if (index === 'goalCompleted') {
-        await axios.post(
-          "https://api.dailyping.org/api/response/toggle-goal",
-          { responseId, completed: updated[responseId][index] },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        // ✅ Update response.completed to persist UI
-        setResponses(prev =>
-          prev.map(r =>
-            r._id === responseId ? { ...r, completed: updated[responseId][index] } : r
-          )
-        );
-      } else {
-        await axios.post(
-          "https://api.dailyping.org/api/response/toggle-subtask",
-          { responseId, index, completed: updated[responseId][index] },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
+      await axios.post(
+        "https://api.dailyping.org/api/response/toggle-subtask",
+        { responseId, index, completed: !current },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
     } catch (err) {
-      console.error("❌ Failed to update task:", err);
+      console.error("❌ Failed to update subtask:", err);
+    }
+  };
+
+  const toggleGoalComplete = async (responseId) => {
+    const current = taskState[responseId]?.goalCompleted || false;
+    const token = localStorage.getItem("token");
+
+    const updated = {
+      ...taskState,
+      [responseId]: {
+        ...(taskState[responseId] || {}),
+        goalCompleted: !current,
+      },
+    };
+    setTaskState(updated);
+
+    try {
+      await axios.post(
+        "https://api.dailyping.org/api/response/toggle-goal",
+        { responseId, completed: !current },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error("❌ Failed to update goal:", err);
     }
   };
 
@@ -107,7 +120,6 @@ export default function Dashboard() {
 
   return (
     <div className="container py-5">
-      {/* Header */}
       <div className="card shadow-sm p-4 mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mb-3 mb-md-0">
@@ -138,7 +150,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Pro CTA */}
       {!user.pro && (
         <div className="alert alert-warning text-center mb-4">
           <h5 className="mb-2">⭐ Unlock Pro</h5>
@@ -162,64 +173,64 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Goals */}
       <h4 className="mb-3">Your Past Goals</h4>
       {responses.length === 0 ? (
         <p className="text-muted">No responses yet.</p>
       ) : (
         <div className="accordion" id="goalsAccordion">
-          {responses.map((r, index) => (
-            <div
-              className={`accordion-item ${r.date === today ? "border-primary border-2" : ""}`}
-              key={r._id}
-            >
-              <h2 className="accordion-header" id={`heading-${r._id}`}>
-                <div className="d-flex align-items-center w-100">
-                  <input
-                    type="checkbox"
-                    className="form-check-input me-2"
-                    checked={taskState[r._id]?.goalCompleted || false}
-                    onChange={() => toggleTask(r._id, "goalCompleted")}
-                  />
-                  <button
-                    className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
-                    type="button"
-                    onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
-                  >
-                    <strong>{r.date}</strong>: {r.content}
-                    {r.date === today && <span className="badge bg-info ms-3">Today</span>}
-                  </button>
-                </div>
-              </h2>
-              <div
-                id={`collapse-${r._id}`}
-                className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
-              >
-                <div className="accordion-body">
-                  {(r.subTasks || []).map((task, idx) => (
-                    task.text && (
-                      <div className="form-check mb-2" key={idx}>
-                        <input
-                          className="form-check-input me-2"
-                          type="checkbox"
-                          id={`task-${r._id}-${idx}`}
-                          checked={taskState[r._id]?.[idx] || false}
-                          onChange={() => toggleTask(r._id, idx)}
-                        />
-                        <label className="form-check-label" htmlFor={`task-${r._id}-${idx}`}>
-                          {task.text}
-                        </label>
-                      </div>
-                    )
-                  ))}
+          {responses.map((r, index) => {
+            const isToday = r.date === today;
+            return (
+              <div className="accordion-item" key={r._id}>
+                <h2 className="accordion-header" id={`heading-${r._id}`}>
+                  <div className="d-flex align-items-center w-100 px-3 py-2">
+                    <input
+                      type="checkbox"
+                      className="form-check-input me-3"
+                      checked={taskState[r._id]?.goalCompleted || false}
+                      onChange={() => toggleGoalComplete(r._id)}
+                    />
+                    <button
+                      className={`accordion-button flex-grow-1 ${activeAccordion === index ? "" : "collapsed"}`}
+                      type="button"
+                      onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
+                    >
+                      <strong>{r.date}</strong>: {r.content}
+                      {isToday && (
+                        <span className="badge bg-info text-dark ms-3">Today</span>
+                      )}
+                    </button>
+                  </div>
+                </h2>
+                <div
+                  id={`collapse-${r._id}`}
+                  className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
+                >
+                  <div className="accordion-body">
+                    {(r.subTasks || []).map((task, idx) => (
+                      task.text && (
+                        <div className="form-check mb-2" key={idx}>
+                          <input
+                            className="form-check-input me-2"
+                            type="checkbox"
+                            id={`task-${r._id}-${idx}`}
+                            checked={taskState[r._id]?.[idx] || false}
+                            onChange={() => toggleTask(r._id, idx)}
+                          />
+                          <label className="form-check-label" htmlFor={`task-${r._id}-${idx}`}>
+                            {task.text}
+                          </label>
+                        </div>
+                      )
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Admin */}
       {user.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
