@@ -33,16 +33,14 @@ export default function Dashboard() {
 
         setResponses(res.data);
 
-        const updatedTaskState = {};
-        res.data.forEach((r) => {
-          updatedTaskState[r._id] = {
-            goalCompleted: r.completed || false,
-          };
+       const updatedTaskState = {};
+       res.data.forEach((r) => {
+          updatedTaskState[r._id] = {};
           r.subTasks?.forEach((t, i) => {
             updatedTaskState[r._id][i] = t.completed;
-          });
-        });
-        setTaskState(updatedTaskState);
+         });
+       });
+      setTaskState(updatedTaskState);
 
         await registerPush();
       } catch {
@@ -53,35 +51,28 @@ export default function Dashboard() {
     fetchData();
   }, [user]);
 
-  const toggleTask = async (responseId, index) => {
-    const token = localStorage.getItem("token");
-    const updated = {
-      ...taskState,
-      [responseId]: {
-        ...(taskState[responseId] || {}),
-        [index]: !taskState[responseId]?.[index],
-      },
-    };
-    setTaskState(updated);
+const toggleTask = async (responseId, index) => {
+  const token = localStorage.getItem("token");
 
-    try {
-      if (index === 'goalCompleted') {
-        await axios.post(
-          "https://api.dailyping.org/api/response/toggle-goal",
-          { responseId, completed: updated[responseId][index] },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        await axios.post(
-          "https://api.dailyping.org/api/response/toggle-subtask",
-          { responseId, index, completed: updated[responseId][index] },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
-    } catch (err) {
-      console.error("❌ Failed to update task:", err);
-    }
+  const updated = {
+    ...taskState,
+    [responseId]: {
+      ...(taskState[responseId] || {}),
+      [index]: !taskState[responseId]?.[index],
+    },
   };
+  setTaskState(updated);
+
+  try {
+    await axios.post(
+      "https://api.dailyping.org/api/response/toggle-subtask",
+      { responseId, index, completed: updated[responseId][index] },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (err) {
+    console.error("❌ Failed to update subtask:", err);
+  }
+};
 
   if (loading) {
     return (
