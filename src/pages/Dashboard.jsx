@@ -69,6 +69,14 @@ export default function Dashboard() {
           { responseId, completed: updated[responseId][index] },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+
+         // ✅ Update the local response object
+          setResponses(prev =>
+            prev.map(r =>
+              r._id === responseId ? { ...r, completed: updated[responseId][index] } : r
+            )
+          );
+        }
       } else {
         await axios.post(
           "https://api.dailyping.org/api/response/toggle-subtask",
