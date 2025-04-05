@@ -188,11 +188,10 @@ export default function Dashboard() {
               <h2 className="accordion-header" id={`heading-${r._id}`}>
                 <div className="d-flex align-items-center w-100">
                   <input
-                    className="form-check-input me-2 ms-2"
                     type="checkbox"
-                    checked={taskState[r._id]?.goalCompleted || false}
-                    onChange={() => toggleTask(r._id, 'goalCompleted')}
-                    id={`goal-check-${r._id}`}
+                    className="form-check-input me-2"
+                    checked={r.completed || false}
+                    onChange={() => toggleGoalComplete(r._id, !r.completed)}
                   />
                   <button
                     className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
