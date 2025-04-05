@@ -34,9 +34,7 @@ export default function Dashboard() {
 
         const updatedTaskState = {};
         res.data.forEach((r) => {
-          updatedTaskState[r._id] = {
-            goalCompleted: r.completed || false,
-          };
+          updatedTaskState[r._id] = { goalCompleted: r.completed || false };
           r.subTasks?.forEach((t, i) => {
             updatedTaskState[r._id][i] = t.completed;
           });
@@ -54,6 +52,7 @@ export default function Dashboard() {
 
   const toggleTask = async (responseId, index) => {
     const token = localStorage.getItem("token");
+
     const updated = {
       ...taskState,
       [responseId]: {
@@ -64,30 +63,21 @@ export default function Dashboard() {
     setTaskState(updated);
 
     try {
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-subtask",
-        { responseId, index, completed: updated[responseId][index] },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (index === "goalCompleted") {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-goal",
+          { responseId, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-subtask",
+          { responseId, index, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
     } catch (err) {
-      console.error("❌ Failed to update subtask:", err);
-    }
-  };
-
-  const toggleGoalComplete = async (responseId, completed) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-goal",
-        { responseId, completed },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setResponses((prev) =>
-        prev.map((r) => (r._id === responseId ? { ...r, completed } : r))
-      );
-    } catch (err) {
-      console.error("❌ Failed to toggle goal completion:", err);
+      console.error("❌ Failed to update task:", err);
     }
   };
 
@@ -107,9 +97,11 @@ export default function Dashboard() {
     );
   }
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <div className="container py-5">
-      {/* Header Card */}
+      {/* Header */}
       <div className="card shadow-sm p-4 mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mb-3 mb-md-0">
@@ -164,21 +156,24 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Goals Accordion */}
+      {/* Goals */}
       <h4 className="mb-3">Your Past Goals</h4>
       {responses.length === 0 ? (
         <p className="text-muted">No responses yet.</p>
       ) : (
         <div className="accordion" id="goalsAccordion">
           {responses.map((r, index) => (
-            <div className="accordion-item" key={r._id}>
+            <div
+              className={`accordion-item ${r.date === today ? "border-primary border-2" : ""}`}
+              key={r._id}
+            >
               <h2 className="accordion-header" id={`heading-${r._id}`}>
                 <div className="d-flex align-items-center w-100">
                   <input
                     type="checkbox"
                     className="form-check-input me-2"
-                    checked={r.completed || false}
-                    onChange={() => toggleGoalComplete(r._id, !r.completed)}
+                    checked={taskState[r._id]?.goalCompleted || false}
+                    onChange={() => toggleTask(r._id, "goalCompleted")}
                   />
                   <button
                     className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
@@ -186,6 +181,7 @@ export default function Dashboard() {
                     onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
                   >
                     <strong>{r.date}</strong>: {r.content}
+                    {r.date === today && <span className="badge bg-info ms-3">Today</span>}
                   </button>
                 </div>
               </h2>
@@ -194,8 +190,8 @@ export default function Dashboard() {
                 className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
               >
                 <div className="accordion-body">
-                  {(r.subTasks || []).map((task, idx) =>
-                    task.text ? (
+                  {(r.subTasks || []).map((task, idx) => (
+                    task.text && (
                       <div className="form-check mb-2" key={idx}>
                         <input
                           className="form-check-input me-2"
@@ -208,8 +204,8 @@ export default function Dashboard() {
                           {task.text}
                         </label>
                       </div>
-                    ) : null
-                  )}
+                    )
+                  ))}
                 </div>
               </div>
             </div>
@@ -217,7 +213,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Admin Tools */}
+      {/* Admin */}
       {user.isAdmin && (
         <div className="mt-5">
           <AdminPanel />
