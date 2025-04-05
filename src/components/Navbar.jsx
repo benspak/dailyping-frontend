@@ -45,11 +45,9 @@ export default function Navbar() {
                 <li className="nav-item">
                   <Link className="nav-link" to="/feedback" onClick={() => setExpanded(false)}>Feedback</Link>
                 </li>
-                {user?.pro && (
                   <li className="nav-item">
                     <Link className="nav-link" to="/settings" onClick={() => setExpanded(false)}>Settings</Link>
                   </li>
-                )}
                 <li className="nav-item">
                   <Link className="nav-link" to="/changelog" onClick={() => setExpanded(false)}>Changelog</Link>
                 </li>
