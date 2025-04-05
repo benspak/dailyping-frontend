@@ -57,6 +57,7 @@ export default function ProSettings() {
   if (loading) return <div className="container py-5 text-center">Loading...</div>;
 
   return (
+    <>
     <div className="container py-5">
       <h2 className="mb-4">Settings</h2>
 
@@ -110,7 +111,8 @@ export default function ProSettings() {
 
       <button className="btn btn-dark" onClick={savePreferences}>Save Settings</button>
       {status && <p className="mt-3 text-muted">{status}</p>}
-
+    </div>
+    <div>
       {/* Admin Panel */}
       {user.isAdmin && (
         <div className="mt-5">
@@ -118,5 +120,6 @@ export default function ProSettings() {
         </div>
       )}
     </div>
+    </>
   );
 }
