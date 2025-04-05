@@ -33,14 +33,16 @@ export default function Dashboard() {
 
         setResponses(res.data);
 
-        const initialState = {};
+        const updatedTaskState = {};
         res.data.forEach((r) => {
-          initialState[r._id] = {};
+          updatedTaskState[r._id] = {
+            goalCompleted: r.completed || false,
+          };
           r.subTasks?.forEach((t, i) => {
-            initialState[r._id][i] = t.completed;
+            updatedTaskState[r._id][i] = t.completed;
           });
         });
-        setTaskState(initialState);
+        setTaskState(updatedTaskState);
 
         await registerPush();
       } catch {
@@ -53,7 +55,6 @@ export default function Dashboard() {
 
   const toggleTask = async (responseId, index) => {
     const token = localStorage.getItem("token");
-
     const updated = {
       ...taskState,
       [responseId]: {
@@ -64,13 +65,21 @@ export default function Dashboard() {
     setTaskState(updated);
 
     try {
-      await axios.post(
-        "https://api.dailyping.org/api/response/toggle-subtask",
-        { responseId, index, completed: updated[responseId][index] },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (index === 'goalCompleted') {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-goal",
+          { responseId, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-subtask",
+          { responseId, index, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
     } catch (err) {
-      console.error("❌ Failed to update subtask:", err);
+      console.error("❌ Failed to update task:", err);
     }
   };
 
@@ -160,13 +169,22 @@ export default function Dashboard() {
           {responses.map((r, index) => (
             <div className="accordion-item" key={r._id}>
               <h2 className="accordion-header" id={`heading-${r._id}`}>
-                <button
-                  className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
-                  type="button"
-                  onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
-                >
-                  <strong>{r.date}</strong>: {r.content}
-                </button>
+                <div className="d-flex align-items-center w-100">
+                  <input
+                    className="form-check-input me-2 ms-2"
+                    type="checkbox"
+                    checked={taskState[r._id]?.goalCompleted || false}
+                    onChange={() => toggleTask(r._id, 'goalCompleted')}
+                    id={`goal-check-${r._id}`}
+                  />
+                  <button
+                    className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
+                    type="button"
+                    onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
+                  >
+                    <strong>{r.date}</strong>: {r.content}
+                  </button>
+                </div>
               </h2>
               <div
                 id={`collapse-${r._id}`}
