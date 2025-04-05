@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import AdminPanel from "../components/AdminPanel";
 import { registerPush } from "../utils/registerPush";
 import { useAuth } from "../context/AuthContext";
 import md5 from "md5";
@@ -257,12 +256,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Admin Panel */}
-      {user.isAdmin && (
-        <div className="mt-5">
-          <AdminPanel />
-        </div>
-      )}
+      
     </div>
   );
 }

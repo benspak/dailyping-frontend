@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TonePreview from '../components/TonePreview';
+import AdminPanel from "../components/AdminPanel";
 
 export default function ProSettings() {
   const [preferences, setPreferences] = useState({
@@ -109,6 +110,13 @@ export default function ProSettings() {
 
       <button className="btn btn-dark" onClick={savePreferences}>Save Settings</button>
       {status && <p className="mt-3 text-muted">{status}</p>}
+
+      {/* Admin Panel */}
+      {user.isAdmin && (
+        <div className="mt-5">
+          <AdminPanel />
+        </div>
+      )}
     </div>
   );
 }
