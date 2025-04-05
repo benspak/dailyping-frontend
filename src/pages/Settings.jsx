@@ -10,6 +10,7 @@ export default function ProSettings() {
     timezone: '',
     weeklySummary: true
   });
+  const [isAdmin, setIsAdmin] = useState(false);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -24,9 +25,10 @@ export default function ProSettings() {
       setPreferences({
         pingTime: prefs.pingTime || '08:00',
         tone: prefs.tone || 'gentle',
-        timezone: res.data.timezone || 'America/New_York', // ✅ Correct timezone handling
-        weeklySummary: prefs.weeklySummary !== false // default to true
+        timezone: res.data.timezone || 'America/New_York',
+        weeklySummary: prefs.weeklySummary !== false
       });
+      setIsAdmin(res.data.isAdmin || false);
     }).catch(() => {
       window.location.href = '/';
     }).finally(() => setLoading(false));
@@ -58,68 +60,65 @@ export default function ProSettings() {
 
   return (
     <>
-    <div className="container py-5">
-      <h2 className="mb-4">Settings</h2>
+      <div className="container py-5">
+        <h2 className="mb-4">Settings</h2>
 
-      <div className="mb-3">
-        <label className="form-label">Ping Time</label>
-        <input
-          type="time"
-          className="form-control"
-          name="pingTime"
-          value={preferences.pingTime}
-          onChange={handleChange}
-        />
+        <div className="mb-3">
+          <label className="form-label">Ping Time</label>
+          <input
+            type="time"
+            className="form-control"
+            name="pingTime"
+            value={preferences.pingTime}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Tone</label>
+          <TonePreview
+            selectedTone={preferences.tone}
+            onToneChange={(newTone) => setPreferences((p) => ({ ...p, tone: newTone }))}
+          />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Timezone</label>
+          <select
+            className="form-select"
+            name="timezone"
+            value={preferences.timezone}
+            onChange={handleChange}
+          >
+            {Intl.supportedValuesOf('timeZone').map((tz) => (
+              <option key={tz} value={tz}>{tz}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="form-check form-switch mb-4">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="weeklySummary"
+            name="weeklySummary"
+            checked={preferences.weeklySummary}
+            onChange={handleChange}
+          />
+          <label className="form-check-label" htmlFor="weeklySummary">
+            Send weekly summary email
+          </label>
+        </div>
+
+        <button className="btn btn-dark" onClick={savePreferences}>Save Settings</button>
+        {status && <p className="mt-3 text-muted">{status}</p>}
       </div>
 
-      <div className="mb-3">
-        <label className="form-label">Tone</label>
-        <TonePreview
-          selectedTone={preferences.tone}
-          onToneChange={(newTone) => setPreferences((p) => ({ ...p, tone: newTone }))}
-        />
-
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Timezone</label>
-        <select
-          className="form-select"
-          name="timezone"
-          value={preferences.timezone}
-          onChange={handleChange}
-        >
-          {Intl.supportedValuesOf('timeZone').map((tz) => (
-            <option key={tz} value={tz}>{tz}</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="form-check form-switch mb-4">
-        <input
-          className="form-check-input"
-          type="checkbox"
-          id="weeklySummary"
-          name="weeklySummary"
-          checked={preferences.weeklySummary}
-          onChange={handleChange}
-        />
-        <label className="form-check-label" htmlFor="weeklySummary">
-          Send weekly summary email
-        </label>
-      </div>
-
-      <button className="btn btn-dark" onClick={savePreferences}>Save Settings</button>
-      {status && <p className="mt-3 text-muted">{status}</p>}
-    </div>
-    <div>
-      {/* Admin Panel */}
-      {res.data.isAdmin && (
-        <div className="mt-5">
+      {isAdmin && (
+        <div className="container mt-5">
           <AdminPanel />
         </div>
       )}
-    </div>
     </>
   );
 }
