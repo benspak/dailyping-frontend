@@ -8,11 +8,9 @@ export default function Dashboard() {
   const { user, loading } = useAuth();
   const [responses, setResponses] = useState([]);
   const [taskState, setTaskState] = useState({});
-  const [activeAccordion, setActiveAccordion] = useState(null);
-
+  const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
+  const [activePastAccordion, setActivePastAccordion] = useState(null);
   const todayDate = new Date().toISOString().split("T")[0];
-  const oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
   useEffect(() => {
     if (!user) return;
@@ -64,15 +62,19 @@ export default function Dashboard() {
     setTaskState(updated);
 
     try {
-      await axios.post(
-        index === "goalCompleted"
-          ? "https://api.dailyping.org/api/response/toggle-goal"
-          : "https://api.dailyping.org/api/response/toggle-subtask",
-        index === "goalCompleted"
-          ? { responseId, completed: updated[responseId][index] }
-          : { responseId, index, completed: updated[responseId][index] },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      if (index === "goalCompleted") {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-goal",
+          { responseId, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        await axios.post(
+          "https://api.dailyping.org/api/response/toggle-subtask",
+          { responseId, index, completed: updated[responseId][index] },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
     } catch (err) {
       console.error("❌ Failed to update task:", err);
     }
@@ -94,55 +96,18 @@ export default function Dashboard() {
     );
   }
 
-  const todayGoal = responses.find((r) => r.date === todayDate);
-  const recentGoals = responses
-    .filter((r) => r.date !== todayDate && new Date(r.date) >= oneWeekAgo)
-    .slice(0, 6);
-  const olderGoals = responses.filter((r) => new Date(r.date) < oneWeekAgo);
+  const today = new Date();
+  const oneWeekAgo = new Date(today);
+  oneWeekAgo.setDate(today.getDate() - 6);
+  const todayISO = today.toISOString().split("T")[0];
+  const weekAgoISO = oneWeekAgo.toISOString().split("T")[0];
 
-  const renderGoalItem = (r, idx) => (
-    <div className="accordion-item" key={r._id}>
-      <h2 className="accordion-header" id={`heading-${r._id}`}>
-        <div className="d-flex align-items-center w-100">
-          <button
-            className={`accordion-button ${activeAccordion === idx ? "" : "collapsed"}`}
-            type="button"
-            onClick={() => setActiveAccordion(activeAccordion === idx ? null : idx)}
-          >
-            <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
-              <strong>{r.date}</strong>: {r.content}
-            </span>
-          </button>
-        </div>
-      </h2>
-      <div
-        id={`collapse-${r._id}`}
-        className={`accordion-collapse collapse ${activeAccordion === idx ? "show" : ""}`}
-      >
-        <div className="accordion-body">
-          {(r.subTasks || []).map((task, i) => (
-            <div className="form-check mb-2" key={i}>
-              <input
-                className="form-check-input me-2"
-                type="checkbox"
-                id={`task-${r._id}-${i}`}
-                checked={taskState[r._id]?.[i] || false}
-                onChange={() => toggleTask(r._id, i)}
-              />
-              <label
-                className={`form-check-label ${
-                  taskState[r._id]?.[i] ? "text-decoration-line-through text-muted" : ""
-                }`}
-                htmlFor={`task-${r._id}-${i}`}
-              >
-                {task.text}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  const activeResponses = responses.filter((r) => !r.completed);
+  const completedResponses = responses.filter((r) => r.completed);
+
+  const todayGoal = activeResponses.find((r) => r.date === todayISO);
+  const weeklyGoals = activeResponses.filter((r) => r.date > weekAgoISO && r.date < todayISO);
+  const olderGoals = activeResponses.filter((r) => r.date <= weekAgoISO);
 
   return (
     <div className="container py-5">
@@ -160,38 +125,47 @@ export default function Dashboard() {
           </div>
           <div className="col-md">
             <h5 className="fw-bold mb-1">Welcome, {user.email}</h5>
-            <p className="text-muted mb-0">
-              Track your goals, check off subtasks, and keep your streak alive.
-            </p>
+            <p className="text-muted mb-0">Track your goals, check off subtasks, and keep your streak alive.</p>
           </div>
           <div className="col-md-auto text-center mt-3 mt-md-0">
-            <p className="mb-1 fw-bold text-muted">Current Streak</p>
-            <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
+            <div className="mb-2">
+              <p className="mb-1 fw-bold text-muted">Current Streak</p>
+              <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
+            </div>
+            <div>
+              <p className="mb-1 fw-bold text-muted">Pro Status</p>
+              <span className={`badge fs-6 ${user.pro ? "bg-primary" : "bg-secondary"}`}>
+                {user.pro ? "✅ Active" : "❌ Not active"}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Today's Goal */}
       {todayGoal && (
-        <div className="accordion mb-4">
-          <div className="accordion-item border border-success">
-            <h2 className="accordion-header">
-              <div className="d-flex align-items-center w-100 bg-success-subtle p-3">
-                <h4 className="mb-0">{todayGoal.date}: {todayGoal.content}</h4>
-              </div>
-            </h2>
-            <div className="accordion-body">
-              {(todayGoal.subTasks || []).map((task, i) => (
-                <div className="form-check mb-2" key={i}>
+        <>
+          <h4 className="mb-3">Today's Goal</h4>
+          <div className="card border-success mb-4">
+            <div className="card-body">
+              <h5 className="card-title">
+                {todayGoal.completed ? (
+                  <s className="text-muted">{todayGoal.content}</s>
+                ) : (
+                  todayGoal.content
+                )}
+              </h5>
+              {(todayGoal.subTasks || []).map((task, idx) => (
+                <div className="form-check mb-2" key={idx}>
                   <input
                     className="form-check-input me-2"
                     type="checkbox"
-                    checked={taskState[todayGoal._id]?.[i] || false}
-                    onChange={() => toggleTask(todayGoal._id, i)}
+                    checked={taskState[todayGoal._id]?.[idx] || false}
+                    onChange={() => toggleTask(todayGoal._id, idx)}
                   />
                   <label
                     className={`form-check-label ${
-                      taskState[todayGoal._id]?.[i] ? "text-decoration-line-through text-muted" : ""
+                      taskState[todayGoal._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
                     }`}
                   >
                     {task.text}
@@ -200,15 +174,55 @@ export default function Dashboard() {
               ))}
             </div>
           </div>
-        </div>
+        </>
       )}
 
-      {/* This Week's Goals */}
-      {recentGoals.length > 0 && (
+      {/* Weekly Goals */}
+      {weeklyGoals.length > 0 && (
         <>
-          <h4 className="mb-3">This Week’s Goals</h4>
-          <div className="accordion mb-5" id="recentGoalsAccordion">
-            {recentGoals.map(renderGoalItem)}
+          <h4 className="mb-3">This Week's Goals</h4>
+          <div className="accordion mb-5" id="weeklyAccordion">
+            {weeklyGoals.map((r, index) => (
+              <div className="accordion-item" key={r._id}>
+                <h2 className="accordion-header" id={`heading-week-${r._id}`}>
+                  <button
+                    className={`accordion-button ${activeWeeklyAccordion === index ? "" : "collapsed"}`}
+                    type="button"
+                    onClick={() =>
+                      setActiveWeeklyAccordion(activeWeeklyAccordion === index ? null : index)
+                    }
+                  >
+                    <strong>{r.date}</strong>: {r.content}
+                  </button>
+                </h2>
+                <div
+                  id={`collapse-week-${r._id}`}
+                  className={`accordion-collapse collapse ${activeWeeklyAccordion === index ? "show" : ""}`}
+                >
+                  <div className="accordion-body">
+                    {(r.subTasks || []).map((task, idx) => (
+                      <div className="form-check mb-2" key={idx}>
+                        <input
+                          className="form-check-input me-2"
+                          type="checkbox"
+                          checked={taskState[r._id]?.[idx] || false}
+                          onChange={() => toggleTask(r._id, idx)}
+                          id={`task-${r._id}-${idx}`}
+                        />
+                        <label
+                          className={`form-check-label ${
+                            taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                          }`}
+                          htmlFor={`task-${r._id}-${idx}`}
+                        >
+                          {task.text}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </>
       )}
@@ -217,8 +231,48 @@ export default function Dashboard() {
       {olderGoals.length > 0 && (
         <>
           <h4 className="mb-3">Your Past Goals</h4>
-          <div className="accordion mb-5" id="olderGoalsAccordion">
-            {olderGoals.map(renderGoalItem)}
+          <div className="accordion mb-5" id="pastAccordion">
+            {olderGoals.map((r, index) => (
+              <div className="accordion-item" key={r._id}>
+                <h2 className="accordion-header" id={`heading-past-${r._id}`}>
+                  <button
+                    className={`accordion-button ${activePastAccordion === index ? "" : "collapsed"}`}
+                    type="button"
+                    onClick={() =>
+                      setActivePastAccordion(activePastAccordion === index ? null : index)
+                    }
+                  >
+                    <strong>{r.date}</strong>: {r.content}
+                  </button>
+                </h2>
+                <div
+                  id={`collapse-past-${r._id}`}
+                  className={`accordion-collapse collapse ${activePastAccordion === index ? "show" : ""}`}
+                >
+                  <div className="accordion-body">
+                    {(r.subTasks || []).map((task, idx) => (
+                      <div className="form-check mb-2" key={idx}>
+                        <input
+                          className="form-check-input me-2"
+                          type="checkbox"
+                          checked={taskState[r._id]?.[idx] || false}
+                          onChange={() => toggleTask(r._id, idx)}
+                          id={`task-${r._id}-${idx}`}
+                        />
+                        <label
+                          className={`form-check-label ${
+                            taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                          }`}
+                          htmlFor={`task-${r._id}-${idx}`}
+                        >
+                          {task.text}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </>
       )}
