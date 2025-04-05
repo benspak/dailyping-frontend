@@ -157,7 +157,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Active Goals */}
+      {/* Today's Goal */}
       {todayGoal && (
         <div className="accordion mb-4">
           <div className="accordion-item border border-success">
@@ -191,56 +191,55 @@ export default function Dashboard() {
         </div>
       )}
 
-      {otherActiveGoals.length === 0 ? (
-        <p className="text-muted">No additional active goals.</p>
-      ) : (
+      {/* Weekly Goals */}
+      {otherActiveGoals.length > 0 && (
         <>
-        <h4 className="mb-3">Your Weekly Goals</h4>
-        <div className="accordion mb-5" id="goalsAccordion">
-          {otherActiveGoals.map((r, index) => (
-            <div className="accordion-item" key={r._id}>
-              <h2 className="accordion-header" id={`heading-${r._id}`}>
-                <div className="d-flex align-items-center w-100">
-                  <button
-                    className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
-                    type="button"
-                    onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
-                  >
-                    <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
-                      <strong>{r.date}</strong>: {r.content}
-                    </span>
-                  </button>
-                </div>
-              </h2>
-              <div
-                id={`collapse-${r._id}`}
-                className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
-              >
-                <div className="accordion-body">
-                  {(r.subTasks || []).map((task, idx) => (
-                    <div className="form-check mb-2" key={idx}>
-                      <input
-                        className="form-check-input me-2"
-                        type="checkbox"
-                        id={`task-${r._id}-${idx}`}
-                        checked={taskState[r._id]?.[idx] || false}
-                        onChange={() => toggleTask(r._id, idx)}
-                      />
-                      <label
-                        className={`form-check-label ${
-                          taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
-                        }`}
-                        htmlFor={`task-${r._id}-${idx}`}
-                      >
-                        {task.text}
-                      </label>
-                    </div>
-                  ))}
+          <h4 className="mb-3">Your Weekly Goals</h4>
+          <div className="accordion mb-5" id="goalsAccordion">
+            {otherActiveGoals.map((r, index) => (
+              <div className="accordion-item" key={r._id}>
+                <h2 className="accordion-header" id={`heading-${r._id}`}>
+                  <div className="d-flex align-items-center w-100">
+                    <button
+                      className={`accordion-button ${activeAccordion === index ? "" : "collapsed"}`}
+                      type="button"
+                      onClick={() => setActiveAccordion(activeAccordion === index ? null : index)}
+                    >
+                      <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
+                        <strong>{r.date}</strong>: {r.content}
+                      </span>
+                    </button>
+                  </div>
+                </h2>
+                <div
+                  id={`collapse-${r._id}`}
+                  className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
+                >
+                  <div className="accordion-body">
+                    {(r.subTasks || []).map((task, idx) => (
+                      <div className="form-check mb-2" key={idx}>
+                        <input
+                          className="form-check-input me-2"
+                          type="checkbox"
+                          id={`task-${r._id}-${idx}`}
+                          checked={taskState[r._id]?.[idx] || false}
+                          onChange={() => toggleTask(r._id, idx)}
+                        />
+                        <label
+                          className={`form-check-label ${
+                            taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                          }`}
+                          htmlFor={`task-${r._id}-${idx}`}
+                        >
+                          {task.text}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
         </>
       )}
 
@@ -257,8 +256,6 @@ export default function Dashboard() {
           </ul>
         </>
       )}
-
-
     </div>
   );
 }
