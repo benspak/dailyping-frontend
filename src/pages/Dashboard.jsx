@@ -173,6 +173,12 @@ export default function Dashboard() {
             <div className="accordion-body">
               {(todayGoal.subTasks || []).map((task, idx) => (
                 <div className="form-check mb-2" key={idx}>
+                  <input
+                    className="form-check-input me-2"
+                    type="checkbox"
+                    checked={taskState[todayGoal._id]?.[idx] || false}
+                    onChange={() => toggleTask(todayGoal._id, idx)}
+                  />
                   <label
                     className={`form-check-label ${
                       taskState[todayGoal._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
