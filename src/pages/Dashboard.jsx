@@ -14,7 +14,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
-    // Play sound on push from service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data?.action === "play-ping-sound") {
@@ -33,14 +32,16 @@ export default function Dashboard() {
 
         setResponses(res.data);
 
-       const updatedTaskState = {};
-       res.data.forEach((r) => {
-          updatedTaskState[r._id] = {};
+        const updatedTaskState = {};
+        res.data.forEach((r) => {
+          updatedTaskState[r._id] = {
+            goalCompleted: r.completed || false,
+          };
           r.subTasks?.forEach((t, i) => {
             updatedTaskState[r._id][i] = t.completed;
-         });
-       });
-      setTaskState(updatedTaskState);
+          });
+        });
+        setTaskState(updatedTaskState);
 
         await registerPush();
       } catch {
@@ -51,28 +52,44 @@ export default function Dashboard() {
     fetchData();
   }, [user]);
 
-const toggleTask = async (responseId, index) => {
-  const token = localStorage.getItem("token");
+  const toggleTask = async (responseId, index) => {
+    const token = localStorage.getItem("token");
+    const updated = {
+      ...taskState,
+      [responseId]: {
+        ...(taskState[responseId] || {}),
+        [index]: !taskState[responseId]?.[index],
+      },
+    };
+    setTaskState(updated);
 
-  const updated = {
-    ...taskState,
-    [responseId]: {
-      ...(taskState[responseId] || {}),
-      [index]: !taskState[responseId]?.[index],
-    },
+    try {
+      await axios.post(
+        "https://api.dailyping.org/api/response/toggle-subtask",
+        { responseId, index, completed: updated[responseId][index] },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (err) {
+      console.error("❌ Failed to update subtask:", err);
+    }
   };
-  setTaskState(updated);
 
-  try {
-    await axios.post(
-      "https://api.dailyping.org/api/response/toggle-subtask",
-      { responseId, index, completed: updated[responseId][index] },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  } catch (err) {
-    console.error("❌ Failed to update subtask:", err);
-  }
-};
+  const toggleGoalComplete = async (responseId, completed) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "https://api.dailyping.org/api/response/toggle-goal",
+        { responseId, completed },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setResponses((prev) =>
+        prev.map((r) => (r._id === responseId ? { ...r, completed } : r))
+      );
+    } catch (err) {
+      console.error("❌ Failed to toggle goal completion:", err);
+    }
+  };
 
   if (loading) {
     return (
@@ -90,28 +107,11 @@ const toggleTask = async (responseId, index) => {
     );
   }
 
-  const toggleGoalComplete = async (responseId, completed) => {
-  try {
-    const token = localStorage.getItem("token");
-    await axios.post(
-      "https://api.dailyping.org/api/response/toggle-goal",
-      { responseId, completed },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    setResponses(prev =>
-      prev.map(r => r._id === responseId ? { ...r, completed } : r)
-    );
-  } catch (err) {
-    console.error("❌ Failed to toggle goal completion:", err);
-  }
-};
-
   return (
     <div className="container py-5">
+      {/* Header Card */}
       <div className="card shadow-sm p-4 mb-4">
         <div className="row align-items-center">
-          {/* Avatar */}
           <div className="col-md-auto text-center mb-3 mb-md-0">
             <img
               src={`https://www.gravatar.com/avatar/${md5(user.email?.trim().toLowerCase())}?s=80&d=identicon`}
@@ -121,14 +121,10 @@ const toggleTask = async (responseId, index) => {
               height="80"
             />
           </div>
-
-          {/* Welcome Text + App Description */}
           <div className="col-md">
             <h5 className="fw-bold mb-1">Welcome, {user.email}</h5>
             <p className="text-muted mb-0">Track your goals, check off subtasks, and keep your streak alive.</p>
           </div>
-
-          {/* Streak + Pro Status */}
           <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
               <p className="mb-1 fw-bold text-muted">Current Streak</p>
@@ -136,8 +132,8 @@ const toggleTask = async (responseId, index) => {
             </div>
             <div>
               <p className="mb-1 fw-bold text-muted">Pro Status</p>
-              <span className={`badge fs-6 ${user.pro ? 'bg-primary' : 'bg-secondary'}`}>
-                {user.pro ? '✅ Active' : '❌ Not active'}
+              <span className={`badge fs-6 ${user.pro ? "bg-primary" : "bg-secondary"}`}>
+                {user.pro ? "✅ Active" : "❌ Not active"}
               </span>
             </div>
           </div>
@@ -168,7 +164,7 @@ const toggleTask = async (responseId, index) => {
         </div>
       )}
 
-      {/* Goals */}
+      {/* Goals Accordion */}
       <h4 className="mb-3">Your Past Goals</h4>
       {responses.length === 0 ? (
         <p className="text-muted">No responses yet.</p>
@@ -198,22 +194,21 @@ const toggleTask = async (responseId, index) => {
                 className={`accordion-collapse collapse ${activeAccordion === index ? "show" : ""}`}
               >
                 <div className="accordion-body">
-                  {(r.subTasks || []).map(
-                    (task, idx) =>
-                      task.text && (
-                        <div className="form-check mb-2" key={idx}>
-                          <input
-                            className="form-check-input me-2"
-                            type="checkbox"
-                            id={`task-${r._id}-${idx}`}
-                            checked={taskState[r._id]?.[idx] || false}
-                            onChange={() => toggleTask(r._id, idx)}
-                          />
-                          <label className="form-check-label" htmlFor={`task-${r._id}-${idx}`}>
-                            {task.text}
-                          </label>
-                        </div>
-                      )
+                  {(r.subTasks || []).map((task, idx) =>
+                    task.text ? (
+                      <div className="form-check mb-2" key={idx}>
+                        <input
+                          className="form-check-input me-2"
+                          type="checkbox"
+                          id={`task-${r._id}-${idx}`}
+                          checked={taskState[r._id]?.[idx] || false}
+                          onChange={() => toggleTask(r._id, idx)}
+                        />
+                        <label className="form-check-label" htmlFor={`task-${r._id}-${idx}`}>
+                          {task.text}
+                        </label>
+                      </div>
+                    ) : null
                   )}
                 </div>
               </div>
