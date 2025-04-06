@@ -83,7 +83,7 @@ export default function Dashboard() {
 
   const renderReminders = (reminders) =>
     Array.isArray(reminders) && reminders.length > 0 ? (
-      <ul className="text-muted small ps-3 mb-2">
+      <ul className="text-muted small ps-3 mb-2" style={{ listStyle: "none", paddingLeft: 0 }}>
         {reminders.map((r, i) => (
           <li key={i}><i className="bi bi-clock me-1"></i>{r}</li>
         ))}
@@ -162,8 +162,8 @@ export default function Dashboard() {
                 ) : (
                   todayGoal.content
                 )}
-                {renderReminders(todayGoal.reminders)}
               </h5>
+              {renderReminders(todayGoal.reminders)}
               {(todayGoal.subTasks || []).map((task, idx) => (
                 <div key={idx} className="mb-3">
                   <div className="form-check mb-1">
