@@ -37,7 +37,7 @@ function PrivateRoute({ children, proOnly = false }) {
 
 function App() {
   return (
-    <AuthProvider>
+
       <Router>
         <Navbar />
         <Routes>
@@ -73,7 +73,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
-    </AuthProvider>
+
   );
 }
 
