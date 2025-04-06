@@ -1,10 +1,11 @@
 // frontend/src/index.js
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom'; // ✅
 import App from './App';
-import { AuthProvider } from './context/AuthContext'; // ✅
+import { AuthProvider } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'; // ✅ This includes Popper.js
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
 
 if ('serviceWorker' in navigator) {
@@ -18,8 +19,10 @@ if ('serviceWorker' in navigator) {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <BrowserRouter> {/* ✅ Wrap everything in BrowserRouter */}
+      <AuthProvider>
+        <App />
+      </AuthProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
