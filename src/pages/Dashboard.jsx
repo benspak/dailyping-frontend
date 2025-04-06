@@ -155,6 +155,13 @@ export default function Dashboard() {
                   todayGoal.content
                 )}
               </h5>
+              {r.reminders?.length > 0 && (
+                <ul className="list-unstyled small text-muted mt-2">
+                  {r.reminders.map((reminder, i) => (
+                    <li key={i}><i className="bi bi-clock me-1" /> {reminder}</li>
+                  ))}
+                </ul>
+              )}
               {(todayGoal.subTasks || []).map((task, idx) => (
                 <div className="form-check mb-2" key={idx}>
                   <input
@@ -172,6 +179,13 @@ export default function Dashboard() {
                   </label>
                 </div>
               ))}
+              {task.reminders?.length > 0 && (
+                <ul className="list-unstyled small text-muted ms-4">
+                  {task.reminders.map((rTime, rIdx) => (
+                    <li key={rIdx}><i className="bi bi-clock me-1" /> {rTime}</li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
         </>
