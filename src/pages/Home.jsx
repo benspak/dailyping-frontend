@@ -57,7 +57,7 @@ export default function Home() {
           <div className="col-md-6 mb-4">
             <h3 className="h5 fw-semibold">Free Forever</h3>
             <ul className="list-unstyled">
-              <li>✔️ 1 daily ping (email)</li>
+              <li>✔️ 1 daily ping (email, push notification)</li>
               <li>✔️ Private dashboard</li>
               <li>✔️ Streak tracker</li>
               <li>✔️ Custom ping time</li>
@@ -68,7 +68,7 @@ export default function Home() {
           <div className="col-md-6 mb-4">
             <h3 className="h5 fw-semibold">Pro — $5/mo</h3>
             <ul className="list-unstyled">
-              <li>⭐ Gravatar Support</li>
+              <li>⭐ Coming soon</li>
             </ul>
           </div>
         </div>
