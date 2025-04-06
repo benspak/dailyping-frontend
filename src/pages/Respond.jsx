@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ReminderForm from '../components/ReminderForm';
+import { useAuth } from '../context/AuthContext';
 
 export default function Respond() {
   const [params] = useSearchParams();
@@ -18,7 +19,7 @@ export default function Respond() {
     { text: '', reminders: [] }
   ]);
   const [isEditing, setIsEditing] = useState(false);
-  const [isPro, setIsPro] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -33,8 +34,6 @@ export default function Respond() {
         const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
           headers: { Authorization: `Bearer ${res.data.token}` }
         });
-
-        setIsPro(res.data.pro || false);
 
         if (checkRes.data.alreadySubmitted) {
           setAlreadySubmitted(true);
@@ -78,25 +77,17 @@ export default function Respond() {
       .filter((task) => task.text.trim() !== '')
       .map((task) => ({
         text: task.text.trim(),
-        ...(isPro && { reminders: task.reminders || [] }) // ✅ only add reminders if Pro
-      }));
-
-    const payload = {
-      content: goal,
-      mode: 'goal',
-      subTasks: filteredSubTasks,
-    };
-
-    if (user?.pro) {
-      payload.reminders = goalReminders;
-      // Include reminders for sub-tasks too
-      payload.subTasks = filteredSubTasks.map((task) => ({
-        text: task.text,
         reminders: task.reminders || []
       }));
-    }
 
     try {
+      const payload = {
+        content: goal,
+        mode: 'goal',
+        reminders: goalReminders,
+        subTasks: filteredSubTasks
+      };
+
       if (alreadySubmitted && submittedGoalId) {
         await axios.put(`https://api.dailyping.org/api/response/${submittedGoalId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
@@ -111,7 +102,7 @@ export default function Respond() {
       setIsEditing(false);
     } catch (err) {
       console.error('❌ Submission error:', err.response?.data || err.message);
-      alert(err.response?.data?.error || 'Error submitting your goal.');
+      alert('Error submitting your goal.');
     }
   };
 
@@ -135,15 +126,25 @@ export default function Respond() {
                   <li key={idx}>
                     {task.text}
                     {Array.isArray(task.reminders) && task.reminders.length > 0 && (
-                      <ul className="small text-muted ms-3">
+                      <ul className="small text-muted ms-3 list-unstyled">
                         {task.reminders.map((r, i) => (
-                          <li key={i}>Reminder: {r}</li>
+                          <li key={i}>🔔 {r}</li>
                         ))}
                       </ul>
                     )}
                   </li>
                 ))}
               </ul>
+              {goalReminders.length > 0 && (
+                <div className="text-muted small mt-3 text-center">
+                  Goal reminders:
+                  <ul className="list-unstyled mb-0">
+                    {goalReminders.map((r, i) => (
+                      <li key={i}>🔔 {r}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <div className="text-center mt-3">
                 <button className="btn btn-outline-secondary" onClick={() => setIsEditing(true)}>
                   Edit
@@ -165,9 +166,7 @@ export default function Respond() {
 
               <div className="mb-4">
                 <label className="form-label fw-bold">Goal Reminders</label>
-                {isPro && (
-                  <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
-                )}
+                <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
               </div>
 
               <h6 className="text-muted">Optional sub-tasks:</h6>
