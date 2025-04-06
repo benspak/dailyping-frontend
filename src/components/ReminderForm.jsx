@@ -16,7 +16,7 @@ export default function ReminderForm({ reminders, setReminders }) {
 
   return (
     <div className="mb-3">
-      <label className="form-label">Reminders (time in HH:MM)</label>
+      <label className="form-label"></label>
       {reminders.map((r, i) => (
         <div key={i} className="d-flex mb-1">
           <input
