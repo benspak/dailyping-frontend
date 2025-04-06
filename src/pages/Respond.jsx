@@ -79,31 +79,21 @@ export default function Respond() {
       }));
 
     try {
+      const payload = {
+        content: goal,
+        mode: 'goal',
+        reminders: goalReminders,
+        subTasks: filteredSubTasks
+      };
+
       if (alreadySubmitted && submittedGoalId) {
-        await axios.put(
-          `https://api.dailyping.org/api/response/${submittedGoalId}`,
-          {
-            content: goal,
-            reminders: goalReminders,
-            subTasks: filteredSubTasks
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
+        await axios.put(`https://api.dailyping.org/api/response/${submittedGoalId}`, payload, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
       } else {
-        await axios.post(
-          `https://api.dailyping.org/api/response`,
-          {
-            content: goal,
-            mode: 'goal',
-            reminders: goalReminders,
-            subTasks: filteredSubTasks
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` }
-          }
-        );
+        await axios.post(`https://api.dailyping.org/api/response`, payload, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
       }
 
       setSubmitted(true);
