@@ -68,7 +68,7 @@ export default function Home() {
           <div className="col-md-6 mb-4">
             <h3 className="h5 fw-semibold">Pro — $5/mo</h3>
             <ul className="list-unstyled">
-              <li>⭐ Coming soon</li>
+              <li>⭐ Goal reminders (email, push notification)</li>
             </ul>
           </div>
         </div>

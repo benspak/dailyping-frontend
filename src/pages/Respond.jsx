@@ -18,6 +18,7 @@ export default function Respond() {
     { text: '', reminders: [] }
   ]);
   const [isEditing, setIsEditing] = useState(false);
+  const [isPro, setIsPro] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -32,6 +33,8 @@ export default function Respond() {
         const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
           headers: { Authorization: `Bearer ${res.data.token}` }
         });
+
+        setIsPro(res.data.pro || false);
 
         if (checkRes.data.alreadySubmitted) {
           setAlreadySubmitted(true);
@@ -75,17 +78,17 @@ export default function Respond() {
       .filter((task) => task.text.trim() !== '')
       .map((task) => ({
         text: task.text.trim(),
-        reminders: task.reminders || []
+        ...(isPro && { reminders: task.reminders || [] }) // ✅ only add reminders if Pro
       }));
 
-    try {
-      const payload = {
-        content: goal,
-        mode: 'goal',
-        reminders: goalReminders,
-        subTasks: filteredSubTasks
-      };
+    const payload = {
+      content: goal,
+      mode: 'goal',
+      subTasks: filteredSubTasks,
+      ...(isPro && { reminders: goalReminders }) // ✅ only for Pro users
+    };
 
+    try {
       if (alreadySubmitted && submittedGoalId) {
         await axios.put(`https://api.dailyping.org/api/response/${submittedGoalId}`, payload, {
           headers: { Authorization: `Bearer ${token}` }
@@ -100,7 +103,7 @@ export default function Respond() {
       setIsEditing(false);
     } catch (err) {
       console.error('❌ Submission error:', err.response?.data || err.message);
-      alert('Error submitting your goal.');
+      alert(err.response?.data?.error || 'Error submitting your goal.');
     }
   };
 
@@ -154,7 +157,9 @@ export default function Respond() {
 
               <div className="mb-4">
                 <label className="form-label fw-bold">Goal Reminders</label>
-                <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
+                {isPro && (
+                  <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
+                )}
               </div>
 
               <h6 className="text-muted">Optional sub-tasks:</h6>
