@@ -12,9 +12,10 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CalendarPage from './pages/CalendarPage';
 import Changelog from './pages/Changelog';
+import SetupUsername from './pages/SetupUsername';
 
 function PrivateRoute({ children, proOnly = false }) {
-  const { user, loading } = useAuth();
+  const { user, loading, usernameRequired } = useAuth();
 
   if (loading) {
     return (
@@ -26,6 +27,10 @@ function PrivateRoute({ children, proOnly = false }) {
 
   if (!user) {
     return <Navigate to="/login" />;
+  }
+
+  if (usernameRequired) {
+    return <Navigate to="/setup-username" />;
   }
 
   if (proOnly && !user.pro) {
@@ -69,6 +74,11 @@ function App() {
             </PrivateRoute>
           } />
           <Route path="/changelog" element={<Changelog />} />
+          <Route path="/setup-username" element={
+            <PrivateRoute>
+              <SetupUsername />
+            </PrivateRoute>
+          } />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>

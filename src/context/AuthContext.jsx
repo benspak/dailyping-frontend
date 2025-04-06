@@ -26,9 +26,6 @@ export function AuthProvider({ children }) {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
-        if (!res.data.username) {
-          window.location.href = '/setup-username';
-        }
       } catch (err) {
         console.error('❌ Failed to fetch /me:', err.message);
         localStorage.removeItem('token');
