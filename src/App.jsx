@@ -12,7 +12,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CalendarPage from './pages/CalendarPage';
 import Changelog from './pages/Changelog';
-import SetupUsername from './pages/SetupUsername';
+import SetUsername from './pages/SetUsername';
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading, usernameRequired } = useAuth();
@@ -76,7 +76,7 @@ function App() {
           <Route path="/changelog" element={<Changelog />} />
           <Route path="/setup-username" element={
             <PrivateRoute>
-              <SetupUsername />
+              <SetUsername />
             </PrivateRoute>
           } />
           <Route path="*" element={<Navigate to="/" />} />
