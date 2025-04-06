@@ -15,7 +15,7 @@ import Changelog from './pages/Changelog';
 import SetUsername from './pages/SetUsername';
 
 function PrivateRoute({ children, proOnly = false }) {
-  const { user, loading, usernameRequired } = useAuth();
+  const { user, loading, } = useAuth();
 
   if (loading) {
     return (
@@ -29,7 +29,7 @@ function PrivateRoute({ children, proOnly = false }) {
     return <Navigate to="/login" />;
   }
 
-  if (usernameRequired) {
+  if (!user.username) {
     return <Navigate to="/setup-username" />;
   }
 
