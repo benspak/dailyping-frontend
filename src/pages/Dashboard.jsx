@@ -162,8 +162,8 @@ export default function Dashboard() {
                 ) : (
                   todayGoal.content
                 )}
+                {renderReminders(todayGoal.reminders)}
               </h5>
-              {renderReminders(todayGoal.reminders)}
               {(todayGoal.subTasks || []).map((task, idx) => (
                 <div key={idx} className="mb-3">
                   <div className="form-check mb-1">
