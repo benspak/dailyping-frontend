@@ -37,8 +37,8 @@ function PrivateRoute({ children, proOnly = false }) {
 
 function App() {
   return (
-    <Router>
-      <AuthProvider>
+    <AuthProvider>
+      <Router>
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -72,8 +72,8 @@ function App() {
           <Route path="/changelog" element={<Changelog />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 
