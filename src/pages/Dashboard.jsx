@@ -25,6 +25,10 @@ export default function Dashboard() {
       });
     }
 
+    if (user && !user.username) {
+      navigate('/setup-username');
+    }
+
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -49,7 +53,7 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, [user]);
+  }, [user, navigate]);
 
   const toggleTask = async (responseId, index) => {
     const token = localStorage.getItem("token");

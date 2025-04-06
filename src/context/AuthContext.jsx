@@ -50,10 +50,8 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const usernameRequired = user && !user.username;
-
-  return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, logout, loading, usernameRequired }}>
+ return (
+    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
