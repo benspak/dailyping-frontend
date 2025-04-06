@@ -3,6 +3,7 @@ import axios from "axios";
 import { registerPush } from "../utils/registerPush";
 import { useAuth } from "../context/AuthContext";
 import md5 from "md5";
+import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -10,8 +11,8 @@ export default function Dashboard() {
   const [taskState, setTaskState] = useState({});
   const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
   const [activePastAccordion, setActivePastAccordion] = useState(null);
-
   const todayDate = new Date().toISOString().split("T")[0];
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
