@@ -85,8 +85,16 @@ export default function Respond() {
       content: goal,
       mode: 'goal',
       subTasks: filteredSubTasks,
-      ...(isPro && { reminders: goalReminders }) // ✅ only for Pro users
     };
+
+    if (user?.pro) {
+      payload.reminders = goalReminders;
+      // Include reminders for sub-tasks too
+      payload.subTasks = filteredSubTasks.map((task) => ({
+        text: task.text,
+        reminders: task.reminders || []
+      }));
+    }
 
     try {
       if (alreadySubmitted && submittedGoalId) {
