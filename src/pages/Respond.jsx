@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import ReminderForm from '../components/ReminderForm';
 
 export default function Respond() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const [tokenValid, setTokenValid] = useState(false);
   const [goal, setGoal] = useState('');
+  const [goalReminders, setGoalReminders] = useState([]);
   const [submittedGoalId, setSubmittedGoalId] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [alreadySubmitted, setAlreadySubmitted] = useState(false);
-  const [subTasks, setSubTasks] = useState(['', '', '']);
+  const [subTasks, setSubTasks] = useState([
+    { text: '', reminders: [] },
+    { text: '', reminders: [] },
+    { text: '', reminders: [] }
+  ]);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -31,11 +37,12 @@ export default function Respond() {
           setAlreadySubmitted(true);
           setGoal(checkRes.data.content || '');
           setSubmittedGoalId(checkRes.data._id || '');
+          setGoalReminders(checkRes.data.reminders || []);
 
           if (Array.isArray(checkRes.data.subTasks)) {
-            const taskTexts = checkRes.data.subTasks.map((t) => t.text || '');
-            const filled = [...taskTexts, '', '', ''].slice(0, 3);
-            setSubTasks(filled);
+            const padded = [...checkRes.data.subTasks];
+            while (padded.length < 3) padded.push({ text: '', reminders: [] });
+            setSubTasks(padded.slice(0, 3));
           }
         }
       } catch {
@@ -54,9 +61,9 @@ export default function Respond() {
     }
   }, [params, navigate]);
 
-  const handleSubTaskChange = (index, value) => {
+  const handleSubTaskTextChange = (index, value) => {
     const updated = [...subTasks];
-    updated[index] = value;
+    updated[index].text = value;
     setSubTasks(updated);
   };
 
@@ -65,9 +72,11 @@ export default function Respond() {
     const token = localStorage.getItem('token');
 
     const filteredSubTasks = subTasks
-      .map((text) => text.trim())
-      .filter((text) => text !== '')
-      .map((text) => ({ text }));
+      .filter((task) => task.text.trim() !== '')
+      .map((task) => ({
+        text: task.text.trim(),
+        reminders: task.reminders || []
+      }));
 
     try {
       if (alreadySubmitted && submittedGoalId) {
@@ -75,6 +84,7 @@ export default function Respond() {
           `https://api.dailyping.org/api/response/${submittedGoalId}`,
           {
             content: goal,
+            reminders: goalReminders,
             subTasks: filteredSubTasks
           },
           {
@@ -87,6 +97,7 @@ export default function Respond() {
           {
             content: goal,
             mode: 'goal',
+            reminders: goalReminders,
             subTasks: filteredSubTasks
           },
           {
@@ -98,7 +109,7 @@ export default function Respond() {
       setSubmitted(true);
       setIsEditing(false);
     } catch (err) {
-      console.error('Submission error:', err.response?.data || err.message);
+      console.error('❌ Submission error:', err.response?.data || err.message);
       alert('Error submitting your goal.');
     }
   };
@@ -119,9 +130,7 @@ export default function Respond() {
                 <p className="mb-0">{goal}</p>
               </blockquote>
               <ul className="mt-3">
-                {subTasks.map((text, idx) => (
-                  text && <li key={idx}>{text}</li>
-                ))}
+                {subTasks.map((task, idx) => task.text && <li key={idx}>{task.text}</li>)}
               </ul>
               <div className="text-center mt-3">
                 <button className="btn btn-outline-secondary" onClick={() => setIsEditing(true)}>
@@ -142,16 +151,30 @@ export default function Respond() {
                 />
               </div>
 
+              <div className="mb-4">
+                <label className="form-label fw-bold">Goal Reminders</label>
+                <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
+              </div>
+
               <h6 className="text-muted">Optional sub-tasks:</h6>
               {[0, 1, 2].map((i) => (
-                <input
-                  key={i}
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder={`Sub-task ${i + 1}`}
-                  value={subTasks[i]}
-                  onChange={(e) => handleSubTaskChange(i, e.target.value)}
-                />
+                <div key={i} className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder={`Sub-task ${i + 1}`}
+                    value={subTasks[i]?.text || ''}
+                    onChange={(e) => handleSubTaskTextChange(i, e.target.value)}
+                  />
+                  <ReminderForm
+                    reminders={subTasks[i]?.reminders || []}
+                    setReminders={(newReminders) => {
+                      const updated = [...subTasks];
+                      updated[i].reminders = newReminders;
+                      setSubTasks(updated);
+                    }}
+                  />
+                </div>
               ))}
 
               <button type="submit" className="btn btn-primary w-100 mt-3">
