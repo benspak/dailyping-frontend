@@ -13,8 +13,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import CalendarPage from './pages/CalendarPage';
 import Changelog from './pages/Changelog';
 
-
-// 🔐 A simple wrapper to protect routes
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
 
@@ -39,8 +37,8 @@ function PrivateRoute({ children, proOnly = false }) {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -66,14 +64,16 @@ function App() {
               <Settings />
             </PrivateRoute>
           } />
-          <Route path="/calendar" element={<PrivateRoute>
-            <CalendarPage />
-          </PrivateRoute>} />
+          <Route path="/calendar" element={
+            <PrivateRoute>
+              <CalendarPage />
+            </PrivateRoute>
+          } />
           <Route path="/changelog" element={<Changelog />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 

@@ -6,21 +6,33 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+  const [token, setToken] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token') || null;
+    }
+    return null;
+  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMe = async () => {
-      if (!token) return;
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       try {
         const res = await axios.get('https://api.dailyping.org/api/me', {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
-      } catch {
+      } catch (err) {
+        console.error('❌ Failed to fetch /me:', err.message);
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -32,8 +44,16 @@ export function AuthProvider({ children }) {
     setToken(newToken);
   };
 
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+  };
+
+  const usernameRequired = user && !user.username;
+
   return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken }}>
+    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, logout, loading, usernameRequired }}>
       {children}
     </AuthContext.Provider>
   );
