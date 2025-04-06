@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [taskState, setTaskState] = useState({});
   const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
   const [activePastAccordion, setActivePastAccordion] = useState(null);
+
   const todayDate = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
@@ -80,6 +81,15 @@ export default function Dashboard() {
     }
   };
 
+  const renderReminders = (reminders) =>
+    Array.isArray(reminders) && reminders.length > 0 ? (
+      <ul className="text-muted small ps-3 mb-2">
+        {reminders.map((r, i) => (
+          <li key={i}><i className="bi bi-clock me-1"></i>{r}</li>
+        ))}
+      </ul>
+    ) : null;
+
   if (loading) {
     return (
       <div className="container py-5 text-center">
@@ -103,8 +113,6 @@ export default function Dashboard() {
   const weekAgoISO = oneWeekAgo.toISOString().split("T")[0];
 
   const activeResponses = responses.filter((r) => !r.completed);
-  const completedResponses = responses.filter((r) => r.completed);
-
   const todayGoal = activeResponses.find((r) => r.date === todayISO);
   const weeklyGoals = activeResponses.filter((r) => r.date > weekAgoISO && r.date < todayISO);
   const olderGoals = activeResponses.filter((r) => r.date <= weekAgoISO);
@@ -155,37 +163,27 @@ export default function Dashboard() {
                   todayGoal.content
                 )}
               </h5>
-              {r.reminders?.length > 0 && (
-                <ul className="list-unstyled small text-muted mt-2">
-                  {r.reminders.map((reminder, i) => (
-                    <li key={i}><i className="bi bi-clock me-1" /> {reminder}</li>
-                  ))}
-                </ul>
-              )}
+              {renderReminders(todayGoal.reminders)}
               {(todayGoal.subTasks || []).map((task, idx) => (
-                <div className="form-check mb-2" key={idx}>
-                  <input
-                    className="form-check-input me-2"
-                    type="checkbox"
-                    checked={taskState[todayGoal._id]?.[idx] || false}
-                    onChange={() => toggleTask(todayGoal._id, idx)}
-                  />
-                  <label
-                    className={`form-check-label ${
-                      taskState[todayGoal._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
-                    }`}
-                  >
-                    {task.text}
-                  </label>
+                <div key={idx} className="mb-3">
+                  <div className="form-check mb-1">
+                    <input
+                      className="form-check-input me-2"
+                      type="checkbox"
+                      checked={taskState[todayGoal._id]?.[idx] || false}
+                      onChange={() => toggleTask(todayGoal._id, idx)}
+                    />
+                    <label
+                      className={`form-check-label ${
+                        taskState[todayGoal._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                      }`}
+                    >
+                      {task.text}
+                    </label>
+                  </div>
+                  {renderReminders(task.reminders)}
                 </div>
               ))}
-              {task.reminders?.length > 0 && (
-                <ul className="list-unstyled small text-muted ms-4">
-                  {task.reminders.map((rTime, rIdx) => (
-                    <li key={rIdx}><i className="bi bi-clock me-1" /> {rTime}</li>
-                  ))}
-                </ul>
-              )}
             </div>
           </div>
         </>
@@ -202,9 +200,7 @@ export default function Dashboard() {
                   <button
                     className={`accordion-button ${activeWeeklyAccordion === index ? "" : "collapsed"}`}
                     type="button"
-                    onClick={() =>
-                      setActiveWeeklyAccordion(activeWeeklyAccordion === index ? null : index)
-                    }
+                    onClick={() => setActiveWeeklyAccordion(activeWeeklyAccordion === index ? null : index)}
                   >
                     <strong>{r.date}</strong>: {r.content}
                   </button>
@@ -214,23 +210,27 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activeWeeklyAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
+                    {renderReminders(r.reminders)}
                     {(r.subTasks || []).map((task, idx) => (
-                      <div className="form-check mb-2" key={idx}>
-                        <input
-                          className="form-check-input me-2"
-                          type="checkbox"
-                          checked={taskState[r._id]?.[idx] || false}
-                          onChange={() => toggleTask(r._id, idx)}
-                          id={`task-${r._id}-${idx}`}
-                        />
-                        <label
-                          className={`form-check-label ${
-                            taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
-                          }`}
-                          htmlFor={`task-${r._id}-${idx}`}
-                        >
-                          {task.text}
-                        </label>
+                      <div key={idx} className="mb-3">
+                        <div className="form-check mb-1">
+                          <input
+                            className="form-check-input me-2"
+                            type="checkbox"
+                            checked={taskState[r._id]?.[idx] || false}
+                            onChange={() => toggleTask(r._id, idx)}
+                            id={`task-${r._id}-${idx}`}
+                          />
+                          <label
+                            className={`form-check-label ${
+                              taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                            }`}
+                            htmlFor={`task-${r._id}-${idx}`}
+                          >
+                            {task.text}
+                          </label>
+                        </div>
+                        {renderReminders(task.reminders)}
                       </div>
                     ))}
                   </div>
@@ -241,7 +241,7 @@ export default function Dashboard() {
         </>
       )}
 
-      {/* Older Goals */}
+      {/* Past Goals */}
       {olderGoals.length > 0 && (
         <>
           <h4 className="mb-3">Your Past Goals</h4>
@@ -252,9 +252,7 @@ export default function Dashboard() {
                   <button
                     className={`accordion-button ${activePastAccordion === index ? "" : "collapsed"}`}
                     type="button"
-                    onClick={() =>
-                      setActivePastAccordion(activePastAccordion === index ? null : index)
-                    }
+                    onClick={() => setActivePastAccordion(activePastAccordion === index ? null : index)}
                   >
                     <strong>{r.date}</strong>: {r.content}
                   </button>
@@ -264,23 +262,27 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activePastAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
+                    {renderReminders(r.reminders)}
                     {(r.subTasks || []).map((task, idx) => (
-                      <div className="form-check mb-2" key={idx}>
-                        <input
-                          className="form-check-input me-2"
-                          type="checkbox"
-                          checked={taskState[r._id]?.[idx] || false}
-                          onChange={() => toggleTask(r._id, idx)}
-                          id={`task-${r._id}-${idx}`}
-                        />
-                        <label
-                          className={`form-check-label ${
-                            taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
-                          }`}
-                          htmlFor={`task-${r._id}-${idx}`}
-                        >
-                          {task.text}
-                        </label>
+                      <div key={idx} className="mb-3">
+                        <div className="form-check mb-1">
+                          <input
+                            className="form-check-input me-2"
+                            type="checkbox"
+                            checked={taskState[r._id]?.[idx] || false}
+                            onChange={() => toggleTask(r._id, idx)}
+                            id={`task-${r._id}-${idx}`}
+                          />
+                          <label
+                            className={`form-check-label ${
+                              taskState[r._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                            }`}
+                            htmlFor={`task-${r._id}-${idx}`}
+                          >
+                            {task.text}
+                          </label>
+                        </div>
+                        {renderReminders(task.reminders)}
                       </div>
                     ))}
                   </div>
