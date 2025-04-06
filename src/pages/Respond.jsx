@@ -5,6 +5,7 @@ import ReminderForm from '../components/ReminderForm';
 import { useAuth } from '../context/AuthContext';
 
 export default function Respond() {
+  const { user } = useAuth();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const [tokenValid, setTokenValid] = useState(false);
@@ -19,7 +20,6 @@ export default function Respond() {
     { text: '', reminders: [] }
   ]);
   const [isEditing, setIsEditing] = useState(false);
-  const { user } = useAuth();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -77,14 +77,14 @@ export default function Respond() {
       .filter((task) => task.text.trim() !== '')
       .map((task) => ({
         text: task.text.trim(),
-        reminders: task.reminders || []
+        reminders: user?.pro ? (task.reminders || []) : []
       }));
 
     try {
       const payload = {
         content: goal,
         mode: 'goal',
-        reminders: goalReminders,
+        reminders: user?.pro ? goalReminders : [],
         subTasks: filteredSubTasks
       };
 
@@ -126,25 +126,15 @@ export default function Respond() {
                   <li key={idx}>
                     {task.text}
                     {Array.isArray(task.reminders) && task.reminders.length > 0 && (
-                      <ul className="small text-muted ms-3 list-unstyled">
+                      <ul className="small text-muted ms-3" style={{ listStyle: 'none', paddingLeft: 0 }}>
                         {task.reminders.map((r, i) => (
-                          <li key={i}>🔔 {r}</li>
+                          <li key={i}>⏰ {r}</li>
                         ))}
                       </ul>
                     )}
                   </li>
                 ))}
               </ul>
-              {goalReminders.length > 0 && (
-                <div className="text-muted small mt-3 text-center">
-                  Goal reminders:
-                  <ul className="list-unstyled mb-0">
-                    {goalReminders.map((r, i) => (
-                      <li key={i}>🔔 {r}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
               <div className="text-center mt-3">
                 <button className="btn btn-outline-secondary" onClick={() => setIsEditing(true)}>
                   Edit
@@ -164,10 +154,14 @@ export default function Respond() {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="form-label fw-bold">Goal Reminders</label>
-                <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
-              </div>
+              {user?.pro ? (
+                <div className="mb-4">
+                  <label className="form-label fw-bold">Goal Reminders</label>
+                  <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
+                </div>
+              ) : (
+                <div className="alert alert-info text-center">Upgrade to Pro to schedule reminders ⏰</div>
+              )}
 
               <h6 className="text-muted">Optional sub-tasks:</h6>
               {[0, 1, 2].map((i) => (
@@ -179,14 +173,16 @@ export default function Respond() {
                     value={subTasks[i]?.text || ''}
                     onChange={(e) => handleSubTaskTextChange(i, e.target.value)}
                   />
-                  <ReminderForm
-                    reminders={subTasks[i]?.reminders || []}
-                    setReminders={(newReminders) => {
-                      const updated = [...subTasks];
-                      updated[i].reminders = newReminders;
-                      setSubTasks(updated);
-                    }}
-                  />
+                  {user?.pro && (
+                    <ReminderForm
+                      reminders={subTasks[i]?.reminders || []}
+                      setReminders={(newReminders) => {
+                        const updated = [...subTasks];
+                        updated[i].reminders = newReminders;
+                        setSubTasks(updated);
+                      }}
+                    />
+                  )}
                 </div>
               ))}
 
