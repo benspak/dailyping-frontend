@@ -15,6 +15,8 @@ export default function SetUsername() {
       await axios.post('https://api.dailyping.org/api/set-username', { username }, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
+      // ✅ Redirect to dashboard after success
       navigate('/dashboard');
     } catch (err) {
       setStatus(err.response?.data?.error || '❌ Error saving username');
