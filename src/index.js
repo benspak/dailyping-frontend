@@ -19,10 +19,10 @@ if ('serviceWorker' in navigator) {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <BrowserRouter> {/* ✅ Wrap everything in BrowserRouter */}
+    <BrowserRouter>
+      <AuthProvider>
         <App />
-      </BrowserRouter>
-     </AuthProvider>
+      </AuthProvider>
+     </BrowserRouter>
   </React.StrictMode>
 );

@@ -29,10 +29,6 @@ function PrivateRoute({ children, proOnly = false }) {
     return <Navigate to="/login" />;
   }
 
-  if (!user.username) {
-    return <Navigate to="/setup-username" />;
-  }
-
   if (proOnly && !user.pro) {
     return <Navigate to="/dashboard" />;
   }
@@ -42,7 +38,7 @@ function PrivateRoute({ children, proOnly = false }) {
 
 function App() {
   return (
-      <Router>
+      <>
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -81,7 +77,7 @@ function App() {
           } />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-      </Router>
+      </>
   );
 }
 
