@@ -22,18 +22,18 @@ export default function Respond() {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const urlToken = params.get('token');
+    const tokenFromStorage = localStorage.getItem('token');
+    const tokenFromUrl = params.get('token');
 
-    const verifyToken = async (tokenToVerify) => {
+    const verifyAndLoad = async (tokenToUse) => {
       try {
-        const res = await axios.post(`https://api.dailyping.org/auth/verify`, { token: tokenToVerify });
-        localStorage.setItem('token', res.data.token);
-        setTokenValid(true);
-
+        // Try using token directly
         const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
-          headers: { Authorization: `Bearer ${res.data.token}` }
+          headers: { Authorization: `Bearer ${tokenToUse}` }
         });
+
+        setTokenValid(true);
+        localStorage.setItem('token', tokenToUse);
 
         if (checkRes.data.alreadySubmitted) {
           setAlreadySubmitted(true);
@@ -41,26 +41,23 @@ export default function Respond() {
           setSubmittedGoalId(checkRes.data._id || '');
           setGoalReminders(checkRes.data.reminders || []);
 
-          if (Array.isArray(checkRes.data.subTasks)) {
-            const padded = [...checkRes.data.subTasks];
-            while (padded.length < 3) padded.push({ text: '', reminders: [] });
-            setSubTasks(padded.slice(0, 3));
-          }
+          const padded = Array.isArray(checkRes.data.subTasks) ? [...checkRes.data.subTasks] : [];
+          while (padded.length < 3) padded.push({ text: '', reminders: [] });
+          setSubTasks(padded.slice(0, 3));
         }
-      } catch {
-        alert('Login link is invalid or expired.');
-        navigate('/');
+      } catch (err) {
+        console.warn('⚠️ Token invalid or expired:', err.message);
+        return false;
       }
     };
 
-    if (token) {
-      verifyToken(token);
-    } else if (urlToken) {
-      verifyToken(urlToken);
-    } else {
-      alert('No token found. Please log in again.');
+    (async () => {
+      if (tokenFromStorage && await verifyAndLoad(tokenFromStorage)) return;
+      if (tokenFromUrl && await verifyAndLoad(tokenFromUrl)) return;
+
+      alert('Login link is invalid or expired.');
       navigate('/');
-    }
+    })();
   }, [params, navigate]);
 
   const handleSubTaskTextChange = (index, value) => {
