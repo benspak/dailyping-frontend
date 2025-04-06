@@ -120,7 +120,18 @@ export default function Respond() {
                 <p className="mb-0">{goal}</p>
               </blockquote>
               <ul className="mt-3">
-                {subTasks.map((task, idx) => task.text && <li key={idx}>{task.text}</li>)}
+                {subTasks.map((task, idx) => task.text && (
+                  <li key={idx}>
+                    {task.text}
+                    {Array.isArray(task.reminders) && task.reminders.length > 0 && (
+                      <ul className="small text-muted ms-3">
+                        {task.reminders.map((r, i) => (
+                          <li key={i}>Reminder: {r}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
               </ul>
               <div className="text-center mt-3">
                 <button className="btn btn-outline-secondary" onClick={() => setIsEditing(true)}>
