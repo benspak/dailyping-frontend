@@ -159,7 +159,27 @@ export default function Respond() {
                   <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
                 </div>
               ) : (
-                <div className="alert alert-info text-center">Upgrade to Pro to schedule reminders ⏰</div>
+                <div className="alert alert-info text-center">
+                  <button
+                    className="btn btn-link p-0 text-decoration-none"
+                    onClick={async () => {
+                      const token = localStorage.getItem('token');
+                      try {
+                        const res = await axios.post(
+                          'https://api.dailyping.org/billing/create-checkout-session',
+                          {},
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        );
+                        window.location.href = res.data.url;
+                      } catch (err) {
+                        console.error('❌ Stripe checkout error:', err.message);
+                        alert('Failed to initiate checkout.');
+                      }
+                    }}
+                  >
+                    Upgrade to Pro to schedule reminders ⏰
+                  </button>
+                </div>
               )}
 
               <h6 className="text-muted">Optional sub-tasks:</h6>
