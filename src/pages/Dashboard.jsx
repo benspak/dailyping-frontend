@@ -137,7 +137,7 @@ export default function Dashboard() {
             />
           </div>
           <div className="col-md">
-            <h5 className="fw-bold mb-1">Welcome, {user.email}</h5>
+            <h5 className="fw-bold mb-1">Welcome, {user.username}</h5>
             <p className="text-muted mb-0">Track your goals, check off subtasks, and keep your streak alive.</p>
           </div>
           <div className="col-md-auto text-center mt-3 mt-md-0">
