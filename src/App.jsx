@@ -13,6 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import CalendarPage from './pages/CalendarPage';
 import Changelog from './pages/Changelog';
 import SetUsername from './pages/SetUsername';
+import PublicGoal from './pages/PublicGoal';
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading, } = useAuth();
@@ -44,6 +45,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/verify" element={<Verify />} />
+          <Route path="/user/:username/:date" element={<PublicGoal />} />
           <Route path="/respond" element={
             <PrivateRoute>
               <Respond />
