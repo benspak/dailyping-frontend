@@ -27,7 +27,6 @@ export default function Respond() {
 
     const verifyAndLoad = async (tokenToUse) => {
       try {
-        // Try using token directly
         const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
           headers: { Authorization: `Bearer ${tokenToUse}` }
         });
@@ -45,6 +44,8 @@ export default function Respond() {
           while (padded.length < 3) padded.push({ text: '', reminders: [] });
           setSubTasks(padded.slice(0, 3));
         }
+
+        return true; // ✅ this was missing
       } catch (err) {
         console.warn('⚠️ Token invalid or expired:', err.message);
         return false;
@@ -69,6 +70,7 @@ export default function Respond() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
+    const urlToken = params.get('token');
 
     const filteredSubTasks = subTasks
       .filter((task) => task.text.trim() !== '')
