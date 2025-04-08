@@ -24,7 +24,7 @@ export default function Dashboard() {
 
     // Pro status check
     if(user) {
-      refresh();
+      refresh;
     }
 
     const fetchData = async () => {
