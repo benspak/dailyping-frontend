@@ -5,7 +5,7 @@ import ReminderForm from '../components/ReminderForm';
 import { useAuth } from '../context/AuthContext';
 
 export default function Respond() {
-  const { user } = useAuth();
+  const { user, refresh } = useAuth();
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const [tokenValid, setTokenValid] = useState(false);
@@ -170,6 +170,7 @@ export default function Respond() {
                           {},
                           { headers: { Authorization: `Bearer ${token}` } }
                         )
+                        refresh();
                         window.location.href = res.data.url;
                       } catch (err) {
                         console.error('❌ Stripe checkout error:', err.message);

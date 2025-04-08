@@ -50,8 +50,20 @@ export function AuthProvider({ children }) {
     setToken(null);
   };
 
+  const refresh = async () => {
+  if (!token) return;
+  try {
+    const res = await axios.get('https://api.dailyping.org/api/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setUser(res.data);
+  } catch (err) {
+    console.error('❌ Failed to refresh /me:', err.message);
+  }
+};
+
 return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, logout, loading }}>
+    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, logout, loading, refresh }}>
       {children}
     </AuthContext.Provider>
   );

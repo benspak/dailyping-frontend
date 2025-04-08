@@ -6,7 +6,7 @@ import md5 from "md5";
 import { useNavigate } from 'react-router-dom';
 
 export default function Dashboard() {
-  const { user, loading } = useAuth();
+  const { user, loading, refresh } = useAuth();
   const [responses, setResponses] = useState([]);
   const [taskState, setTaskState] = useState({});
   const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
@@ -31,11 +31,9 @@ export default function Dashboard() {
       navigate('/setup-username');
     }
 
-    if (user) {
-      const res = axios.get('https://api.dailyping.org/api/me', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      setUser(res.data);
+    // Pro status check
+    if(user) {
+      refresh();
     }
 
     const fetchData = async () => {
