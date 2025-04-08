@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ReminderForm from '../components/ReminderForm';
 import { useAuth } from '../context/AuthContext';
+const { userRefresh } = useAuth();
 
 export default function Respond() {
   const { user } = useAuth();
@@ -57,7 +58,7 @@ export default function Respond() {
       if (tokenFromUrl && await verifyAndLoad(tokenFromUrl)) return;
 
       alert('Login link is invalid or expired.');
-      navigate('/');
+      navigate('/login');
     })();
   }, [params, navigate]);
 
@@ -169,6 +170,9 @@ export default function Respond() {
                           'https://api.dailyping.org/billing/create-checkout-session',
                           {},
                           { headers: { Authorization: `Bearer ${token}` } }
+                        )
+                        .then(
+                          await userRefresh()
                         );
                         window.location.href = res.data.url;
                       } catch (err) {
