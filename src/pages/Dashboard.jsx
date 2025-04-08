@@ -60,7 +60,7 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, [user, navigate]);
+  }, [user, refresh, navigate]);
 
   const toggleTask = async (responseId, index) => {
     const token = localStorage.getItem("token");

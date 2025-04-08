@@ -51,15 +51,15 @@ export function AuthProvider({ children }) {
   };
 
   const refresh = async () => {
-  if (!token) return;
-  try {
-    const res = await axios.get('https://api.dailyping.org/api/me', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setUser(res.data);
-  } catch (err) {
-    console.error('❌ Failed to refresh /me:', err.message);
-  }
+    if (!token) return;
+    try {
+      const res = await axios.get('https://api.dailyping.org/api/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(res.data);
+    } catch (err) {
+      console.error('❌ Failed to refresh /me:', err.message);
+    }
 };
 
 return (
