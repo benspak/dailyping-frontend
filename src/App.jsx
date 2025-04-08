@@ -31,7 +31,7 @@ function PrivateRoute({ children, proOnly = false }) {
   }
 
   if (user) {
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/" />;
   }
 
   return children;
