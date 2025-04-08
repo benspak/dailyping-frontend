@@ -42,6 +42,17 @@ self.addEventListener('notificationclick', event => {
   );
 });
 
+self.addEventListener("push", function (event) {
+  // Example: send a message to all open clients (tabs)
+  event.waitUntil(
+    self.clients.matchAll({ type: "window" }).then((clients) => {
+      clients.forEach((client) => {
+        client.postMessage({ action: "play-ping-sound" });
+      });
+    })
+  );
+});
+
 
 // Optional: Handle notification click event
 self.addEventListener('notificationclick', event => {
