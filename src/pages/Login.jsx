@@ -10,6 +10,17 @@ export default function Login() {
   const { user } = useAuth();
 
   useEffect(() => {
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then(reg => {
+        console.log('📦 Service worker registered');
+      })
+      .catch(err => {
+        console.error('❌ Service worker registration failed:', err);
+      });
+    }
+    
     if (user) {
       navigate('/dashboard');
     }
