@@ -8,13 +8,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import './index.css';
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(() => {
-      console.log('📦 PWA Service Worker registered');
-    });
-  });
-}
+useEffect(() => {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then(reg => {
+        console.log('📦 Service worker registered');
+      })
+      .catch(err => {
+        console.error('❌ Service worker registration failed:', err);
+      });
+  }
+}, []); // <- very important: empty array to prevent multiple registrations
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

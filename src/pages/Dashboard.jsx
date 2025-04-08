@@ -128,18 +128,6 @@ export default function Dashboard() {
   const weeklyGoals = activeResponses.filter((r) => r.date > weekAgoISO && r.date < todayISO);
   const olderGoals = activeResponses.filter((r) => r.date <= weekAgoISO);
 
-  // Play tone on dashboard load
-  self.addEventListener("push", function (event) {
-	// Example: send a message to all open clients (tabs)
-	event.waitUntil(
-		self.clients.matchAll({ type: "window" }).then((clients) => {
-			clients.forEach((client) => {
-				client.postMessage({ action: "play-ping-sound" });
-			});
-		})
-	);
-});
-
   return (
     <div className="container py-5">
       {/* Header */}
