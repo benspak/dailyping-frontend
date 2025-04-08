@@ -26,6 +26,7 @@ export default function Dashboard() {
       });
     }
 
+    // Redirect if username needs to be set.
     if (user && !user.username) {
       navigate('/setup-username');
     }
@@ -36,6 +37,10 @@ export default function Dashboard() {
         const res = await axios.get("https://api.dailyping.org/api/responses/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        // Update pro status
+        const pro = await axios.get("https://api.dailyping.org/api/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
 
         const updatedState = {};
         res.data.forEach((r) => {
