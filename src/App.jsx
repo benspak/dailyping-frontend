@@ -16,7 +16,7 @@ import SetUsername from './pages/SetUsername';
 import PublicGoal from './pages/PublicGoal';
 
 function PrivateRoute({ children, proOnly = false }) {
-  const { user, loading, } = useAuth();
+  const { user, loading, userRefresh } = useAuth();
 
   if (loading) {
     return (
@@ -30,7 +30,7 @@ function PrivateRoute({ children, proOnly = false }) {
     return <Navigate to="/login" />;
   }
 
-  if (proOnly && !user.pro) {
+  if (user) {
     return <Navigate to="/dashboard" />;
   }
 
