@@ -1,4 +1,6 @@
-// Handle push event
+// sw.js
+
+// Handle push: just show notification (no autoplay here)
 self.addEventListener('push', event => {
   let data = { title: 'DailyPing', body: 'You have a new ping!' };
 
@@ -18,33 +20,26 @@ self.addEventListener('push', event => {
   };
 
   event.waitUntil(
-    (async () => {
-      // Show notification
-      await self.registration.showNotification(data.title, options);
-
-      // Also send message to all clients (to trigger sound)
-      const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-      clientList.forEach(client => {
-        client.postMessage({ action: 'play-ping-sound' });
-      });
-    })()
+    self.registration.showNotification(data.title, options)
   );
 });
 
 // Handle notification click
 self.addEventListener('notificationclick', event => {
-  console.log('🔗 Notification click received.');
   event.notification.close();
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
       for (const client of windowClients) {
         if (client.url.includes('/dashboard') && 'focus' in client) {
+          // Send message to play sound if dashboard is already open
           client.postMessage({ action: 'play-ping-sound' });
           return client.focus();
         }
       }
-      return self.clients.openWindow('/dashboard');
+
+      // Otherwise open new tab and let frontend play sound on load
+      return self.clients.openWindow('/dashboard?ping=1');
     })
   );
 });

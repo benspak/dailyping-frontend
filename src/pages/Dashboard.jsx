@@ -17,13 +17,29 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) return;
 
+    // In Dashboard.jsx or useEffect in a root-level component
+
+
+    // Listen for message from service worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data?.action === "play-ping-sound") {
           const audio = new Audio("/Done.mp3");
-          audio.play().catch((err) => console.warn("Unable to autoplay sound:", err));
+          audio.play().catch((err) => console.warn("🔇 Unable to autoplay sound:", err));
         }
       });
+    }
+
+    // Also play sound if opened via ?ping=1
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('ping') === '1') {
+      const audio = new Audio("/Done.mp3");
+      audio.play().catch((err) => console.warn("🔇 Autoplay blocked:", err));
+
+      // Clean URL without reload
+      const url = new URL(window.location);
+      url.searchParams.delete('ping');
+      window.history.replaceState({}, document.title, url.pathname);
     }
 
     // Redirect if username needs to be set.
