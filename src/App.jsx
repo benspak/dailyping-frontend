@@ -30,10 +30,6 @@ function PrivateRoute({ children, proOnly = false }) {
     return <Navigate to="/login" />;
   }
 
-  if (user) {
-    return <Navigate to="/" />;
-  }
-
   return children;
 }
 
