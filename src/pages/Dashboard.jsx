@@ -32,7 +32,10 @@ export default function Dashboard() {
     }
 
     if (user) {
-      user.fetchMe();
+      const res = axios.get('https://api.dailyping.org/api/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      setUser(res.data);
     }
 
     const fetchData = async () => {
