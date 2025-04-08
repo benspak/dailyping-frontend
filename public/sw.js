@@ -1,4 +1,4 @@
-// sw.js
+// Handle push event
 self.addEventListener('push', event => {
   let data = { title: 'DailyPing', body: 'You have a new ping!' };
 
@@ -18,49 +18,33 @@ self.addEventListener('push', event => {
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title, options)
+    (async () => {
+      // Show notification
+      await self.registration.showNotification(data.title, options);
+
+      // Also send message to all clients (to trigger sound)
+      const clientList = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      clientList.forEach(client => {
+        client.postMessage({ action: 'play-ping-sound' });
+      });
+    })()
   );
 });
 
-// Optional: open dashboard and play sound
+// Handle notification click
 self.addEventListener('notificationclick', event => {
+  console.log('🔗 Notification click received.');
   event.notification.close();
 
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
       for (const client of windowClients) {
-        // Focus the tab if it's already open
         if (client.url.includes('/dashboard') && 'focus' in client) {
           client.postMessage({ action: 'play-ping-sound' });
           return client.focus();
         }
       }
-
-      // Otherwise open a new tab
-      return clients.openWindow('/dashboard');
+      return self.clients.openWindow('/dashboard');
     })
-  );
-});
-
-self.addEventListener("push", function (event) {
-  // Example: send a message to all open clients (tabs)
-  event.waitUntil(
-    self.clients.matchAll({ type: "window" }).then((clients) => {
-      clients.forEach((client) => {
-        client.postMessage({ action: "play-ping-sound" });
-      });
-    })
-  );
-});
-
-
-// Optional: Handle notification click event
-self.addEventListener('notificationclick', event => {
-  console.log('🔗 Notification click received.');
-
-  event.notification.close();
-
-  event.waitUntil(
-    clients.openWindow('https://dailyping.org/dashboard')
   );
 });
