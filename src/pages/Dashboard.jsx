@@ -31,6 +31,10 @@ export default function Dashboard() {
       navigate('/setup-username');
     }
 
+    if (user) {
+      user.fetchMe();
+    }
+
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
