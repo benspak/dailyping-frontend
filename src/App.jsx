@@ -16,7 +16,7 @@ import SetUsername from './pages/SetUsername';
 import PublicGoal from './pages/PublicGoal';
 
 function PrivateRoute({ children, proOnly = false }) {
-  const { user, loading, userRefresh } = useAuth();
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (

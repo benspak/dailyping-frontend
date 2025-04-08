@@ -3,7 +3,6 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ReminderForm from '../components/ReminderForm';
 import { useAuth } from '../context/AuthContext';
-const { userRefresh } = useAuth();
 
 export default function Respond() {
   const { user } = useAuth();
@@ -171,9 +170,6 @@ export default function Respond() {
                           {},
                           { headers: { Authorization: `Bearer ${token}` } }
                         )
-                        .then(
-                          await userRefresh()
-                        );
                         window.location.href = res.data.url;
                       } catch (err) {
                         console.error('❌ Stripe checkout error:', err.message);
