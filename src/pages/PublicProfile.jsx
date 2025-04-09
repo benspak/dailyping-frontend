@@ -21,7 +21,7 @@ export default function PublicProfile() {
     fetchProfile();
   }, [username]);
 
-  if (!profile) return <div className="container py-5 text-center">Loading...</div>;
+  if (!profile) return <div className="container py-5 text-center">Could not find that user ...</div>;
 
   return (
     <div className="container py-5">

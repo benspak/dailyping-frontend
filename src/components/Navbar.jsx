@@ -52,9 +52,6 @@ export default function Navbar() {
                   <Link className="nav-link" to="/changelog" onClick={() => setExpanded(false)}>Changelog</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/profile" onClick={() => setExpanded(false)}>Profile</Link>
-                </li>
-                <li className="nav-item">
                   <button onClick={handleLogout} className="btn btn-outline-secondary btn-sm">
                     Logout
                   </button>
