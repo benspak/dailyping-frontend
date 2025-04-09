@@ -23,6 +23,8 @@ export default function PublicProfile() {
 
   if (!profile) return <div className="container py-5 text-center">Could not find that user ...</div>;
 
+  console.log(profile);
+
   return (
     <div className="container py-5">
       <div className="card shadow-sm p-4 mb-4">
