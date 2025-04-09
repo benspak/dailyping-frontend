@@ -14,6 +14,7 @@ import CalendarPage from './pages/CalendarPage';
 import Changelog from './pages/Changelog';
 import SetUsername from './pages/SetUsername';
 import PublicGoal from './pages/PublicGoal';
+import PublicProfile from './pages/PublicProfile';
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
@@ -73,6 +74,7 @@ function App() {
               <SetUsername />
             </PrivateRoute>
           } />
+          <Route path="/profile" element={<PublicProfile />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </>
