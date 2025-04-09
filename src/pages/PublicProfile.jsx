@@ -29,7 +29,7 @@ export default function PublicProfile() {
         <div className="row align-items-center">
           <div className="col-md-auto text-center mb-3 mb-md-0">
             <img
-              src={`https://www.gravatar.com/avatar/${md5(profile.email.trim().toLowerCase())}?s=80&d=identicon`}
+              src={``}
               alt="User Avatar"
               className="rounded-circle"
               width="80"
