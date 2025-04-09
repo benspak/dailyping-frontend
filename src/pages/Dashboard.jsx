@@ -180,6 +180,7 @@ export default function Dashboard() {
                   todayGoal.content
                 )}
               </h5>
+              {todayGoal.notes && <p className="text-info small fst-italic">{todayGoal.notes}</p>}
               {renderReminders(todayGoal.reminders)}
               {(todayGoal.subTasks || []).map((task, idx) => (
                 <div key={idx} className="mb-3">
@@ -197,6 +198,7 @@ export default function Dashboard() {
                     >
                       {task.text}
                     </label>
+                    {task.notes && <p className="text-info small fst-italic">{task.notes}</p>}
                   </div>
                   {renderReminders(task.reminders)}
                 </div>
@@ -227,6 +229,7 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activeWeeklyAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
+                    {r.notes && <p className="text-info small fst-italic">{r.notes}</p>}
                     {renderReminders(r.reminders)}
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
@@ -246,6 +249,7 @@ export default function Dashboard() {
                           >
                             {task.text}
                           </label>
+                          {task.notes && <p className="text-info small fst-italic">{task.notes}</p>}
                         </div>
                         {renderReminders(task.reminders)}
                       </div>
@@ -279,6 +283,7 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activePastAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
+                    {r.notes && <p className="text-info small fst-italic">{r.notes}</p>}
                     {renderReminders(r.reminders)}
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
@@ -298,6 +303,7 @@ export default function Dashboard() {
                           >
                             {task.text}
                           </label>
+                          {task.notes && <p className="text-info small fst-italic">{task.notes}</p>}
                         </div>
                         {renderReminders(task.reminders)}
                       </div>
