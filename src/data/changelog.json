@@ -1,5 +1,23 @@
 [
   {
+    "date": "2025-04-08",
+    "title": "Fix: Stripe Pro Sync",
+    "description": "Resolved issue where user Pro status wasn't updating after subscription purchase.",
+    "type": "bugfix"
+  },
+  {
+    "date": "2025-04-08",
+    "title": "Public Goal Sharing",
+    "description": "Users can now share public goal pages via URLs like /user/username/date.",
+    "type": "feature"
+  },
+  {
+    "date": "2025-04-08",
+    "title": "Webhook Debugging Tools",
+    "description": "Improved logging and validation of Stripe webhook requests for billing sync.",
+    "type": "update"
+  },
+  {
     "date": "2025-04-07",
     "title": "Dashboard Visual Enhancements",
     "description": "Today's goal is now visually separated and completed items show strikethrough and muted color.",
