@@ -76,14 +76,14 @@ export default function Respond() {
       .filter((task) => task.text.trim() !== '')
       .map((task) => ({
         text: task.text.trim(),
-        reminders: user?.pro ? (task.reminders || []) : []
+        reminders: user?.pro === 'active' ? (task.reminders || []) : []
       }));
 
     try {
       const payload = {
         content: goal,
         mode: 'goal',
-        reminders: user?.pro ? goalReminders : [],
+        reminders: user?.pro === 'active' ? goalReminders : [],
         subTasks: filteredSubTasks
       };
 
@@ -153,7 +153,7 @@ export default function Respond() {
                 />
               </div>
 
-              {user?.pro ? (
+              {user?.pro === 'active' ? (
                 <div className="mb-4">
                   <label className="form-label fw-bold">Goal Reminders</label>
                   <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
@@ -193,7 +193,7 @@ export default function Respond() {
                     value={subTasks[i]?.text || ''}
                     onChange={(e) => handleSubTaskTextChange(i, e.target.value)}
                   />
-                  {user?.pro && (
+                  {user?.pro === 'active' && (
                     <ReminderForm
                       reminders={subTasks[i]?.reminders || []}
                       setReminders={(newReminders) => {
