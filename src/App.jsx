@@ -74,7 +74,7 @@ function App() {
               <SetUsername />
             </PrivateRoute>
           } />
-          <Route path="/profile" element={<PublicProfile />} />
+          <Route path="/user/:username" element={<PublicProfile />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </>
