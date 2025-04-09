@@ -144,8 +144,8 @@ export default function Dashboard() {
             </div>
             <div>
               <p className="mb-1 fw-bold text-muted">Pro Status</p>
-              <span className={`badge fs-6 ${user.pro ? "bg-primary" : "bg-secondary"}`}>
-                {user.pro ? "✅ Active" : "❌ Not active"}
+              <span className={`badge fs-6 ${user.pro === 'active' ? "bg-primary" : "bg-secondary"}`}>
+                {user.pro === 'active' ? "✅ Active" : "❌ Not active"}
               </span>
             </div>
           </div>
