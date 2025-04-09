@@ -77,6 +77,21 @@ export default function Dashboard() {
           { responseId, index, completed: updated[responseId][index] },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+
+        // Check if all subtasks are now completed
+        const currentTaskStates = updated[responseId];
+        const subTaskIndexes = Object.keys(currentTaskStates).filter(k => k !== "goalCompleted");
+        const allComplete = subTaskIndexes.every(k => currentTaskStates[k]);
+
+        if (allComplete && !currentTaskStates.goalCompleted) {
+          await axios.post(
+            "https://api.dailyping.org/api/response/toggle-goal",
+            { responseId, completed: true },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          updated[responseId].goalCompleted = true;
+          setTaskState({ ...updated });
+        }
       }
     } catch (err) {
       console.error("❌ Failed to update task:", err);
