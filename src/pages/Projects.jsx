@@ -17,7 +17,7 @@ export default function Projects() {
         });
         // Filter to only show projects the user is a contributor on
         // const userProjects = res.data.filter(p => p.users.includes(user.username));
-        setProjects(res);
+        setProjects(res.data);
       } catch (err) {
         console.error("Error fetching projects:", err);
       }
