@@ -16,7 +16,7 @@ export default function Projects() {
           headers: { Authorization: `Bearer ${token}` }
         });
         // Filter to only show projects the user is a contributor on
-       const userProjects = res.data.filter(p => p.users.includes(users.username));
+        const userProjects = res.data.filter(p => p.users.includes(user.username));
         setProjects(userProjects);
       } catch (err) {
         console.error("Error fetching projects:", err);
