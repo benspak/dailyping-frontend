@@ -34,7 +34,7 @@ export default function Navbar() {
             {user ? (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/projects" onClick={() => setExpanded(false)}>Projects</Link>
+                  <Link className="nav-link" to="/projects" onClick={() => setExpanded(false)}>🚧 Projects</Link>
                 </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Link>
