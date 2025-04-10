@@ -208,7 +208,7 @@ export default function Dashboard() {
                     >
                       {task.text}
                     </label>
-                    {task.notes && <p className="text-info small fst-italic">{task.notes}</p>}
+                    {task.notes && <p className="text-muted small fst-italic">{task.notes}</p>}
                   </div>
                   {renderReminders(task.reminders)}
                 </div>
