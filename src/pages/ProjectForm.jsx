@@ -42,10 +42,12 @@ export default function ProjectForm() {
     const payload = { title, description, goalIds: selectedGoalIds };
 
     if (isEditing) {
+      console.log(`Edit projects: ${payload}`)
       await axios.put(`https://api.dailyping.org/api/projects/${projectId}`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
     } else {
+      console.log(`Add to projects: ${payload}`)
       await axios.post("https://api.dailyping.org/api/projects", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
