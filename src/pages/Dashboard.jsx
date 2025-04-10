@@ -241,8 +241,8 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activeWeeklyAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
-                    {r.note && <p className="text-info small fst-italic">{r.note}</p>}
                     {renderReminders(r.reminders)}
+                    {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
                         <div className="form-check mb-1">
@@ -261,7 +261,7 @@ export default function Dashboard() {
                           >
                             {task.text}
                           </label>
-                          {task.note && <p className="text-info small fst-italic">{task.note}</p>}
+                          {task.note && <p className="text-muted small fst-italic">{task.note}</p>}
                         </div>
                         {renderReminders(task.reminders)}
                       </div>
@@ -297,7 +297,7 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activePastAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
-                    {r.note && <p className="text-info small fst-italic">{r.note}</p>}
+                    {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
                     {renderReminders(r.reminders)}
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
@@ -317,7 +317,7 @@ export default function Dashboard() {
                           >
                             {task.text}
                           </label>
-                          {task.note && <p className="text-info small fst-italic">{task.note}</p>}
+                          {task.note && <p className="text-muted small fst-italic">{task.note}</p>}
                         </div>
                         {renderReminders(task.reminders)}
                       </div>
