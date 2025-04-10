@@ -41,9 +41,8 @@ export default function ProjectForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    // const userId = user._id;
-    const userId = user.id;
-    const payload = { title, description, goalIds: selectedGoalIds, userId };
+    const users = user.username;
+    const payload = { title, description, goalIds: selectedGoalIds, users };
 
     if (isEditing) {
       console.log(`Edit projects: ${payload}`)
@@ -51,7 +50,7 @@ export default function ProjectForm() {
         headers: { Authorization: `Bearer ${token}` }
       });
     } else {
-      console.log(user)
+      console.log(user.username)
       console.log("Handel Submit working ...")
       await axios.post("https://api.dailyping.org/api/projects", payload, {
         headers: { Authorization: `Bearer ${token}` }

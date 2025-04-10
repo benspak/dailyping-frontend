@@ -45,14 +45,8 @@ export function AuthProvider({ children }) {
     setToken(newToken);
   };
 
-  const handelSetUserId = (userId) => {
-    ("userId", user.user._id);
-    setUserId(user.user._id)
-  }
-
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem("userId");
     setToken(null);
     setUser(null);
   };
