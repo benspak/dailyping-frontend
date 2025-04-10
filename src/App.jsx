@@ -15,6 +15,8 @@ import Changelog from './pages/Changelog';
 import SetUsername from './pages/SetUsername';
 import PublicGoal from './pages/PublicGoal';
 import PublicProfile from './pages/PublicProfile';
+import Projects from './pages/Projects'
+import ProjectForm from './pages/ProjectForm'
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
@@ -39,6 +41,21 @@ function App() {
       <>
         <Navbar />
         <Routes>
+          <Route path="/projects/" element={
+            <PrivateRoute>
+              <Projects />
+            </PrivateRoute>
+          } />
+          <Route path="/projects/new" element={
+            <PrivateRoute>
+              <ProjectForm />
+            </PrivateRoute>
+            } />
+          <Route path="/projects/:projectId/edit" element={
+            <PrivateRoute>
+              <ProjectForm />
+            </PrivateRoute>
+            } />
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/verify" element={<Verify />} />
