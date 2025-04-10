@@ -156,7 +156,7 @@ export default function Dashboard() {
           </div>
           <div className="col-md">
             <h5 className="fw-bold mb-1">Welcome, {user.username}</h5>
-            <p className="text-muted mb-0">Track your goals, check off subtasks, and keep your streak alive.</p>
+            <p className="text-muted mb-0">{`${user.bio}` || "No bio provided."}</p>
           </div>
           <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
@@ -186,7 +186,7 @@ export default function Dashboard() {
                   todayGoal.content
                 )}
               </h5>
-              {todayGoal.notes && <p className="text-info small fst-italic">{todayGoal.notes}</p>}
+              {todayGoal.notes && <p className="text-muted small fst-italic">{todayGoal.notes}</p>}
               {renderReminders(todayGoal.reminders)}
               {(todayGoal.subTasks || []).map((task, idx) => (
                 <div key={idx} className="mb-3">
