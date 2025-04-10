@@ -39,6 +39,7 @@ export default function ProjectForm() {
   }, [projectId, isEditing]);
 
   const handleSubmit = async (e) => {
+    console.log("Handel Submit working ...")
     e.preventDefault();
     const token = localStorage.getItem("token");
     console.log(user)
