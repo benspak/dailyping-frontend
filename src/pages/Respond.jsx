@@ -20,6 +20,7 @@ export default function Respond() {
     { text: '', reminders: [] }
   ]);
   const [isEditing, setIsEditing] = useState(false);
+  const [notes, setNotes] = useState('');
 
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
@@ -39,6 +40,7 @@ export default function Respond() {
           setGoal(checkRes.data.content || '');
           setSubmittedGoalId(checkRes.data._id || '');
           setGoalReminders(checkRes.data.reminders || []);
+          setNotes(checkRes.data.notes || '');
 
           const padded = Array.isArray(checkRes.data.subTasks) ? [...checkRes.data.subTasks] : [];
           while (padded.length < 3) padded.push({ text: '', reminders: [] });
@@ -84,7 +86,8 @@ export default function Respond() {
         content: goal,
         mode: 'goal',
         reminders: user?.pro === 'active' ? goalReminders : [],
-        subTasks: filteredSubTasks
+        subTasks: filteredSubTasks,
+        notes
       };
 
       if (alreadySubmitted && submittedGoalId) {
@@ -207,6 +210,17 @@ export default function Respond() {
                   )}
                 </div>
               ))}
+
+              <div className="mb-3">
+                <label className="form-label fw-bold">Notes (optional)</label>
+                <textarea
+                  className="form-control"
+                  rows="2"
+                  placeholder="Any notes about your goal..."
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
 
               <button type="submit" className="btn btn-primary w-100 mt-3">
                 {alreadySubmitted ? 'Update Goal' : 'Submit Goal'}

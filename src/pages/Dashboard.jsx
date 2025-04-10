@@ -221,7 +221,9 @@ export default function Dashboard() {
                     type="button"
                     onClick={() => setActiveWeeklyAccordion(activeWeeklyAccordion === index ? null : index)}
                   >
-                    <strong>{r.date}</strong>: {r.content}
+                    <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
+                      <strong>{r.date}</strong>: {r.content}
+                    </span>
                   </button>
                 </h2>
                 <div
@@ -275,7 +277,9 @@ export default function Dashboard() {
                     type="button"
                     onClick={() => setActivePastAccordion(activePastAccordion === index ? null : index)}
                   >
-                    <strong>{r.date}</strong>: {r.content}
+                    <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
+                      <strong>{r.date}</strong>: {r.content}
+                    </span>
                   </button>
                 </h2>
                 <div
