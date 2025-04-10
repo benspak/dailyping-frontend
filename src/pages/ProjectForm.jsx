@@ -41,7 +41,9 @@ export default function ProjectForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const users = [`${user.username}`];
+    const users = [];
+    console.log(user.username)
+    users.push(user.username);
     const payload = { title, description, goalIds: selectedGoalIds, users };
 
     if (isEditing) {
