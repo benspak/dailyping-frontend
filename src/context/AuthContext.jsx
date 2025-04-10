@@ -46,8 +46,9 @@ export function AuthProvider({ children }) {
   };
 
   const handelSetUserId = (userId) => {
-    console.log(user.user._id)
-    localStorage.setItem("userId", user.user._id);
+    console.log(`Logging user._id ${user.user._id}`)
+    console.log(`Logging user.id: ${user.user.id}`)
+    ("userId", user.user._id);
     setUserId(user.user._id)
   }
 
