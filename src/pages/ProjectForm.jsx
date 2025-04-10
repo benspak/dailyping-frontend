@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import useAuth from "../context/AuthContext"
 
 export default function ProjectForm() {
+  const { user } = useAuth;
   const { projectId } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(projectId);
@@ -39,7 +41,7 @@ export default function ProjectForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("userId");
+    const userId = user._Id;
     const payload = { title, description, goalIds: selectedGoalIds, userId };
 
     if (isEditing) {
