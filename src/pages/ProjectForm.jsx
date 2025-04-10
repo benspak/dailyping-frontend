@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import useAuth from "../context/AuthContext"
+import { useAuth } from "../context/AuthContext"
 
 export default function ProjectForm() {
   const { user } = useAuth;
