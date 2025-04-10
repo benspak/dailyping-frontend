@@ -67,7 +67,7 @@ export default function Home() {
             <ul className="list-unstyled">
               <li>⭐ Goal reminders (email, push notification)</li>
               <li>⭐ Calendar view (coming soon)</li>
-              <li>⭐ Goal sharing (coming soon)</li>
+              <li>⭐ Goal sharing / projects (coming soon)</li>
             </ul>
           </div>
         </div>
