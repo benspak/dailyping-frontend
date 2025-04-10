@@ -191,7 +191,7 @@ export default function Dashboard() {
                 )}
               </h5>
               {renderReminders(todayGoal.reminders)}
-              {todayGoal.notes && <p className="text-muted small fst-italic">{todayGoal.notes}</p>}
+              {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
               {(todayGoal.subTasks || []).map((task, idx) => (
                 <div key={idx} className="mb-3">
                   <div className="form-check mb-1">
@@ -208,7 +208,7 @@ export default function Dashboard() {
                     >
                       {task.text}
                     </label>
-                    {task.notes && <p className="text-muted small fst-italic">{task.notes}</p>}
+                    {task.note && <p className="text-muted small fst-italic">{task.note}</p>}
                   </div>
                   {renderReminders(task.reminders)}
                 </div>
@@ -241,7 +241,7 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activeWeeklyAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
-                    {r.notes && <p className="text-info small fst-italic">{r.notes}</p>}
+                    {r.note && <p className="text-info small fst-italic">{r.note}</p>}
                     {renderReminders(r.reminders)}
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
@@ -261,7 +261,7 @@ export default function Dashboard() {
                           >
                             {task.text}
                           </label>
-                          {task.notes && <p className="text-info small fst-italic">{task.notes}</p>}
+                          {task.note && <p className="text-info small fst-italic">{task.note}</p>}
                         </div>
                         {renderReminders(task.reminders)}
                       </div>
@@ -297,7 +297,7 @@ export default function Dashboard() {
                   className={`accordion-collapse collapse ${activePastAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
-                    {r.notes && <p className="text-info small fst-italic">{r.notes}</p>}
+                    {r.note && <p className="text-info small fst-italic">{r.note}</p>}
                     {renderReminders(r.reminders)}
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
@@ -317,7 +317,7 @@ export default function Dashboard() {
                           >
                             {task.text}
                           </label>
-                          {task.notes && <p className="text-info small fst-italic">{task.notes}</p>}
+                          {task.note && <p className="text-info small fst-italic">{task.note}</p>}
                         </div>
                         {renderReminders(task.reminders)}
                       </div>
