@@ -36,10 +36,16 @@ export default function Dashboard() {
 
         const updatedState = {};
         res.data.forEach((r) => {
-          updatedState[r._id] = { goalCompleted: r.completed || false };
+          const subTaskStates = {};
           r.subTasks?.forEach((t, i) => {
-            updatedState[r._id][i] = t.completed;
+            subTaskStates[i] = t.completed;
           });
+
+          const allSubTasksComplete = r.subTasks?.length > 0 && r.subTasks.every(t => t.completed);
+          updatedState[r._id] = {
+            ...subTaskStates,
+            goalCompleted: r.completed || allSubTasksComplete
+          };
         });
 
         setResponses(res.data);
