@@ -4,7 +4,7 @@ import axios from "axios";
 import { useAuth } from "../context/AuthContext"
 
 export default function ProjectForm() {
-  const { user } = useAuth;
+  const { user } = useAuth();
   const { projectId } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(projectId);
