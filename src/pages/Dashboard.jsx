@@ -97,6 +97,10 @@ export default function Dashboard() {
           );
           updated[responseId].goalCompleted = true;
           setTaskState({ ...updated });
+
+          // ✅ Play sound when all subtasks are completed
+          const audio = new Audio("/Done.mp3");
+          audio.play().catch(err => console.warn("Unable to autoplay sound:", err));
         }
       }
     } catch (err) {
