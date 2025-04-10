@@ -13,6 +13,7 @@ export function AuthProvider({ children }) {
     return null;
   });
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(true);
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -44,8 +45,14 @@ export function AuthProvider({ children }) {
     setToken(newToken);
   };
 
+  const handelSetUserId = (userId) => {
+    localStorage.setItem("userId", user.user._id);
+    setUserId(user.user._id)
+  }
+
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem("userId");
     setToken(null);
     setUser(null);
   };
@@ -63,7 +70,7 @@ export function AuthProvider({ children }) {
 };
 
 return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, logout, loading, refresh }}>
+    <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, setUserId: handelSetUserId, logout, loading, refresh }}>
       {children}
     </AuthContext.Provider>
   );
