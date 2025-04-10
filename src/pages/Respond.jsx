@@ -20,7 +20,7 @@ export default function Respond() {
     { text: '', reminders: [] }
   ]);
   const [isEditing, setIsEditing] = useState(false);
-  const [notes, setNotes] = useState('');
+  const [note, setNote] = useState('');
 
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
@@ -40,7 +40,7 @@ export default function Respond() {
           setGoal(checkRes.data.content || '');
           setSubmittedGoalId(checkRes.data._id || '');
           setGoalReminders(checkRes.data.reminders || []);
-          setNotes(checkRes.data.notes || '');
+          setNote(checkRes.data.note || '');
 
           const padded = Array.isArray(checkRes.data.subTasks) ? [...checkRes.data.subTasks] : [];
           while (padded.length < 3) padded.push({ text: '', reminders: [] });
@@ -87,7 +87,7 @@ export default function Respond() {
         mode: 'goal',
         reminders: user?.pro === 'active' ? goalReminders : [],
         subTasks: filteredSubTasks,
-        notes
+        note
       };
 
       if (alreadySubmitted && submittedGoalId) {
@@ -212,13 +212,13 @@ export default function Respond() {
               ))}
 
               <div className="mb-3">
-                <label className="form-label fw-bold">Notes (optional)</label>
+                <label className="form-label fw-bold">Note (optional)</label>
                 <textarea
                   className="form-control"
                   rows="2"
                   placeholder="Any notes about your goal..."
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
                 />
               </div>
 
