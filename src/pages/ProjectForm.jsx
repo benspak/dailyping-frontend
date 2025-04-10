@@ -42,6 +42,7 @@ export default function ProjectForm() {
     e.preventDefault();
     const token = localStorage.getItem("token");
     const users = [];
+    console.log(user)
     console.log(user.username)
     users.push(user.username);
     const payload = { title, description, goalIds: selectedGoalIds, users };
