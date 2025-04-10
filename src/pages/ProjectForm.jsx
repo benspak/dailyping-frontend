@@ -52,7 +52,6 @@ export default function ProjectForm() {
     } else {
       console.log(user)
       console.log("Handel Submit working ...")
-      console.log(`Add to projects: ${payload}`)
       await axios.post("https://api.dailyping.org/api/projects", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
