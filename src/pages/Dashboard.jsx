@@ -89,7 +89,7 @@ export default function Dashboard() {
         const subTaskIndexes = Object.keys(currentTaskStates).filter(k => k !== "goalCompleted");
         const allComplete = subTaskIndexes.every(k => currentTaskStates[k]);
 
-        if (allComplete && !currentTaskStates.goalCompleted) {
+        if (subTaskIndexes.length === 3 && allComplete && !currentTaskStates.goalCompleted) {
           await axios.post(
             "https://api.dailyping.org/api/response/toggle-goal",
             { responseId, completed: true },
