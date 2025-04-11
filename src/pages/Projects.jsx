@@ -44,7 +44,7 @@ export default function Projects() {
               <h5>{project.title}</h5>
               <p className="text-muted">{project.description}</p>
               {project._id ? (
-              <Link to={`/projects/view/${project._id}`} className="btn btn-outline-primary btn-sm">View</Link>
+              <Link to={`/projects/${project._id}`} className="btn btn-outline-primary btn-sm">View</Link>
                 ) : (
                   <span className="text-danger small">Invalid project</span>
               )}
