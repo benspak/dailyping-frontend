@@ -33,7 +33,7 @@ export default function ProjectView() {
       <h5 className="mt-4">Goals in this project</h5>
       <ul>
         {project.goalIds?.map(goalId => (
-          <li key={goalId}>{goalId}</li> // optionally replace with goal content later
+          <li key={goalId}>{goal.content}</li> // optionally replace with goal content later
         ))}
       </ul>
 

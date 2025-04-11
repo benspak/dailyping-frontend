@@ -97,7 +97,7 @@ function App() {
           <PrivateRoute>
             <ProjectView />
           </PrivateRoute>
-        } />
+          } />
         <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </>
