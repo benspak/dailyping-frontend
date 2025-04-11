@@ -98,6 +98,11 @@ function App() {
             <ProjectView />
           </PrivateRoute>
           } />
+          <Route path="/queue" element={
+          <PrivateRoute>
+            <Queue />
+          </PrivateRoute>
+          } />
         <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </>
