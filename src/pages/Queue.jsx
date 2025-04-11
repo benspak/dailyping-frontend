@@ -23,9 +23,9 @@ export default function Queue() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const payload = { title, notes };
+    const payload = { title, note };
     try {
-      console.log("Submitting payload:", payload);
+      // console.log("Submitting payload:", payload);
       const res = await axios.post("https://api.dailyping.org/api/queue", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
