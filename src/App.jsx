@@ -93,13 +93,13 @@ function App() {
             </PrivateRoute>
           } />
           <Route path="/user/:username" element={<PublicProfile />} />
-        </Routes>
-        <Route path="/projects/:projectId" element={
+          <Route path="/projects/:projectId" element={
           <PrivateRoute>
             <ProjectView />
           </PrivateRoute>
         } />
         <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
       </>
   );
 }
