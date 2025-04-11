@@ -11,7 +11,6 @@ export default function Queue() {
   useEffect(() => {
     const fetchQueue = async () => {
       const token = localStorage.getItem("token");
-      console.log(token)
       const res = await axios.get("https://api.dailyping.org/api/queue", {
         headers: { Authorization: `Bearer ${token}` }
       });
