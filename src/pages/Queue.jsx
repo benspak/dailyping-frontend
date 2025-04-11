@@ -56,7 +56,7 @@ export default function Queue() {
         {items.map(item => (
           <li key={item._id} className="list-group-item">
             <h5 className="mb-1">{item.title}</h5>
-            {item.notes && <p className="mb-1 text-muted">{item.notes}</p>}
+            {item.note && <p className="mb-1 text-muted">{item.note}</p>}
             <button className="btn btn-sm btn-outline-success">Convert to Goal</button>
           </li>
         ))}
