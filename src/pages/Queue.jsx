@@ -23,7 +23,7 @@ export default function Queue() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const userId = user._id;
+    const userId = user.id;
     const payload = { userId, title, note };
     console.log(user)
     console.log(userId)
