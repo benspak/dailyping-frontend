@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-export default function Queue() {
+export default function QueueItem() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
@@ -25,9 +25,6 @@ export default function Queue() {
     const token = localStorage.getItem("token");
     const userId = user.userId
     const payload = { userId, title, note };
-    console.log(user)
-    console.log(user.userId)
-    console.log(payload)
     try {
       // console.log("Submitting payload:", payload);
       const res = await axios.post("https://api.dailyping.org/api/queue", payload, {
