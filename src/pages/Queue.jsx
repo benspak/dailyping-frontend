@@ -6,7 +6,7 @@ export default function Queue() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
-  const [notes, setNotes] = useState("");
+  const [note, setNote] = useState("");
 
   useEffect(() => {
     const fetchQueue = async () => {
@@ -31,7 +31,7 @@ export default function Queue() {
       });
       setItems([res.data, ...items]);
       setTitle("");
-      setNotes("");
+      setNote("");
     } catch (err) {
       console.error("Error submitting queue item:", err);
     }
@@ -47,7 +47,7 @@ export default function Queue() {
         </div>
         <div className="mb-3">
           <label className="form-label">Notes</label>
-          <textarea className="form-control" value={notes} onChange={e => setNotes(e.target.value)} />
+          <textarea className="form-control" value={note} onChange={e => setNote(e.target.value)} />
         </div>
         <button type="submit" className="btn btn-primary">Add to Queue</button>
       </form>
