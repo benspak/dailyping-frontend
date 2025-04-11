@@ -8,6 +8,8 @@ export default function Queue() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
 
+  const userId = user._id;
+
   useEffect(() => {
     const fetchQueue = async () => {
       const token = localStorage.getItem("token");
