@@ -43,7 +43,7 @@ export default function Projects() {
             <div className="card-body">
               <h5>{project.title}</h5>
               <p className="text-muted">{project.description}</p>
-              <Link to={`/projects/${project._id}`} className="btn btn-outline-primary btn-sm">View</Link>
+              <Link to={`/projects/view/${project._id}`} className="btn btn-outline-primary btn-sm">View</Link>
             </div>
           </div>
         ))

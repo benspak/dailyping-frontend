@@ -92,8 +92,13 @@ function App() {
             </PrivateRoute>
           } />
           <Route path="/user/:username" element={<PublicProfile />} />
-          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+        <Route path="/projects/view/:projectId" element={
+          <PrivateRoute>
+            <ProjectView />
+          </PrivateRoute>
+        } />
+        <Route path="*" element={<Navigate to="/" />} />
       </>
   );
 }
