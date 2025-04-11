@@ -18,7 +18,7 @@ import PublicProfile from './pages/PublicProfile';
 import Projects from './pages/Projects'
 import ProjectForm from './pages/ProjectForm'
 import ProjectView from './pages/ProjectView'
-import Queue from './pages/Queue'
+import QueueItem from './pages/QueueItem'
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
@@ -101,7 +101,7 @@ function App() {
           } />
           <Route path="/queue" element={
           <PrivateRoute>
-            <Queue />
+            <QueueItem />
           </PrivateRoute>
           } />
         <Route path="*" element={<Navigate to="/" />} />
