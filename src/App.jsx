@@ -17,6 +17,7 @@ import PublicGoal from './pages/PublicGoal';
 import PublicProfile from './pages/PublicProfile';
 import Projects from './pages/Projects'
 import ProjectForm from './pages/ProjectForm'
+import ProjectView from './pages/ProjectView'
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
