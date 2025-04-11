@@ -52,7 +52,7 @@ export default function ProjectForm() {
       await axios.post("https://api.dailyping.org/api/projects", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("Payload:", payload);
+      // console.log("Payload:", payload);
     }
 
     navigate("/projects");

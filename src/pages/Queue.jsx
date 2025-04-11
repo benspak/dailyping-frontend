@@ -1,4 +1,3 @@
-// src/pages/Queue.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -24,12 +23,18 @@ export default function Queue() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const res = await axios.post("https://api.dailyping.org/api/queue", { title, notes }, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setItems([res.data, ...items]);
-    setTitle("");
-    setNotes("");
+    const payload = { title, notes };
+    try {
+      console.log("Submitting payload:", payload);
+      const res = await axios.post("https://api.dailyping.org/api/queue", payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setItems([res.data, ...items]);
+      setTitle("");
+      setNotes("");
+    } catch (err) {
+      console.error("Error submitting queue item:", err);
+    }
   };
 
   return (
