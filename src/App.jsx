@@ -18,6 +18,7 @@ import PublicProfile from './pages/PublicProfile';
 import Projects from './pages/Projects'
 import ProjectForm from './pages/ProjectForm'
 import ProjectView from './pages/ProjectView'
+import Queue from './pages/Queue'
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
