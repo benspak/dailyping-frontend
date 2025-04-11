@@ -5,6 +5,7 @@ import axios from "axios";
 export default function ProjectView() {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
+  const [goals, setGoals] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -14,9 +15,22 @@ export default function ProjectView() {
         const res = await axios.get(`https://api.dailyping.org/api/projects/${projectId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setProject(res.data);
+        const projectData = res.data;
+        setProject(projectData);
+
+        // Fetch goal details by ID
+        const goalResponses = await Promise.all(
+          projectData.goalIds.map(id =>
+            axios.get(`https://api.dailyping.org/api/responses/${id}`, {
+              headers: { Authorization: `Bearer ${token}` }
+            })
+          )
+        );
+
+        const goalData = goalResponses.map(r => r.data);
+        setGoals(goalData);
       } catch (err) {
-        console.error("Error loading project:", err);
+        console.error("Error loading project or goals:", err);
       }
     };
 
@@ -32,8 +46,8 @@ export default function ProjectView() {
 
       <h5 className="mt-4">Goals in this project</h5>
       <ul>
-        {project.goalIds?.map(goalId => (
-          <li key={goalId}>{goal.content}</li> // optionally replace with goal content later
+        {goals.map(goal => (
+          <li key={goal._id}>{goal.content}</li>
         ))}
       </ul>
 
