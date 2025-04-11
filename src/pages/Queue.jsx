@@ -8,8 +8,6 @@ export default function Queue() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
 
-  const userId = user._id;
-
   useEffect(() => {
     const fetchQueue = async () => {
       const token = localStorage.getItem("token");
@@ -25,6 +23,7 @@ export default function Queue() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
+    const userId = user._id;
     const payload = { userId, title, note };
     console.log(payload)
     try {
