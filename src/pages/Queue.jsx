@@ -25,6 +25,8 @@ export default function Queue() {
     const token = localStorage.getItem("token");
     const userId = user._id;
     const payload = { userId, title, note };
+    console.log(user)
+    console.log(userId)
     console.log(payload)
     try {
       // console.log("Submitting payload:", payload);
