@@ -94,7 +94,7 @@ function App() {
           } />
           <Route path="/user/:username" element={<PublicProfile />} />
         </Routes>
-        <Route path="/projects/view/:projectId" element={
+        <Route path="/projects/:projectId" element={
           <PrivateRoute>
             <ProjectView />
           </PrivateRoute>
