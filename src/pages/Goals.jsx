@@ -140,7 +140,7 @@ export default function Goals() {
   const weekAgoISO = oneWeekAgo.toISOString().split("T")[0];
 
   const activeResponses = responses.filter((r) => !r.completed);
-  const todayGoal = activeResponses.find((r) => r.date === todayISO);
+  const activeGoals = activeResponses.filter((r) => r.date === todayISO);
   const weeklyGoals = activeResponses.filter((r) => r.date > weekAgoISO && r.date < todayISO);
   const olderGoals = activeResponses.filter((r) => r.date <= weekAgoISO);
 
@@ -158,45 +158,46 @@ export default function Goals() {
         </div>
       </div>
 
-      {/* Today's Goal */}
-      {todayGoal && (
+      {/* Today's Goals */}
+      {activeGoals.length > 0 && (
         <>
-          <h4 className="mb-3">Today's Goal</h4>
-          <div className="card border-success mb-4">
-            <div className="card-body">
-              <h5 className="card-title">
-                {todayGoal.completed ? (
-                  <s className="text-muted">{todayGoal.content}</s>
-                ) : (
-                  todayGoal.content
-                )}
-              </h5>
-              {renderReminders(todayGoal.reminders)}
-              {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
-              {(todayGoal.subTasks || []).map((task, idx) => (
-                <div key={idx} className="mb-3">
-                  <div className="form-check mb-1">
-                    <input
-                      className="form-check-input me-2"
-                      type="checkbox"
-                      checked={taskState[todayGoal._id]?.[idx] || false}
-                      onChange={() => toggleTask(todayGoal._id, idx)}
-                    />
-                    <label
-                      className={`form-check-label ${
-                        taskState[todayGoal._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
-                      }`}
-                    >
-                      {task.text}
-                    </label>
-                    {task.note && <p className="text-muted small fst-italic">{task.note}</p>}
-
+          <h4 className="mb-3">Active Goals</h4>
+          {activeGoals.map((todayGoal) => (
+            <div className="card border-success mb-4" key={todayGoal._id}>
+              <div className="card-body">
+                <h5 className="card-title">
+                  {todayGoal.completed ? (
+                    <s className="text-muted">{todayGoal.content}</s>
+                  ) : (
+                    todayGoal.content
+                  )}
+                </h5>
+                {renderReminders(todayGoal.reminders)}
+                {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
+                {(todayGoal.subTasks || []).map((task, idx) => (
+                  <div key={idx} className="mb-3">
+                    <div className="form-check mb-1">
+                      <input
+                        className="form-check-input me-2"
+                        type="checkbox"
+                        checked={taskState[todayGoal._id]?.[idx] || false}
+                        onChange={() => toggleTask(todayGoal._id, idx)}
+                      />
+                      <label
+                        className={`form-check-label ${
+                          taskState[todayGoal._id]?.[idx] ? "text-decoration-line-through text-muted" : ""
+                        }`}
+                      >
+                        {task.text}
+                      </label>
+                      {task.note && <p className="text-muted small fst-italic">{task.note}</p>}
+                    </div>
+                    {renderReminders(task.reminders)}
                   </div>
-                  {renderReminders(task.reminders)}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          ))}
           <div className="mb-4 text-end">
             <a href="/goals/new" className="btn btn-primary">+ New Goal</a>
           </div>
