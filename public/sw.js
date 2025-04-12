@@ -31,15 +31,15 @@ self.addEventListener('notificationclick', event => {
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
       for (const client of windowClients) {
-        if (client.url.includes('/dashboard') && 'focus' in client) {
-          // Send message to play sound if dashboard is already open
+        if (client.url.includes('/goals') && 'focus' in client) {
+          // Send message to play sound if goals is already open
           client.postMessage({ action: 'play-ping-sound' });
           return client.focus();
         }
       }
 
       // Otherwise open new tab and let frontend play sound on load
-      return self.clients.openWindow('/dashboard?ping=1');
+      return self.clients.openWindow('/goals?ping=1');
     })
   );
 });

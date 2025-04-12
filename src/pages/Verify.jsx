@@ -21,7 +21,7 @@ export default function Verify() {
         const res = await axios.post('https://api.dailyping.org/auth/verify', { token });
         localStorage.setItem('token', res.data.token);
         setUser(res.data.user); // update context
-        navigate('/dashboard');
+        navigate('/goals');
       } catch (err) {
         console.error('❌ Verification failed:', err.message);
         alert('Login link is invalid or expired.');

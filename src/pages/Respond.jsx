@@ -98,7 +98,7 @@ export default function Respond() {
         await axios.post(`https://api.dailyping.org/api/response`, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        navigate('/dashboard');
+        navigate('/goals');
         return;
       }
 

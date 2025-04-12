@@ -16,8 +16,8 @@ export default function SetUsername() {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      // ✅ Redirect to dashboard after success
-      navigate('/dashboard');
+      // ✅ Redirect to goals after success
+      navigate('/goals');
     } catch (err) {
       setStatus(err.response?.data?.error || '❌ Error saving username');
     }

@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Verify from './pages/Verify';
 import Respond from './pages/Respond';
-import Dashboard from './pages/Dashboard';
+import Goals from './pages/Goals';
 import Feedback from './pages/Feedback';
 import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
@@ -70,6 +70,11 @@ function App() {
           <Route path="/dashboard" element={
             <PrivateRoute>
               <Dashboard />
+            </PrivateRoute>
+          } />
+          <Route path="/goals" element={
+            <PrivateRoute>
+              <Goals />
             </PrivateRoute>
           } />
           <Route path="/feedback" element={

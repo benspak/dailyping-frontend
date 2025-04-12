@@ -43,6 +43,9 @@ export default function Navbar() {
                   <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Link>
                 </li>
                 <li className="nav-item">
+                  <Link className="nav-link" to="/goals" onClick={() => setExpanded(false)}>Goals</Link>
+                </li>
+                <li className="nav-item">
                   <Link className="nav-link" to="/respond" onClick={() => setExpanded(false)}>Respond</Link>
                 </li>
                 {/*<li className="nav-item">

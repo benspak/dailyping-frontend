@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import md5 from "md5";
 import { useNavigate } from 'react-router-dom';
 
-export default function Dashboard() {
+export default function Goals() {
   const { user, loading, refresh } = useAuth();
   const [responses, setResponses] = useState([]);
   const [taskState, setTaskState] = useState({});
@@ -128,7 +128,7 @@ export default function Dashboard() {
   if (!user) {
     return (
       <div className="container py-5 text-center">
-        <p>Please log in to view your dashboard.</p>
+        <p>Please log in to view your goals.</p>
       </div>
     );
   }
