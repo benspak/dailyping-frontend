@@ -45,7 +45,12 @@ export default function QueueItem() {
       });
       setItems(prev => prev.filter(item => item._id !== id));
     } catch (err) {
-      console.error("Error deleting queue item:", err);
+      if (err.response?.status === 404) {
+        console.warn("Item not found on server. Removing from UI.");
+        setItems(prev => prev.filter(item => item._id !== id)); // still remove from UI
+      } else {
+        console.error("Error deleting queue item:", err);
+      }
     }
   };
 
