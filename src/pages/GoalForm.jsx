@@ -12,7 +12,6 @@ export default function GoalForm() {
   const [goal, setGoal] = useState('');
   const [goalReminders, setGoalReminders] = useState([]);
   const [submittedGoalId, setSubmittedGoalId] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
   const [subTasks, setSubTasks] = useState([
     { text: '', reminders: [] },
     { text: '', reminders: [] },
@@ -96,12 +95,9 @@ export default function GoalForm() {
         await axios.put(`https://api.dailyping.org/api/goal/${submittedGoalId}`, payload, { headers });
       } else {
         await axios.post(`https://api.dailyping.org/api/goal`, payload, { headers });
-        navigate('/goals');
-        return;
       }
 
-      setSubmitted(true);
-      setIsEditing(false);
+      navigate('/goals');
     } catch (err) {
       console.error('❌ Submission error:', err.response?.data || err.message);
       alert('Error submitting your goal.');
