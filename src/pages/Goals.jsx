@@ -172,6 +172,11 @@ export default function Goals() {
                   )}
                 </h5>
                 {renderReminders(todayGoal.reminders)}
+                {todayGoal.dueDate && (
+                  <p className="text-muted small mb-2">
+                    <strong>Due:</strong> {new Date(todayGoal.dueDate).toLocaleDateString()}
+                  </p>
+                )}
                 {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
                 <div className="text-end">
                   <a href={`/goals/form?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
@@ -232,6 +237,11 @@ export default function Goals() {
                 >
                   <div className="accordion-body">
                     {renderReminders(r.reminders)}
+                    {r.dueDate && (
+                      <p className="text-muted small mb-2">
+                        <strong>Due:</strong> {new Date(r.dueDate).toLocaleDateString()}
+                      </p>
+                    )}
                     {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
                     <div className="text-end">
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
