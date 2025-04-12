@@ -193,6 +193,29 @@ export default function GoalForm() {
             <button type="submit" className="btn btn-primary w-100 mt-3">
               {isEditing ? 'Update Goal' : 'Submit Goal'}
             </button>
+            {isEditing && (
+              <button
+                type="button"
+                className="btn btn-outline-danger w-100 mt-2"
+                onClick={async () => {
+                  const confirmed = window.confirm("Are you sure you want to delete this goal?");
+                  if (!confirmed) return;
+
+                  const token = localStorage.getItem('token');
+                  try {
+                    await axios.delete(`https://api.dailyping.org/api/goal/${submittedGoalId}`, {
+                      headers: { Authorization: `Bearer ${token}` }
+                    });
+                    navigate('/goals');
+                  } catch (err) {
+                    console.error("❌ Deletion error:", err.response?.data || err.message);
+                    alert("Failed to delete goal.");
+                  }
+                }}
+              >
+                🗑️ Delete Goal
+              </button>
+            )}
           </form>
         </div>
       </div>
