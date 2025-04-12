@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Verify from './pages/Verify';
 import Respond from './pages/Respond';
 import Goals from './pages/Goals';
+import Dashboard from './pages/Dashboard'
 import Feedback from './pages/Feedback';
 import Settings from './pages/Settings';
 import Navbar from './components/Navbar';
