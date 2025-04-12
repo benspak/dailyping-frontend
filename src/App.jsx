@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Verify from './pages/Verify';
-import Respond from './pages/Respond';
+import GoalForm from './pages/GoalForm';
 import Goals from './pages/Goals';
 import Dashboard from './pages/Dashboard'
 import Feedback from './pages/Feedback';
@@ -63,9 +63,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/auth/verify" element={<Verify />} />
           <Route path="/user/:username/:date" element={<PublicGoal />} />
-          <Route path="/respond" element={
+          <Route path="/goals/new" element={
             <PrivateRoute>
-              <Respond />
+              <GoalForm />
             </PrivateRoute>
           } />
           <Route path="/dashboard" element={

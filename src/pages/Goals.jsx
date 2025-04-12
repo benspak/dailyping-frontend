@@ -147,7 +147,7 @@ export default function Goals() {
   return (
     <div className="container py-5">
       {/* Header */}
-      <div className="card shadow-sm p-4 mb-4">
+      <div className="card shadow-sm mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">

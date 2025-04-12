@@ -4,7 +4,7 @@ import axios from 'axios';
 import ReminderForm from '../components/ReminderForm';
 import { useAuth } from '../context/AuthContext';
 
-export default function Respond() {
+export default function GoalForm() {
   const { user, refresh } = useAuth();
   const [params] = useSearchParams();
   const navigate = useNavigate();
