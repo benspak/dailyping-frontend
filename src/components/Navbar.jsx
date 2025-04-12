@@ -33,21 +33,21 @@ export default function Navbar() {
           <ul className="navbar-nav ms-auto align-items-center gap-2">
             {user ? (
               <>
-                <li className="nav-item">
+                {/*<li className="nav-item">
                   <Link className="nav-link" to="/Backlog" onClick={() => setExpanded(false)}>🚧 Backlog</Link>
-                </li>
-                <li className="nav-item">
+                </li>*/}
+                {/*<li className="nav-item">
                   <Link className="nav-link" to="/projects" onClick={() => setExpanded(false)}>🚧 Projects</Link>
-                </li>
+                </li>*/}
                 <li className="nav-item">
                   <Link className="nav-link" to="/goals" onClick={() => setExpanded(false)}>Goals</Link>
                 </li>
                 {/*<li className="nav-item">
                   <Link className="nav-link" to="/calendar" onClick={() => setExpanded(false)}>Calendar</Link>
                 </li>*/}
-                <li className="nav-item">
+                {/*<li className="nav-item">
                   <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>🚧 Dashboard</Link>
-                </li>
+                </li>*/}
                   <li className="nav-item">
                     <Link className="nav-link" to="/settings" onClick={() => setExpanded(false)}>Settings</Link>
                   </li>
