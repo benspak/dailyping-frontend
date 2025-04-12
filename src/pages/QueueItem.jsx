@@ -7,6 +7,7 @@ export default function QueueItem() {
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
     const fetchQueue = async () => {
@@ -24,7 +25,7 @@ export default function QueueItem() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const payload = { title, note };
+    const payload = { title, note, dueDate };
     try {
       const res = await axios.post("https://api.dailyping.org/api/queue", payload, {
         headers: { Authorization: `Bearer ${token}` }
@@ -32,6 +33,7 @@ export default function QueueItem() {
       setItems([res.data, ...items]);
       setTitle("");
       setNote("");
+      setDueDate("");
     } catch (err) {
       console.error("Error submitting queue item:", err);
     }
@@ -66,6 +68,15 @@ export default function QueueItem() {
           <label className="form-label">Note</label>
           <textarea className="form-control" value={note} onChange={e => setNote(e.target.value)} />
         </div>
+        <div className="mb-3">
+          <label className="form-label">Due Date</label>
+          <input
+            type="date"
+            className="form-control"
+            value={dueDate}
+            onChange={e => setDueDate(e.target.value)}
+          />
+        </div>
         <button type="submit" className="btn btn-primary">Add to Queue</button>
       </form>
 
@@ -79,6 +90,9 @@ export default function QueueItem() {
               ×
             </button>
             <h5 className="mb-1">{item.title}</h5>
+            {item.dueDate && (
+              <p className="mb-1"><strong>Due:</strong> {new Date(item.dueDate).toLocaleDateString()}</p>
+            )}
             {item.note && <p className="mb-1 text-muted">{item.note}</p>}
             <button className="btn btn-sm btn-outline-success">Convert to Goal</button>
           </li>
