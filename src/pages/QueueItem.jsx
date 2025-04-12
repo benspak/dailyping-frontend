@@ -14,7 +14,8 @@ export default function QueueItem() {
       const res = await axios.get("https://api.dailyping.org/api/queue", {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setItems(res.data);
+      const sorted = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setItems(sorted);
     };
 
     if (user?.username) fetchQueue();
@@ -46,7 +47,7 @@ export default function QueueItem() {
           <input className="form-control" value={title} onChange={e => setTitle(e.target.value)} required />
         </div>
         <div className="mb-3">
-          <label className="form-label">Notes</label>
+          <label className="form-label">Note</label>
           <textarea className="form-control" value={note} onChange={e => setNote(e.target.value)} />
         </div>
         <button type="submit" className="btn btn-primary">Add to Queue</button>
