@@ -7,7 +7,7 @@ export default function Backlog() {
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
-  const [dueDate, setDueDate] = useState("");
+  const [date, setDate] = useState("");
 
   useEffect(() => {
     const fetchBacklog = async () => {
@@ -25,7 +25,7 @@ export default function Backlog() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const payload = { title, note, dueDate };
+    const payload = { title, note, date };
     try {
       const res = await axios.post("https://api.dailyping.org/api/backlog", payload, {
         headers: { Authorization: `Bearer ${token}` }
@@ -33,7 +33,7 @@ export default function Backlog() {
       setItems([res.data, ...items]);
       setTitle("");
       setNote("");
-      setDueDate("");
+      setDate("");
     } catch (err) {
       console.error("Error submitting backlog item:", err);
     }
@@ -73,8 +73,8 @@ export default function Backlog() {
           <input
             type="date"
             className="form-control"
-            value={dueDate}
-            onChange={e => setDueDate(e.target.value)}
+            value={date}
+            onChange={e => setDate(e.target.value)}
           />
         </div>
         <button type="submit" className="btn btn-primary">Add to Backlog</button>
@@ -90,8 +90,8 @@ export default function Backlog() {
               ×
             </button>
             <h5 className="mb-1">{item.title}</h5>
-            {item.dueDate && (
-              <p className="mb-1"><strong>Due:</strong> {new Date(item.dueDate).toLocaleDateString()}</p>
+            {item.date && (
+              <p className="mb-1"><strong>Due:</strong> {new Date(item.date).toLocaleDateString()}</p>
             )}
             {item.note && <p className="mb-1 text-muted">{item.note}</p>}
           </li>

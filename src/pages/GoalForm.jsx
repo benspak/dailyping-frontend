@@ -19,7 +19,7 @@ export default function GoalForm() {
   ]);
   const [isEditing, setIsEditing] = useState(false);
   const [note, setNote] = useState('');
-  const [dueDate, setDueDate] = useState('');
+  const [date, setDate] = useState('');
 
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
@@ -52,7 +52,7 @@ export default function GoalForm() {
           setSubmittedGoalId(data._id);
           setGoalReminders(data.reminders || []);
           setNote(data.note || '');
-          setDueDate(data.dueDate || '');
+          setDate(data.date || '');
           const padded = Array.isArray(data.subTasks) ? [...data.subTasks] : [];
           while (padded.length < 3) padded.push({ text: '', reminders: [] });
           setSubTasks(padded.slice(0, 3));
@@ -91,7 +91,7 @@ export default function GoalForm() {
         reminders: user?.pro === 'active' ? goalReminders : [],
         subTasks: filteredSubTasks,
         note,
-        dueDate
+        date
       };
 
       if (submittedGoalId) {
@@ -133,8 +133,8 @@ export default function GoalForm() {
               <input
                 type="date"
                 className="form-control"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
               />
             </div>
 

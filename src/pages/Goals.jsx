@@ -172,9 +172,9 @@ export default function Goals() {
                   )}
                 </h5>
                 {renderReminders(todayGoal.reminders)}
-                {todayGoal.dueDate && (
+                {todayGoal.date && (
                   <p className="text-muted small mb-2">
-                    <strong>Due:</strong> {new Date(todayGoal.dueDate).toLocaleDateString()}
+                    <strong>Due:</strong> {new Date(todayGoal.date).toLocaleDateString()}
                   </p>
                 )}
                 {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
@@ -237,9 +237,9 @@ export default function Goals() {
                 >
                   <div className="accordion-body">
                     {renderReminders(r.reminders)}
-                    {r.dueDate && (
+                    {r.date && (
                       <p className="text-muted small mb-2">
-                        <strong>Due:</strong> {new Date(r.dueDate).toLocaleDateString()}
+                        <strong>Due:</strong> {new Date(r.date).toLocaleDateString()}
                       </p>
                     )}
                     {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
