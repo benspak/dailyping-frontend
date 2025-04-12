@@ -146,6 +146,9 @@ export default function Goals() {
 
   return (
     <div className="container py-5">
+      <div className="mb-4 text-end">
+        <a href="/goals/new" className="btn btn-outline-primary">+ New Goal</a>
+      </div>
       {/* Header */}
       <div className="card shadow-sm mb-4">
         <div className="row align-items-center">
@@ -190,6 +193,7 @@ export default function Goals() {
                       {task.text}
                     </label>
                     {task.note && <p className="text-muted small fst-italic">{task.note}</p>}
+
                   </div>
                   {renderReminders(task.reminders)}
                 </div>
