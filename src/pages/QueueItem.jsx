@@ -26,7 +26,6 @@ export default function QueueItem() {
     const token = localStorage.getItem("token");
     const payload = { title, note };
     try {
-      // console.log("Submitting payload:", payload);
       const res = await axios.post("https://api.dailyping.org/api/queue", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -38,9 +37,21 @@ export default function QueueItem() {
     }
   };
 
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    try {
+      await axios.delete(`https://api.dailyping.org/api/queue/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setItems(prev => prev.filter(item => item._id !== id));
+    } catch (err) {
+      console.error("Error deleting queue item:", err);
+    }
+  };
+
   return (
     <div className="container py-5">
-      <h2>Goal Backlog</h2>
+      <h2>Queue</h2>
       <form onSubmit={handleSubmit} className="mb-4">
         <div className="mb-3">
           <label className="form-label">Title</label>
@@ -56,6 +67,12 @@ export default function QueueItem() {
       <ul className="list-group">
         {items.map(item => (
           <li key={item._id} className="list-group-item">
+            <button
+              className="btn btn-sm btn-outline-danger float-end"
+              onClick={() => handleDelete(item._id)}
+            >
+              ×
+            </button>
             <h5 className="mb-1">{item.title}</h5>
             {item.note && <p className="mb-1 text-muted">{item.note}</p>}
             <button className="btn btn-sm btn-outline-success">Convert to Goal</button>
