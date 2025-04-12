@@ -153,9 +153,6 @@ export default function Goals() {
             <div className="mb-2">
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
-              <div className="mb-4 text-end">
-                <a href="/goals/new" className="btn btn-primary">+ New Goal</a>
-              </div>
             </div>
           </div>
         </div>
@@ -199,6 +196,9 @@ export default function Goals() {
                 </div>
               ))}
             </div>
+          </div>
+          <div className="mb-4 text-end">
+            <a href="/goals/new" className="btn btn-primary">+ New Goal</a>
           </div>
         </>
       )}
