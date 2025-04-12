@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { registerPush } from "../utils/registerPush";
 import { useAuth } from "../context/AuthContext";
-import md5 from "md5";
 import { useNavigate } from 'react-router-dom';
 
 export default function Goals() {
@@ -174,6 +173,11 @@ export default function Goals() {
                 </h5>
                 {renderReminders(todayGoal.reminders)}
                 {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
+                <div className="text-end">
+                  <a href={`/goals/new?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
+                    Edit
+                  </a>
+                </div>
                 {(todayGoal.subTasks || []).map((task, idx) => (
                   <div key={idx} className="mb-3">
                     <div className="form-check mb-1">
@@ -229,6 +233,11 @@ export default function Goals() {
                   <div className="accordion-body">
                     {renderReminders(r.reminders)}
                     {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
+                    <div className="text-end">
+                      <a href={`/goals/new?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
+                        Edit
+                      </a>
+                    </div>
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
                         <div className="form-check mb-1">
@@ -285,6 +294,11 @@ export default function Goals() {
                   <div className="accordion-body">
                     {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
                     {renderReminders(r.reminders)}
+                    <div className="text-end">
+                      <a href={`/goals/new?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
+                        Edit
+                      </a>
+                    </div>
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
                         <div className="form-check mb-1">
