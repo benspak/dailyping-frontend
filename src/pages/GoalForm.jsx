@@ -47,7 +47,7 @@ export default function GoalForm() {
           setSubTasks(padded.slice(0, 3));
         }
 
-        return true; // ✅ this was missing
+        return true;
       } catch (err) {
         console.warn('⚠️ Token invalid or expired:', err.message);
         return false;

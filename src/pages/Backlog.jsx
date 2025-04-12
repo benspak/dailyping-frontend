@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
-export default function QueueItem() {
+export default function Backlog() {
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [title, setTitle] = useState("");
@@ -10,16 +10,16 @@ export default function QueueItem() {
   const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
-    const fetchQueue = async () => {
+    const fetchBacklog = async () => {
       const token = localStorage.getItem("token");
-      const res = await axios.get("https://api.dailyping.org/api/queue", {
+      const res = await axios.get("https://api.dailyping.org/api/backlog", {
         headers: { Authorization: `Bearer ${token}` }
       });
       const sorted = res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setItems(sorted);
     };
 
-    if (user?.username) fetchQueue();
+    if (user?.username) fetchBacklog();
   }, [user]);
 
   const handleSubmit = async (e) => {
@@ -27,7 +27,7 @@ export default function QueueItem() {
     const token = localStorage.getItem("token");
     const payload = { title, note, dueDate };
     try {
-      const res = await axios.post("https://api.dailyping.org/api/queue", payload, {
+      const res = await axios.post("https://api.dailyping.org/api/backlog", payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setItems([res.data, ...items]);
@@ -35,14 +35,14 @@ export default function QueueItem() {
       setNote("");
       setDueDate("");
     } catch (err) {
-      console.error("Error submitting queue item:", err);
+      console.error("Error submitting backlog item:", err);
     }
   };
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
     try {
-      await axios.delete(`https://api.dailyping.org/api/queue/${id}`, {
+      await axios.delete(`https://api.dailyping.org/api/backlog/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setItems(prev => prev.filter(item => item._id !== id));
@@ -51,14 +51,14 @@ export default function QueueItem() {
         console.warn("Item not found on server. Removing from UI.");
         setItems(prev => prev.filter(item => item._id !== id)); // still remove from UI
       } else {
-        console.error("Error deleting queue item:", err);
+        console.error("Error deleting backlog item:", err);
       }
     }
   };
 
   return (
     <div className="container py-5">
-      <h2>Queue</h2>
+      <h2>Backlog</h2>
       <form onSubmit={handleSubmit} className="mb-4">
         <div className="mb-3">
           <label className="form-label">Title</label>
@@ -77,7 +77,7 @@ export default function QueueItem() {
             onChange={e => setDueDate(e.target.value)}
           />
         </div>
-        <button type="submit" className="btn btn-primary">Add to Queue</button>
+        <button type="submit" className="btn btn-primary">Add to Backlog</button>
       </form>
 
       <ul className="list-group">
