@@ -146,9 +146,6 @@ export default function Goals() {
 
   return (
     <div className="container py-5">
-      <div className="mb-4 text-end">
-        <a href="/goals/new" className="btn btn-outline-primary">+ New Goal</a>
-      </div>
       {/* Header */}
       <div className="card shadow-sm mb-4">
         <div className="row align-items-center">
@@ -159,6 +156,9 @@ export default function Goals() {
             </div>
           </div>
         </div>
+        <div className="mb-4 text-end">
+        <a href="/goals/new" className="btn btn-primary">+ New Goal</a>
+      </div>
       </div>
 
       {/* Today's Goal */}
