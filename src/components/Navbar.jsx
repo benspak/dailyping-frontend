@@ -40,9 +40,6 @@ export default function Navbar() {
                   <Link className="nav-link" to="/projects" onClick={() => setExpanded(false)}>🚧 Projects</Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>Dashboard</Link>
-                </li>
-                <li className="nav-item">
                   <Link className="nav-link" to="/goals" onClick={() => setExpanded(false)}>Goals</Link>
                 </li>
                 <li className="nav-item">
@@ -52,13 +49,16 @@ export default function Navbar() {
                   <Link className="nav-link" to="/calendar" onClick={() => setExpanded(false)}>Calendar</Link>
                 </li>*/}
                 <li className="nav-item">
-                  <Link className="nav-link" to="/feedback" onClick={() => setExpanded(false)}>Feedback</Link>
+                  <Link className="nav-link" to="/dashboard" onClick={() => setExpanded(false)}>🚧 Dashboard</Link>
                 </li>
                   <li className="nav-item">
                     <Link className="nav-link" to="/settings" onClick={() => setExpanded(false)}>Settings</Link>
                   </li>
                 <li className="nav-item">
                   <Link className="nav-link" to="/changelog" onClick={() => setExpanded(false)}>Changelog</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/feedback" onClick={() => setExpanded(false)}>Feedback</Link>
                 </li>
                 <li className="nav-item">
                   <button onClick={handleLogout} className="btn btn-outline-secondary btn-sm">
