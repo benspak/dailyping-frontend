@@ -94,7 +94,6 @@ export default function Backlog() {
               <p className="mb-1"><strong>Due:</strong> {new Date(item.dueDate).toLocaleDateString()}</p>
             )}
             {item.note && <p className="mb-1 text-muted">{item.note}</p>}
-            <button className="btn btn-sm btn-outline-success">Convert to Goal</button>
           </li>
         ))}
       </ul>

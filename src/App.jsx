@@ -63,7 +63,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/auth/verify" element={<Verify />} />
           <Route path="/user/:username/:date" element={<PublicGoal />} />
-          <Route path="/goals/new" element={
+          <Route path="/goals/form" element={
             <PrivateRoute>
               <GoalForm />
             </PrivateRoute>

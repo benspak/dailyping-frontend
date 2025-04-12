@@ -174,7 +174,7 @@ export default function Goals() {
                 {renderReminders(todayGoal.reminders)}
                 {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
                 <div className="text-end">
-                  <a href={`/goals/new?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
+                  <a href={`/goals/form?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
                     Edit
                   </a>
                 </div>
@@ -203,7 +203,7 @@ export default function Goals() {
             </div>
           ))}
           <div className="mb-4 text-end">
-            <a href="/goals/new" className="btn btn-primary">+ New Goal</a>
+            <a href="/goals/form" className="btn btn-primary">+ New Goal</a>
           </div>
         </>
       )}
@@ -234,7 +234,7 @@ export default function Goals() {
                     {renderReminders(r.reminders)}
                     {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
                     <div className="text-end">
-                      <a href={`/goals/new?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
+                      <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
                     </div>
@@ -295,7 +295,7 @@ export default function Goals() {
                     {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
                     {renderReminders(r.reminders)}
                     <div className="text-end">
-                      <a href={`/goals/new?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
+                      <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
                     </div>
