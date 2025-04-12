@@ -155,10 +155,10 @@ export default function Goals() {
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
             </div>
           </div>
+          <div className="mb-4 text-end">
+            <a href="/goals/new" className="btn btn-primary">+ New Goal</a>
+          </div>
         </div>
-        <div className="mb-4 text-end">
-        <a href="/goals/new" className="btn btn-primary">+ New Goal</a>
-      </div>
       </div>
 
       {/* Today's Goal */}
