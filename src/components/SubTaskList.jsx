@@ -1,15 +1,15 @@
 import React from 'react';
 
-export default function SubTaskList({ response, onToggle }) {
+export default function SubTaskList({ goal, onToggle }) {
   const handleChange = (index) => {
-    const updated = [...response.subTasks];
+    const updated = [...goal.subTasks];
     updated[index].checked = !updated[index].checked;
-    onToggle(response._id, updated);
+    onToggle(goal._id, updated);
   };
 
   return (
     <ul className="list-group mt-2">
-      {response.subTasks?.map((task, i) => (
+      {goal.subTasks?.map((task, i) => (
         <li key={i} className="list-group-item d-flex align-items-center">
           <input
             type="checkbox"

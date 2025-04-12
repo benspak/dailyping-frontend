@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Goals() {
   const { user, loading, refresh } = useAuth();
-  const [responses, setResponses] = useState([]);
+  const [goals, setGoals] = useState([]);
   const [taskState, setTaskState] = useState({});
   const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
   const [activePastAccordion, setActivePastAccordion] = useState(null);
@@ -30,7 +30,7 @@ export default function Goals() {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("https://api.dailyping.org/api/responses/all", {
+        const res = await axios.get("https://api.dailyping.org/api/goals/all", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -48,24 +48,24 @@ export default function Goals() {
           };
         });
 
-        setResponses(res.data);
+        setGoals(res.data);
         setTaskState(updatedState);
         await registerPush();
       } catch {
-        setResponses([]);
+        setGoals([]);
       }
     };
 
     fetchData();
   }, [user, refresh, navigate]);
 
-  const toggleTask = async (responseId, index) => {
+  const toggleTask = async (goalId, index) => {
     const token = localStorage.getItem("token");
     const updated = {
       ...taskState,
-      [responseId]: {
-        ...(taskState[responseId] || {}),
-        [index]: !taskState[responseId]?.[index],
+      [goalId]: {
+        ...(taskState[goalId] || {}),
+        [index]: !taskState[goalId]?.[index],
       },
     };
     setTaskState(updated);
@@ -73,29 +73,29 @@ export default function Goals() {
     try {
       if (index === "goalCompleted") {
         await axios.post(
-          "https://api.dailyping.org/api/response/toggle-goal",
-          { responseId, completed: updated[responseId][index] },
+          "https://api.dailyping.org/api/goal/toggle-goal",
+          { goalId, completed: updated[goalId][index] },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axios.post(
-          "https://api.dailyping.org/api/response/toggle-subtask",
-          { responseId, index, completed: updated[responseId][index] },
+          "https://api.dailyping.org/api/goal/toggle-subtask",
+          { goalId, index, completed: updated[goalId][index] },
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
         // Check if all subtasks are now completed
-        const currentTaskStates = updated[responseId];
+        const currentTaskStates = updated[goalId];
         const subTaskIndexes = Object.keys(currentTaskStates).filter(k => k !== "goalCompleted");
         const allComplete = subTaskIndexes.every(k => currentTaskStates[k]);
 
         if (subTaskIndexes.length === 3 && allComplete && !currentTaskStates.goalCompleted) {
           await axios.post(
-            "https://api.dailyping.org/api/response/toggle-goal",
-            { responseId, completed: true },
+            "https://api.dailyping.org/api/goal/toggle-goal",
+            { goalId, completed: true },
             { headers: { Authorization: `Bearer ${token}` } }
           );
-          updated[responseId].goalCompleted = true;
+          updated[goalId].goalCompleted = true;
           setTaskState({ ...updated });
 
           // ✅ Play sound when all subtasks are completed
@@ -139,7 +139,7 @@ export default function Goals() {
   const todayISO = today.toISOString().split("T")[0];
   const weekAgoISO = oneWeekAgo.toISOString().split("T")[0];
 
-  const activeResponses = responses.filter((r) => !r.completed);
+  const activeResponses = goals.filter((r) => !r.completed);
   const activeGoals = activeResponses.filter((r) => r.date === todayISO);
   const weeklyGoals = activeResponses.filter((r) => r.date > weekAgoISO && r.date < todayISO);
   const olderGoals = activeResponses.filter((r) => r.date <= weekAgoISO);

@@ -27,7 +27,7 @@ export default function GoalForm() {
 
     const verifyAndLoad = async (tokenToUse) => {
       try {
-        const checkRes = await axios.get(`https://api.dailyping.org/api/responses/today`, {
+        const checkRes = await axios.get(`https://api.dailyping.org/api/goals/today`, {
           headers: { Authorization: `Bearer ${tokenToUse}` }
         });
 
@@ -44,7 +44,7 @@ export default function GoalForm() {
     (async () => {
       if (tokenFromStorage && await verifyAndLoad(tokenFromStorage)) {
         if (goalId) {
-          const res = await axios.get(`https://api.dailyping.org/api/response/${goalId}`, {
+          const res = await axios.get(`https://api.dailyping.org/api/goal/${goalId}`, {
             headers: { Authorization: `Bearer ${tokenFromStorage}` }
           });
           const data = res.data;
@@ -93,9 +93,9 @@ export default function GoalForm() {
       };
 
       if (submittedGoalId) {
-        await axios.put(`https://api.dailyping.org/api/response/${submittedGoalId}`, payload, { headers });
+        await axios.put(`https://api.dailyping.org/api/goal/${submittedGoalId}`, payload, { headers });
       } else {
-        await axios.post(`https://api.dailyping.org/api/response`, payload, { headers });
+        await axios.post(`https://api.dailyping.org/api/goal`, payload, { headers });
         navigate('/goals');
         return;
       }

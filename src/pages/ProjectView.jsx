@@ -21,7 +21,7 @@ export default function ProjectView() {
         // Fetch goal details by ID
         const goalResponses = await Promise.all(
           projectData.goalIds.map(id =>
-            axios.get(`https://api.dailyping.org/api/responses/${id}`, {
+            axios.get(`https://api.dailyping.org/api/goals/${id}`, {
               headers: { Authorization: `Bearer ${token}` }
             })
           )

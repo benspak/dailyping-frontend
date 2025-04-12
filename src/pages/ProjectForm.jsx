@@ -18,7 +18,7 @@ export default function ProjectForm() {
     const token = localStorage.getItem("token");
 
     const fetchGoals = async () => {
-      const res = await axios.get("https://api.dailyping.org/api/responses/all", {
+      const res = await axios.get("https://api.dailyping.org/api/goals/all", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setGoals(res.data);
