@@ -169,7 +169,7 @@ export default function GoalForm() {
             )}
 
             <h6 className="text-muted">Optional sub-tasks:</h6>
-            {[0, 1, 2].map((i) => (
+            {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} className="mb-3">
                 <input
                   type="text"

@@ -163,7 +163,7 @@ export default function Goals() {
       {/* Today's Goals */}
       {activeGoals.length > 0 && (
         <>
-          <h4 className="mb-3">Active Goals</h4>
+          <h4 className="mb-3">Today's Goals</h4>
           {activeGoals.map((todayGoal) => (
             <div className="card border-success mb-4" key={todayGoal._id}>
               <div className="card-body">
