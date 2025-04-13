@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ReminderForm from '../components/ReminderForm';
 import { useAuth } from '../context/AuthContext';
+const moment = require('moment-timezone');
 
 export default function GoalForm() {
   const { user, refresh } = useAuth();
