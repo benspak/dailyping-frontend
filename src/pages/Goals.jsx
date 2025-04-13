@@ -157,6 +157,10 @@ export default function Goals() {
         </div>
       </div>
 
+      <div className="mb-4 text-end">
+        <a href="/goals/form" className="btn btn-primary">+ New Goal</a>
+      </div>
+
       {/* Today's Goals */}
       {activeGoals.length > 0 && (
         <>
@@ -207,9 +211,6 @@ export default function Goals() {
               </div>
             </div>
           ))}
-          <div className="mb-4 text-end">
-            <a href="/goals/form" className="btn btn-primary">+ New Goal</a>
-          </div>
         </>
       )}
 
