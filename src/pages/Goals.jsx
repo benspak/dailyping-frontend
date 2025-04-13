@@ -177,7 +177,7 @@ export default function Goals() {
                 {renderReminders(todayGoal.reminders)}
                 {todayGoal.date && (
                   <p className="text-muted small mb-2">
-                    <strong>Due:</strong> {moment.tz(goal.date, "YYYY-MM-DD", userTimezone).format("MMMM D, YYYY")}
+                    <strong>Due:</strong> {moment.tz(todayGoal.date, "YYYY-MM-DD", userTimezone).format("MMMM D, YYYY")}
                   </p>
                 )}
                 {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
@@ -239,7 +239,7 @@ export default function Goals() {
                     {renderReminders(r.reminders)}
                     {r.date && (
                       <p className="text-muted small mb-2">
-                        <strong>Due:</strong> {moment.tz(goal.date, "YYYY-MM-DD", userTimezone).format("MMMM D, YYYY")}
+                        <strong>Due:</strong> {moment.tz(r.date, "YYYY-MM-DD", userTimezone).format("MMMM D, YYYY")}
                       </p>
                     )}
                     {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
