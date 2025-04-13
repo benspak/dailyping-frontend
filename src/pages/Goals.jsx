@@ -182,27 +182,28 @@ export default function Goals() {
 
   return (
     <div className="container py-5">
-    {goals.filter(g => g.date > todayDate).length > 0 && (
-      <div className="mb-3">
-        <h5 className="text-muted">Upcoming Goals</h5>
-        <ul className="list-unstyled mb-2">
-          {goals
-            .filter(g => g.date > todayDate)
-            .sort((a, b) => a.date.localeCompare(b.date))
-            .slice(0, 3)
-            .map(goal => (
-              <li key={goal._id} className="text-muted small">
-                <strong>{goal.date}</strong>: {goal.content}
-              </li>
-          ))}
-        </ul>
-      </div>
-    )}
-    <h3>Today is {todayDate}</h3>
+
       {/* Header */}
       <div className="card shadow-sm mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mt-3 mt-md-0">
+            {goals.filter(g => g.date > todayDate).length > 0 && (
+              <div className="mb-3">
+                <h5 className="text-muted">Upcoming Goals</h5>
+                <ul className="list-unstyled mb-2">
+                  {goals
+                    .filter(g => g.date > todayDate)
+                    .sort((a, b) => a.date.localeCompare(b.date))
+                    .slice(0, 3)
+                    .map(goal => (
+                      <li key={goal._id} className="text-muted small">
+                        <strong>{goal.date}</strong>: {goal.content}
+                      </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <h3>Today is {todayDate}</h3>
             <div className="mb-2">
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
