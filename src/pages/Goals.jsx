@@ -3,6 +3,7 @@ import axios from "axios";
 import { registerPush } from "../utils/registerPush";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
+import moment from "moment-timezone";
 
 export default function Goals() {
   const { user, loading, refresh } = useAuth();
@@ -10,7 +11,9 @@ export default function Goals() {
   const [taskState, setTaskState] = useState({});
   const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
   const [activePastAccordion, setActivePastAccordion] = useState(null);
-  const todayDate = new Date().toISOString().split("T")[0];
+  const userTimezone = user?.timezone || process.env.SERVER_TIMEZONE || "America/New_York";
+  const now = moment().tz(userTimezone);
+  const todayDate = now.format("YYYY-MM-DD");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -132,25 +135,20 @@ export default function Goals() {
     );
   }
 
-  const today = new Date();
-  const oneWeekAgo = new Date(today);
-  oneWeekAgo.setDate(today.getDate() - 6);
-  const todayISO = today.toISOString().split("T")[0];
-  const weekAgoISO = oneWeekAgo.toISOString().split("T")[0];
-
+  const oneWeekAgo = now.clone().subtract(6, "days").format("YYYY-MM-DD");
   const activeResponses = goals.filter((r) => !r.completed);
-  const activeGoals = activeResponses.filter((r) => r.date === todayISO);
-  const weeklyGoals = activeResponses.filter((r) => r.date > weekAgoISO && r.date < todayISO);
-  const olderGoals = activeResponses.filter((r) => r.date <= weekAgoISO);
+  const activeGoals = activeResponses.filter((r) => r.date === todayDate);
+  const weeklyGoals = activeResponses.filter((r) => r.date > oneWeekAgo && r.date < todayDate);
+  const olderGoals = activeResponses.filter((r) => r.date <= oneWeekAgo);
 
   return (
     <div className="container py-5">
+      <h3>Today is {todayDate}</h3>
       {/* Header */}
       <div className="card shadow-sm mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
-              <h3>Today is {todayDate}</h3>
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
             </div>
