@@ -20,6 +20,7 @@ export default function GoalForm() {
   const [isEditing, setIsEditing] = useState(false);
   const [note, setNote] = useState('');
   const [date, setDate] = useState('');
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
@@ -168,8 +169,8 @@ export default function GoalForm() {
               </div>
             )}
 
-            <h6 className="text-muted">Optional sub-tasks:</h6>
-            {[0, 1, 2, 3, 4].map((i) => (
+            <h6 className="text-muted">Sub-tasks:</h6>
+            {subTasks.slice(0, showAll ? 5 : 1).map((_, i) => (
               <div key={i} className="mb-3">
                 <input
                   type="text"
@@ -190,6 +191,17 @@ export default function GoalForm() {
                 )}
               </div>
             ))}
+            {!showAll && (
+              <div className="text-end mb-3">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={() => setShowAll(true)}
+                >
+                  + Add More Subtasks
+                </button>
+              </div>
+            )}
 
             <div className="mb-3">
               <label className="form-label fw-bold">Note (optional)</label>
