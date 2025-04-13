@@ -4,6 +4,7 @@ import { registerPush } from "../utils/registerPush";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import moment from "moment-timezone";
+import confetti from 'canvas-confetti';
 
 export default function Goals() {
   const { user, loading, refresh } = useAuth();
@@ -61,6 +62,39 @@ export default function Goals() {
     fetchData();
   }, [user, refresh, navigate]);
 
+  useEffect(() => {
+    goals.forEach((goal) => {
+      if (goal.subTasks?.length > 0 && taskState[goal._id]) {
+        const states = taskState[goal._id];
+        const allComplete = goal.subTasks.every((_, idx) => states[idx]);
+
+        if (allComplete && !states.goalCompleted) {
+          const token = localStorage.getItem("token");
+          axios.post(
+            "https://api.dailyping.org/api/goal/toggle-goal",
+            { goalId: goal._id, completed: true },
+            { headers: { Authorization: `Bearer ${token}` } }
+          ).then(() => {
+            const updated = {
+              ...taskState,
+              [goal._id]: { ...states, goalCompleted: true }
+            };
+            setTaskState(updated);
+            const audio = new Audio("/Done.mp3");
+            audio.play().catch(err => console.warn("Unable to autoplay sound:", err));
+            confetti({
+              particleCount: 100,
+              spread: 70,
+              origin: { y: 0.6 }
+            });
+          }).catch(err => {
+            console.error("Failed to mark goal complete:", err);
+          });
+        }
+      }
+    });
+  }, [taskState, goals]);
+
   const toggleTask = async (goalId, index) => {
     const token = localStorage.getItem("token");
     const updated = {
@@ -103,6 +137,11 @@ export default function Goals() {
           // ✅ Play sound when all subtasks are completed
           const audio = new Audio("/Done.mp3");
           audio.play().catch(err => console.warn("Unable to autoplay sound:", err));
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
         }
       }
     } catch (err) {
