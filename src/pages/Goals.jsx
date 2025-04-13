@@ -150,6 +150,7 @@ export default function Goals() {
         <div className="row align-items-center">
           <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
+              <h3>Today is {todayDate}</h3>
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
             </div>
