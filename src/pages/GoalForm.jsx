@@ -99,6 +99,9 @@ export default function GoalForm() {
         await axios.put(`https://api.dailyping.org/api/goal/${submittedGoalId}`, payload, { headers });
       } else {
         await axios.post(`https://api.dailyping.org/api/goal`, payload, { headers });
+
+        // 🎯 Trigger streak update
+        await axios.post(`https://api.dailyping.org/api/streak/update`, {}, { headers });
       }
 
       navigate('/goals');
