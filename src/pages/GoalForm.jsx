@@ -24,6 +24,7 @@ export default function GoalForm() {
   const [showAll, setShowAll] = useState(false);
   const [suggestedSubtasks, setSuggestedSubtasks] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(null);
 
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
@@ -116,29 +117,29 @@ export default function GoalForm() {
 
   const isStillVerifying = !tokenValid;
 
-const fetchSubtaskSuggestions = async () => {
-  if (!goal) return;
+  const fetchSubtaskSuggestions = async () => {
+    if (!goal) return;
 
-  setLoadingSuggestions(true);
-  try {
-    const token = localStorage.getItem('token');
-    const { data } = await axios.post(
-      'https://api.dailyping.org/api/ai/suggest-subtasks',
-      { goal },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    setSuggestedSubtasks(data.subtasks);
-  } catch (err) {
-    alert('Failed to get suggestions.');
-    console.error(err);
-  } finally {
-    setLoadingSuggestions(false);
-  }
-};
+    setLoadingSuggestions(true);
+    try {
+      const token = localStorage.getItem('token');
+      const { data } = await axios.post(
+        'https://api.dailyping.org/api/ai/suggest-subtasks',
+        { goal },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setSuggestedSubtasks(data.subtasks);
+    } catch (err) {
+      alert('Failed to get suggestions.');
+      console.error(err);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
 
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
@@ -166,6 +167,9 @@ const fetchSubtaskSuggestions = async () => {
                       if (i < updated.length) updated[i].text = task;
                       else updated.push({ text: task, reminders: [] });
                       setSubTasks(updated);
+                      setSuggestedSubtasks((prev) => prev.filter((_, idx) => idx !== i));
+                      setHighlightedIndex(i);
+                      setTimeout(() => setHighlightedIndex(null), 800);
                     }}
                   >
                     ✅ Add: {task}
@@ -233,7 +237,7 @@ const fetchSubtaskSuggestions = async () => {
                 <div key={i} className="mb-3">
                   <input
                     type="text"
-                    className="form-control mb-2"
+                    className={`form-control mb-2 ${highlightedIndex === i ? 'border-success border-3 flash-border' : ''}`}
                     placeholder={`Sub-task ${i + 1}`}
                     value={subTasks[i]?.text || ''}
                     onChange={(e) => handleSubTaskTextChange(i, e.target.value)}
