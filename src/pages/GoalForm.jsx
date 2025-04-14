@@ -223,9 +223,11 @@ export default function GoalForm() {
               )}
 
               <label className="form-label fw-bold">Sub-tasks:</label>
-              <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
-                {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
-              </Button>
+              <div>
+                <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
+                  {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
+                </Button>
+              </div>
 
               {suggestedSubtasks.length > 0 && (
                 <div className="mt-3">
