@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import ReminderForm from '../components/ReminderForm';
 import { useAuth } from '../context/AuthContext';
+import { Button, Spinner } from 'react-bootstrap';
 
 export default function GoalForm() {
   const { user, refresh } = useAuth();
@@ -21,6 +22,9 @@ export default function GoalForm() {
   const [note, setNote] = useState('');
   const [date, setDate] = useState('');
   const [showAll, setShowAll] = useState(false);
+  const [suggestedSubtasks, setSuggestedSubtasks] = useState([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
 
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
@@ -113,6 +117,22 @@ export default function GoalForm() {
 
   if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
 
+  const fetchSubtaskSuggestions = async () => {
+    if (!goal) return;
+
+    setLoadingSuggestions(true);
+    try {
+      const { data } = await axios.post('https://api.dailyping.org/api/ai/suggest-subtasks', { goal });
+      setSuggestedSubtasks(data.subtasks);
+    } catch (err) {
+      alert('Failed to get suggestions.');
+      console.error(err);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="w-100" style={{ maxWidth: '600px' }}>
@@ -195,6 +215,36 @@ export default function GoalForm() {
                 )}
               </div>
             ))}
+
+
+              <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
+                {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
+              </Button>
+
+              {suggestedSubtasks.length > 0 && (
+                <div className="mt-3">
+                  <p><strong>Suggested Subtasks:</strong></p>
+                  {suggestedSubtasks.map((task, i) => (
+                    <div key={i}>
+                      <Button
+                        variant="outline-success"
+                        size="sm"
+                        className="me-2 mb-2"
+                        onClick={() => {
+                          const updated = [...subTasks];
+                          if (i < updated.length) updated[i].text = task;
+                          else updated.push({ text: task, reminders: [] });
+                          setSubTasks(updated);
+                        }}
+                      >
+                        ✅ Add: {task}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+
             {!showAll && (
               <div className="text-end mb-3">
                 <button
