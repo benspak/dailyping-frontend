@@ -39,7 +39,7 @@ export default function Home() {
         <ul className="list-unstyled">
           <li>✅ ADHD-friendly design</li>
           <li>🧠 Builds mindful habits</li>
-          <li>🛠 Reduces overwhelm with tiny tasks</li>
+          <li>🛠 Reduces overwhelm with tiny tasks (est 2 hours)</li>
           <li>🎯 Triggers deep focus</li>
           <li>📈 Helps track consistency</li>
         </ul>
@@ -56,10 +56,10 @@ export default function Home() {
         <ul className="list-unstyled">
           <li>✨ AI-powered subtask suggestions</li>
           <li>📝 Add notes + reminders to goals</li>
-          <li>✅ Mark subtasks complete on dashboard</li>
+          <li>✅ Mark subtasks complete under Goals</li>
           <li>📅 View upcoming goals in calendar cards</li>
           <li>🔗 Share public links to goals and projects</li>
-          <li>📦 Organize your week with Projects + Queue</li>
+          <li>📦 Organize your week with Projects + Backlog</li>
         </ul>
       </section>
 
@@ -77,13 +77,13 @@ export default function Home() {
             </ul>
           </div>
           <div className="col-md-6 mb-4">
-            <h3 className="h5 fw-semibold">Pro — $12/yr</h3>
+            <h3 className="h5 fw-semibold">Pro — $36/yr</h3>
             <ul className="list-unstyled">
               <li>⭐ Goal & subtask reminders (email/push)</li>
-              <li>⭐ Calendar view</li>
-              <li>⭐ Goal sharing & Projects</li>
-              <li>⭐ Smart queue for unplanned tasks</li>
               <li>⭐ Unlock AI suggestions</li>
+              <li>⭐ Calendar view (coming soon)</li>
+              <li>⭐ Goal sharing & Projects (coming soon)</li>
+              <li>⭐ Smart backlog for unplanned tasks (coming soon)</li>
             </ul>
           </div>
         </div>
