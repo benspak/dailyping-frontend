@@ -164,11 +164,13 @@ export default function GoalForm() {
                     className="me-2 mb-2"
                     onClick={() => {
                       const updated = [...subTasks];
-                      if (i < updated.length) updated[i].text = task;
-                      else updated.push({ text: task, reminders: [] });
+                      const firstBlankIndex = updated.findIndex((s) => !s.text.trim());
+                      if (firstBlankIndex === -1) return; // no empty slot
+
+                      updated[firstBlankIndex].text = task;
                       setSubTasks(updated);
                       setSuggestedSubtasks((prev) => prev.filter((_, idx) => idx !== i));
-                      setHighlightedIndex(i);
+                      setHighlightedIndex(firstBlankIndex);
                       setTimeout(() => setHighlightedIndex(null), 800);
                     }}
                   >
