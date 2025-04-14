@@ -190,17 +190,22 @@ export default function Goals() {
             {goals.filter(g => g.date > todayDate).length > 0 && (
               <div className="mb-3">
                 <h5 className="text-muted">Upcoming Goals</h5>
-                <ul className="list-unstyled mb-2">
+                <div className="card-group">
                   {goals
                     .filter(g => g.date > todayDate)
                     .sort((a, b) => a.date.localeCompare(b.date))
                     .slice(0, 3)
                     .map(goal => (
-                      <li key={goal._id} className="text-muted small">
-                        <strong>{goal.date}</strong>: {goal.content}
-                      </li>
+                      <div className="card me-2" key={goal._id}>
+                        <div className="card-body">
+                          <h6 className="card-title">{goal.content}</h6>
+                          <p className="card-text">
+                            <small className="text-muted">Due: {goal.date}</small>
+                          </p>
+                        </div>
+                      </div>
                   ))}
-                </ul>
+                </div>
               </div>
             )}
           </div>
