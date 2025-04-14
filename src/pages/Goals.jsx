@@ -209,13 +209,13 @@ export default function Goals() {
               </div>
             )}
           </div>
-          <div className="col-md-auto text-center mt-3 mt-md-0">
+        </div>
+        <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
             </div>
           </div>
-        </div>
       </div>
 
       <div className="mb-4 text-end">
