@@ -25,7 +25,7 @@ export default function Goals() {
       navigate('/setup-username');
     }
 
-    // Pro status check
+    // Logged in status check
     if(user) {
       refresh;
     }
@@ -215,14 +215,13 @@ export default function Goals() {
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
             </div>
-        </div>
-        <div>
+            <div>
               <p className="mb-1 fw-bold text-muted">Pro Status</p>
               <span className={`badge fs-6 ${user.pro === 'active' ? "bg-primary" : "bg-secondary"}`}>
                 {user.pro === 'active' ? "✅ Active" : "❌ Not active"}
               </span>
+            </div>
         </div>
-
       </div>
 
       <div className="mb-4 text-end">
