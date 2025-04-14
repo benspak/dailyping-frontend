@@ -125,7 +125,7 @@ export default function GoalForm() {
       const token = localStorage.getItem('token');
       const { data } = await axios.post(
         'https://api.dailyping.org/api/ai/suggest-subtasks',
-        { goal },
+        { goal, existing: existingSubtaskTexts },
         {
           headers: {
             Authorization: `Bearer ${token}`,
