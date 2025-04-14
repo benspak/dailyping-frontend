@@ -143,6 +143,24 @@ export default function GoalForm() {
     }
   };
 
+  const fetchNoteSuggestion = async () => {
+  if (!goal) return;
+  const token = localStorage.getItem('token');
+  const cleanSubtasks = subTasks.map(t => t.text).filter(t => t.trim() !== '');
+
+  try {
+    const { data } = await axios.post(
+      'https://api.dailyping.org/api/ai/suggest-note',
+      { goal, subtasks: cleanSubtasks },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setNote(data.note);
+  } catch (err) {
+    alert('Failed to generate a note.');
+    console.error(err);
+  }
+};
+
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="w-100" style={{ maxWidth: '600px' }}>
@@ -150,38 +168,6 @@ export default function GoalForm() {
           <h3 className="mb-4 text-center">
             {isEditing ? 'Edit your goal' : 'What’s your goal?'}
           </h3>
-
-          <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
-            {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
-          </Button>
-
-          {suggestedSubtasks.length > 0 && (
-            <div className="mt-3">
-              <p><strong>Suggested Subtasks:</strong></p>
-              {suggestedSubtasks.map((task, i) => (
-                <div key={i}>
-                  <Button
-                    variant="outline-success"
-                    size="sm"
-                    className="me-2 mb-2"
-                    onClick={() => {
-                      const updated = [...subTasks];
-                      const firstBlankIndex = updated.findIndex((s) => !s.text.trim());
-                      if (firstBlankIndex === -1) return; // no empty slot
-
-                      updated[firstBlankIndex].text = task;
-                      setSubTasks(updated);
-                      setSuggestedSubtasks((prev) => prev.filter((_, idx) => idx !== i));
-                      setHighlightedIndex(firstBlankIndex);
-                      setTimeout(() => setHighlightedIndex(null), 800);
-                    }}
-                  >
-                    ✅ Add: {task}
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
 
           {!isStillVerifying ? (
             <form onSubmit={handleSubmit}>
@@ -236,6 +222,38 @@ export default function GoalForm() {
                 </div>
               )}
 
+              <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
+                {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
+              </Button>
+
+              {suggestedSubtasks.length > 0 && (
+                <div className="mt-3">
+                  <p><strong>Suggested Subtasks:</strong></p>
+                  {suggestedSubtasks.map((task, i) => (
+                    <div key={i}>
+                      <Button
+                        variant="outline-success"
+                        size="sm"
+                        className="me-2 mb-2"
+                        onClick={() => {
+                          const updated = [...subTasks];
+                          const firstBlankIndex = updated.findIndex((s) => !s.text.trim());
+                          if (firstBlankIndex === -1) return; // no empty slot
+
+                          updated[firstBlankIndex].text = task;
+                          setSubTasks(updated);
+                          setSuggestedSubtasks((prev) => prev.filter((_, idx) => idx !== i));
+                          setHighlightedIndex(firstBlankIndex);
+                          setTimeout(() => setHighlightedIndex(null), 800);
+                        }}
+                      >
+                        ✅ Add: {task}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <h6 className="text-muted">Sub-tasks:</h6>
               {subTasks.slice(0, showAll ? 5 : 1).map((_, i) => (
                 <div key={i} className="mb-3">
@@ -268,6 +286,15 @@ export default function GoalForm() {
                   >
                     + Add More Subtasks
                   </button>
+                </div>
+              )}
+
+              <Button onClick={fetchNoteSuggestion}>🧠 Generate Note</Button>
+
+              {note && (
+                <div className="alert alert-secondary mt-3">
+                  <h6 className="fw-bold">Suggested Note:</h6>
+                  <p className="mb-0" style={{ whiteSpace: 'pre-line' }}>{note}</p>
                 </div>
               )}
 
