@@ -25,7 +25,6 @@ export default function GoalForm() {
   const [suggestedSubtasks, setSuggestedSubtasks] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
-
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
     const goalId = params.get('id');
@@ -115,7 +114,7 @@ export default function GoalForm() {
     }
   };
 
-  if (!tokenValid) return <div className="container mt-5">Verifying token...</div>;
+  const isStillVerifying = !tokenValid;
 
   const fetchSubtaskSuggestions = async () => {
     if (!goal) return;
@@ -132,7 +131,6 @@ export default function GoalForm() {
     }
   };
 
-
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="w-100" style={{ maxWidth: '600px' }}>
@@ -141,160 +139,162 @@ export default function GoalForm() {
             {isEditing ? 'Edit your goal' : 'What’s your goal?'}
           </h3>
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <textarea
-                value={goal}
-                onChange={(e) => setGoal(e.target.value)}
-                className="form-control"
-                rows="4"
-                placeholder="Write your goal here..."
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label fw-bold">Due Date</label>
-              <input
-                type="date"
-                className="form-control"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                required
-              />
-            </div>
+          <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
+            {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
+          </Button>
 
-            {user?.pro === 'active' ? (
-              <div className="mb-4">
-                <label className="form-label fw-bold">Goal Reminders</label>
-                <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
-              </div>
-            ) : (
-              <div className="alert alert-info text-center">
-                <button
-                  className="btn btn-link p-0 text-decoration-none"
-                  onClick={async () => {
-                    const token = localStorage.getItem('token');
-                    try {
-                      const res = await axios.post(
-                        'https://api.dailyping.org/billing/create-checkout-session',
-                        {},
-                        { headers: { Authorization: `Bearer ${token}` } }
-                      )
-                      refresh();
-                      window.location.href = res.data.url;
-                    } catch (err) {
-                      console.error('❌ Stripe checkout error:', err.message);
-                      alert('Failed to initiate checkout.');
-                    }
-                  }}
-                >
-                  Upgrade to Pro to schedule reminders ⏰
-                </button>
-              </div>
-            )}
-
-            <h6 className="text-muted">Sub-tasks:</h6>
-            {subTasks.slice(0, showAll ? 5 : 1).map((_, i) => (
-              <div key={i} className="mb-3">
-                <input
-                  type="text"
-                  className="form-control mb-2"
-                  placeholder={`Sub-task ${i + 1}`}
-                  value={subTasks[i]?.text || ''}
-                  onChange={(e) => handleSubTaskTextChange(i, e.target.value)}
-                />
-                {user?.pro === 'active' && (
-                  <ReminderForm
-                    reminders={subTasks[i]?.reminders || []}
-                    setReminders={(newReminders) => {
+          {suggestedSubtasks.length > 0 && (
+            <div className="mt-3">
+              <p><strong>Suggested Subtasks:</strong></p>
+              {suggestedSubtasks.map((task, i) => (
+                <div key={i}>
+                  <Button
+                    variant="outline-success"
+                    size="sm"
+                    className="me-2 mb-2"
+                    onClick={() => {
                       const updated = [...subTasks];
-                      updated[i].reminders = newReminders;
+                      if (i < updated.length) updated[i].text = task;
+                      else updated.push({ text: task, reminders: [] });
                       setSubTasks(updated);
                     }}
-                  />
-                )}
+                  >
+                    ✅ Add: {task}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {!isStillVerifying ? (
+            <form onSubmit={handleSubmit}>
+              <div className="mb-3">
+                <textarea
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                  className="form-control"
+                  rows="4"
+                  placeholder="Write your goal here..."
+                  required
+                />
               </div>
-            ))}
+              <div className="mb-3">
+                <label className="form-label fw-bold">Due Date</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  required
+                />
+              </div>
 
-
-              <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
-                {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
-              </Button>
-
-              {suggestedSubtasks.length > 0 && (
-                <div className="mt-3">
-                  <p><strong>Suggested Subtasks:</strong></p>
-                  {suggestedSubtasks.map((task, i) => (
-                    <div key={i}>
-                      <Button
-                        variant="outline-success"
-                        size="sm"
-                        className="me-2 mb-2"
-                        onClick={() => {
-                          const updated = [...subTasks];
-                          if (i < updated.length) updated[i].text = task;
-                          else updated.push({ text: task, reminders: [] });
-                          setSubTasks(updated);
-                        }}
-                      >
-                        ✅ Add: {task}
-                      </Button>
-                    </div>
-                  ))}
+              {user?.pro === 'active' ? (
+                <div className="mb-4">
+                  <label className="form-label fw-bold">Goal Reminders</label>
+                  <ReminderForm reminders={goalReminders} setReminders={setGoalReminders} />
+                </div>
+              ) : (
+                <div className="alert alert-info text-center">
+                  <button
+                    className="btn btn-link p-0 text-decoration-none"
+                    onClick={async () => {
+                      const token = localStorage.getItem('token');
+                      try {
+                        const res = await axios.post(
+                          'https://api.dailyping.org/billing/create-checkout-session',
+                          {},
+                          { headers: { Authorization: `Bearer ${token}` } }
+                        )
+                        refresh();
+                        window.location.href = res.data.url;
+                      } catch (err) {
+                        console.error('❌ Stripe checkout error:', err.message);
+                        alert('Failed to initiate checkout.');
+                      }
+                    }}
+                  >
+                    Upgrade to Pro to schedule reminders ⏰
+                  </button>
                 </div>
               )}
 
+              <h6 className="text-muted">Sub-tasks:</h6>
+              {subTasks.slice(0, showAll ? 5 : 1).map((_, i) => (
+                <div key={i} className="mb-3">
+                  <input
+                    type="text"
+                    className="form-control mb-2"
+                    placeholder={`Sub-task ${i + 1}`}
+                    value={subTasks[i]?.text || ''}
+                    onChange={(e) => handleSubTaskTextChange(i, e.target.value)}
+                  />
+                  {user?.pro === 'active' && (
+                    <ReminderForm
+                      reminders={subTasks[i]?.reminders || []}
+                      setReminders={(newReminders) => {
+                        const updated = [...subTasks];
+                        updated[i].reminders = newReminders;
+                        setSubTasks(updated);
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
 
-            {!showAll && (
-              <div className="text-end mb-3">
+              {!showAll && (
+                <div className="text-end mb-3">
+                  <button
+                    type="button"
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={() => setShowAll(true)}
+                  >
+                    + Add More Subtasks
+                  </button>
+                </div>
+              )}
+
+              <div className="mb-3">
+                <label className="form-label fw-bold">Note (optional)</label>
+                <textarea
+                  className="form-control"
+                  rows="2"
+                  placeholder="Any notes about your goal..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                />
+              </div>
+
+              <button type="submit" className="btn btn-primary w-100 mt-3">
+                {isEditing ? 'Update Goal' : 'Submit Goal'}
+              </button>
+              {isEditing && (
                 <button
                   type="button"
-                  className="btn btn-sm btn-outline-primary"
-                  onClick={() => setShowAll(true)}
+                  className="btn btn-outline-danger w-100 mt-2"
+                  onClick={async () => {
+                    const confirmed = window.confirm("Are you sure you want to delete this goal?");
+                    if (!confirmed) return;
+
+                    const token = localStorage.getItem('token');
+                    try {
+                      await axios.delete(`https://api.dailyping.org/api/goal/${submittedGoalId}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                      });
+                      navigate('/goals');
+                    } catch (err) {
+                      console.error("❌ Deletion error:", err.response?.data || err.message);
+                      alert("Failed to delete goal.");
+                    }
+                  }}
                 >
-                  + Add More Subtasks
+                  🗑️ Delete Goal
                 </button>
-              </div>
-            )}
-
-            <div className="mb-3">
-              <label className="form-label fw-bold">Note (optional)</label>
-              <textarea
-                className="form-control"
-                rows="2"
-                placeholder="Any notes about your goal..."
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary w-100 mt-3">
-              {isEditing ? 'Update Goal' : 'Submit Goal'}
-            </button>
-            {isEditing && (
-              <button
-                type="button"
-                className="btn btn-outline-danger w-100 mt-2"
-                onClick={async () => {
-                  const confirmed = window.confirm("Are you sure you want to delete this goal?");
-                  if (!confirmed) return;
-
-                  const token = localStorage.getItem('token');
-                  try {
-                    await axios.delete(`https://api.dailyping.org/api/goal/${submittedGoalId}`, {
-                      headers: { Authorization: `Bearer ${token}` }
-                    });
-                    navigate('/goals');
-                  } catch (err) {
-                    console.error("❌ Deletion error:", err.response?.data || err.message);
-                    alert("Failed to delete goal.");
-                  }
-                }}
-              >
-                🗑️ Delete Goal
-              </button>
-            )}
-          </form>
+              )}
+            </form>
+          ) : (
+            <div className="container mt-5">Verifying token...</div>
+          )}
         </div>
       </div>
     </div>
