@@ -10,9 +10,9 @@ export default function Home() {
       <section className="text-center mb-5">
         <h1 className="display-4 fw-bold">Start your day with clarity.</h1>
         <p className="lead mt-3">
-          DailyPing asks you one simple question every morning:<br />
-          <strong>“What’s your #1 goal today?”</strong><br />
-          You reply. You commit. You get it done.
+          DailyPing is your ADHD-friendly productivity buddy. <br />
+          Every day, we ask just one question: <strong>“What’s your #1 goal?”</strong> <br />
+          You commit. You get it done. You build momentum.
         </p>
         <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">
           <button className="btn btn-dark btn-lg" onClick={() => navigate('/login')}>Start Free</button>
@@ -23,9 +23,10 @@ export default function Home() {
       <section className="mb-5">
         <h2 className="h4 fw-bold mb-3">How It Works</h2>
         <ul className="list-unstyled">
-          <li>• <strong>Every morning</strong>, we ping you by email (or text).</li>
-          <li>• You answer with your top goal for the day.</li>
-          <li>• Your streak grows. Your mind clears. You focus.</li>
+          <li>• Wake up to a daily email or push ping</li>
+          <li>• Set your #1 goal + 3 subtasks</li>
+          <li>• Optional: add reminders to stay on track</li>
+          <li>• Check off tasks. Celebrate progress.</li>
         </ul>
         <blockquote className="blockquote mt-3">
           <p className="fst-italic">No dashboards to obsess over. Just momentum.</p>
@@ -36,10 +37,11 @@ export default function Home() {
       <section className="mb-5">
         <h2 className="h4 fw-bold mb-3">Why It Works</h2>
         <ul className="list-unstyled">
-          <li>✅ Clarity over clutter</li>
-          <li>🧠 Builds daily intention</li>
-          <li>🔁 Turns goals into habits</li>
-          <li>💥 Breaks procrastination loops</li>
+          <li>✅ ADHD-friendly design</li>
+          <li>🧠 Builds mindful habits</li>
+          <li>🛠 Reduces overwhelm with tiny tasks</li>
+          <li>🎯 Triggers deep focus</li>
+          <li>📈 Helps track consistency</li>
         </ul>
       </section>
 
@@ -47,6 +49,18 @@ export default function Home() {
       <section className="mb-5">
         <h2 className="h4 fw-bold mb-3">Built for humans, not hustle culture</h2>
         <p>DailyPing is for indie makers, creatives, students, and anyone who wants to move forward without burnout.</p>
+      </section>
+
+      <section className="mb-5">
+        <h2 className="h4 fw-bold mb-3">What’s New</h2>
+        <ul className="list-unstyled">
+          <li>✨ AI-powered subtask suggestions</li>
+          <li>📝 Add notes + reminders to goals</li>
+          <li>✅ Mark subtasks complete on dashboard</li>
+          <li>📅 View upcoming goals in calendar cards</li>
+          <li>🔗 Share public links to goals and projects</li>
+          <li>📦 Organize your week with Projects + Queue</li>
+        </ul>
       </section>
 
       {/* Pricing */}
@@ -65,9 +79,11 @@ export default function Home() {
           <div className="col-md-6 mb-4">
             <h3 className="h5 fw-semibold">Pro — $12/yr</h3>
             <ul className="list-unstyled">
-              <li>⭐ Goal reminders (email, push notification)</li>
-              <li>⭐ Calendar view (coming soon)</li>
-              <li>⭐ Goal sharing / projects (coming soon)</li>
+              <li>⭐ Goal & subtask reminders (email/push)</li>
+              <li>⭐ Calendar view</li>
+              <li>⭐ Goal sharing & Projects</li>
+              <li>⭐ Smart queue for unplanned tasks</li>
+              <li>⭐ Unlock AI suggestions</li>
             </ul>
           </div>
         </div>
@@ -87,6 +103,10 @@ export default function Home() {
         <blockquote className="blockquote mt-4">
           <p className="mb-1">"I finally have a system that doesn’t stress me out."</p>
           <footer className="blockquote-footer">James, ADHD coach</footer>
+        </blockquote>
+        <blockquote className="blockquote mt-4">
+          <p className="mb-1">"The AI suggestions help me break down goals when my brain is stuck."</p>
+          <footer className="blockquote-footer">Talia, grad student with ADHD</footer>
         </blockquote>
       </section>
 
