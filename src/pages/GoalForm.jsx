@@ -116,20 +116,29 @@ export default function GoalForm() {
 
   const isStillVerifying = !tokenValid;
 
-  const fetchSubtaskSuggestions = async () => {
-    if (!goal) return;
+const fetchSubtaskSuggestions = async () => {
+  if (!goal) return;
 
-    setLoadingSuggestions(true);
-    try {
-      const { data } = await axios.post('https://api.dailyping.org/api/ai/suggest-subtasks', { goal });
-      setSuggestedSubtasks(data.subtasks);
-    } catch (err) {
-      alert('Failed to get suggestions.');
-      console.error(err);
-    } finally {
-      setLoadingSuggestions(false);
-    }
-  };
+  setLoadingSuggestions(true);
+  try {
+    const token = localStorage.getItem('token');
+    const { data } = await axios.post(
+      'https://api.dailyping.org/api/suggest-subtasks',
+      { goal },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    setSuggestedSubtasks(data.subtasks);
+  } catch (err) {
+    alert('Failed to get suggestions.');
+    console.error(err);
+  } finally {
+    setLoadingSuggestions(false);
+  }
+};
 
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
