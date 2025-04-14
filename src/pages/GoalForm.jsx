@@ -120,6 +120,8 @@ export default function GoalForm() {
   const fetchSubtaskSuggestions = async () => {
     if (!goal) return;
 
+    const existingSubtaskTexts = subTasks.map((t) => t.text).filter((t) => t.trim() !== '');
+
     setLoadingSuggestions(true);
     try {
       const token = localStorage.getItem('token');
