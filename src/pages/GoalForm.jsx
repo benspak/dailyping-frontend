@@ -58,8 +58,8 @@ export default function GoalForm() {
           setNote(data.note || '');
           setDate(data.date || '');
           const padded = Array.isArray(data.subTasks) ? [...data.subTasks] : [];
-          while (padded.length < 5) padded.push({ text: '', reminders: [] });
-          setSubTasks(padded.slice(0, 5));
+          while (padded.length < 3) padded.push({ text: '', reminders: [] });
+          setSubTasks(padded.slice(0, 3));
           setIsEditing(true);
         }
         return;
