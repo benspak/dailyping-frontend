@@ -222,6 +222,7 @@ export default function GoalForm() {
                 </div>
               )}
 
+              <label className="form-label fw-bold">Sub-tasks:</label>
               <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
                 {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
               </Button>
@@ -254,7 +255,6 @@ export default function GoalForm() {
                 </div>
               )}
 
-              <h6 className="text-muted">Sub-tasks:</h6>
               {subTasks.slice(0, showAll ? 5 : 1).map((_, i) => (
                 <div key={i} className="mb-3">
                   <input
