@@ -106,5 +106,47 @@
     "title": "Started Pro Features",
     "description": "Initial implementation of Pro features like scheduled pings, tones, and timezone settings.",
     "type": "feature"
+  },
+  {
+    "date": "2025-04-13",
+    "title": "AI-Generated Subtask Suggestions",
+    "description": "Users can now generate AI-powered suggestions for subtasks based on their goal using GPT-4.",
+    "type": "feature"
+  },
+  {
+    "date": "2025-04-13",
+    "title": "Smart Note Generation",
+    "description": "Pro users can generate a detailed, actionable note for their goal and subtasks using GPT-4.",
+    "type": "feature"
+  },
+  {
+    "date": "2025-04-13",
+    "title": "Subtask Suggestion Button Enhancements",
+    "description": "Suggestion buttons are now disabled if no empty subtask field is available and flash when filled.",
+    "type": "update"
+  },
+  {
+    "date": "2025-04-13",
+    "title": "Note Preview UI",
+    "description": "Added preview display for AI-generated notes in the goal form with character limit truncation on dashboard.",
+    "type": "update"
+  },
+  {
+    "date": "2025-04-13",
+    "title": "Updated Pro Pricing",
+    "description": "Annual Pro subscription updated from $12/year to $36/year.",
+    "type": "update"
+  },
+  {
+    "date": "2025-04-13",
+    "title": "Homepage Copy Overhaul",
+    "description": "Homepage rewritten with updated feature highlights, pricing, and ADHD-friendly messaging from makebook.pdf.",
+    "type": "update"
+  },
+  {
+    "date": "2025-04-13",
+    "title": "Terminology Update",
+    "description": "Changed 'Queue' to 'Backlog' and 'Dashboard' to 'Goals' throughout the app and marketing pages.",
+    "type": "update"
   }
 ]

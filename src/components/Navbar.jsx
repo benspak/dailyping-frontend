@@ -64,9 +64,14 @@ export default function Navbar() {
                 </li>
               </>
             ) : (
-              <li className="nav-item">
-                <Link className="nav-link" to="/login" onClick={() => setExpanded(false)}>Login</Link>
-              </li>
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/login" onClick={() => setExpanded(false)}>Login</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/changelog" onClick={() => setExpanded(false)}>Changelog</Link>
+                </li>
+              </>
             )}
           </ul>
         </div>
