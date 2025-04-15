@@ -25,6 +25,7 @@ export default function GoalForm() {
   const [suggestedSubtasks, setSuggestedSubtasks] = useState([]);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(null);
+  const [loadingNote, setLoadingNote] = useState(false);
 
   useEffect(() => {
     const tokenFromStorage = localStorage.getItem('token');
@@ -144,22 +145,25 @@ export default function GoalForm() {
   };
 
   const fetchNoteSuggestion = async () => {
-  if (!goal) return;
-  const token = localStorage.getItem('token');
-  const cleanSubtasks = subTasks.map(t => t.text).filter(t => t.trim() !== '');
+    if (!goal) return;
+    const token = localStorage.getItem('token');
+    const cleanSubtasks = subTasks.map(t => t.text).filter(t => t.trim() !== '');
 
-  try {
-    const { data } = await axios.post(
-      'https://api.dailyping.org/api/ai/suggest-note',
-      { goal, subtasks: cleanSubtasks },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setNote(data.note);
-  } catch (err) {
-    alert('Failed to generate a note.');
-    console.error(err);
-  }
-};
+    setLoadingNote(true);
+    try {
+      const { data } = await axios.post(
+        'https://api.dailyping.org/api/ai/suggest-note',
+        { goal, subtasks: cleanSubtasks },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNote(data.note);
+    } catch (err) {
+      alert('Failed to generate a note.');
+      console.error(err);
+    } finally {
+      setLoadingNote(false);
+    }
+  };
 
   return (
     <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
@@ -300,7 +304,11 @@ export default function GoalForm() {
 
               <div className="mb-3">
                 <label className="form-label fw-bold">Note (optional)</label>
-                <Button onClick={fetchNoteSuggestion}>🧠 Generate Note</Button>
+                <div>
+                  <Button onClick={fetchNoteSuggestion} disabled={!goal || subTasks.every(t => !t.text.trim()) || loadingNote}>
+                    {loadingNote ? <Spinner size="sm" animation="border" /> : '🧠 Generate Note'}
+                  </Button>
+                </div>
                 <textarea
                   className="form-control"
                   rows="2"
