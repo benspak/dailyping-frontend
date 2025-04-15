@@ -395,7 +395,7 @@ export default function Goals() {
                           >
                             {task.text}
                           </label>
-                          {task.note && <p className="text-muted small fst-italic">{task.note}</p>}
+                          {task.note && <p className="text-muted small fst-italic">{task.note.length > 100 ? task.note.slice(0, 100) + '…' : task.note}</p>}
                         </div>
                         {renderReminders(task.reminders)}
                       </div>

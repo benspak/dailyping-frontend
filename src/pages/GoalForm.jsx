@@ -291,8 +291,6 @@ export default function GoalForm() {
                 </div>
               )}
 
-              <Button onClick={fetchNoteSuggestion}>🧠 Generate Note</Button>
-
               {note && (
                 <div className="alert alert-secondary mt-3">
                   <h6 className="fw-bold">Suggested Note:</h6>
@@ -302,6 +300,7 @@ export default function GoalForm() {
 
               <div className="mb-3">
                 <label className="form-label fw-bold">Note (optional)</label>
+                <Button onClick={fetchNoteSuggestion}>🧠 Generate Note</Button>
                 <textarea
                   className="form-control"
                   rows="2"
