@@ -248,7 +248,7 @@ export default function Goals() {
                     <strong>Due:</strong> {moment.tz(todayGoal.date, "YYYY-MM-DD", userTimezone).format("MMMM D, YYYY")}
                   </p>
                 )}
-                {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note}</p>}
+                {todayGoal.note && <p className="text-muted small fst-italic">{todayGoal.note.length > 100 ? todayGoal.note.slice(0, 100) + '…' : todayGoal.note}</p>}
                 <div className="text-end">
                   <a href={`/goals/form?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
                     Edit
@@ -310,7 +310,7 @@ export default function Goals() {
                         <strong>Due:</strong> {moment.tz(r.date, "YYYY-MM-DD", userTimezone).format("MMMM D, YYYY")}
                       </p>
                     )}
-                    {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
+                    {r.note && <p className="text-muted small fst-italic">{r.note.length > 100 ? r.note.slice(0, 100) + '…' : r.note}</p>}
                     <div className="text-end">
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
@@ -370,7 +370,7 @@ export default function Goals() {
                   className={`accordion-collapse collapse ${activePastAccordion === index ? "show" : ""}`}
                 >
                   <div className="accordion-body">
-                    {r.note && <p className="text-muted small fst-italic">{r.note}</p>}
+                    {r.note && <p className="text-muted small fst-italic">{r.note.length > 100 ? r.note.slice(0, 100) + '…' : r.note}</p>}
                     {renderReminders(r.reminders)}
                     <div className="text-end">
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
