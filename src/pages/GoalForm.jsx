@@ -119,7 +119,19 @@ export default function GoalForm() {
   const isStillVerifying = !tokenValid;
 
   const fetchSubtaskSuggestions = async () => {
-    if (!goal) return;
+    if (!goal || user?.pro !== 'active') {
+      if (window.confirm('AI suggestions are available to Pro users only. Upgrade now?')) {
+        const token = localStorage.getItem('token');
+        const res = await axios.post(
+          'https://api.dailyping.org/billing/create-checkout-session',
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        refresh();
+        window.location.href = res.data.url;
+      }
+      return;
+    }
 
     const existingSubtaskTexts = subTasks.map((t) => t.text).filter((t) => t.trim() !== '');
 
@@ -145,7 +157,19 @@ export default function GoalForm() {
   };
 
   const fetchNoteSuggestion = async () => {
-    if (!goal) return;
+    if (!goal || user?.pro !== 'active') {
+      if (window.confirm('AI notes are available to Pro users only. Upgrade now?')) {
+        const token = localStorage.getItem('token');
+        const res = await axios.post(
+          'https://api.dailyping.org/billing/create-checkout-session',
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        refresh();
+        window.location.href = res.data.url;
+      }
+      return;
+    }
     const token = localStorage.getItem('token');
     const cleanSubtasks = subTasks.map(t => t.text).filter(t => t.trim() !== '');
 
@@ -228,7 +252,7 @@ export default function GoalForm() {
 
               <label className="form-label fw-bold">Sub-tasks:</label>
               <div>
-                <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
+                <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions || user?.pro !== 'active'}>
                   {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
                 </Button>
               </div>
@@ -305,7 +329,7 @@ export default function GoalForm() {
               <div className="mb-3">
                 <label className="form-label fw-bold">Note (optional)</label>
                 <div>
-                  <Button onClick={fetchNoteSuggestion} disabled={!goal || subTasks.every(t => !t.text.trim()) || loadingNote}>
+                  <Button onClick={fetchNoteSuggestion} disabled={!goal || subTasks.every(t => !t.text.trim()) || loadingNote || user?.pro !== 'active'}>
                     {loadingNote ? <Spinner size="sm" animation="border" /> : '🧠 Generate Note'}
                   </Button>
                 </div>
