@@ -245,16 +245,18 @@ export default function GoalForm() {
                       }
                     }}
                   >
-                    Upgrade to Pro to schedule reminders ⏰
+                    Upgrade to Pro to unlock reminders, AI subtask suggestions, and note generation ✨
                   </button>
                 </div>
               )}
 
               <label className="form-label fw-bold">Sub-tasks:</label>
               <div>
-                <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions || user?.pro !== 'active'}>
-                  {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
-                </Button>
+                {user?.pro === 'active' && (
+                  <Button variant="secondary" onClick={fetchSubtaskSuggestions} disabled={!goal || loadingSuggestions}>
+                    {loadingSuggestions ? <Spinner size="sm" animation="border" /> : '✨ Suggest Subtasks with AI'}
+                  </Button>
+                )}
               </div>
 
               {suggestedSubtasks.length > 0 && (
@@ -321,7 +323,6 @@ export default function GoalForm() {
 
               {note && (
                 <div className="alert alert-secondary mt-3">
-                  <h6 className="fw-bold">Suggested Note:</h6>
                   <p className="mb-0" style={{ whiteSpace: 'pre-line' }}>{note}</p>
                 </div>
               )}
@@ -329,9 +330,11 @@ export default function GoalForm() {
               <div className="mb-3">
                 <label className="form-label fw-bold">Note (optional)</label>
                 <div>
-                  <Button onClick={fetchNoteSuggestion} disabled={!goal || subTasks.every(t => !t.text.trim()) || loadingNote || user?.pro !== 'active'}>
-                    {loadingNote ? <Spinner size="sm" animation="border" /> : '🧠 Generate Note'}
-                  </Button>
+                  {user?.pro === 'active' && (
+                    <Button onClick={fetchNoteSuggestion} disabled={!goal || subTasks.every(t => !t.text.trim()) || loadingNote}>
+                      {loadingNote ? <Spinner size="sm" animation="border" /> : '🧠 Generate Note'}
+                    </Button>
+                  )}
                 </div>
                 <textarea
                   className="form-control"
