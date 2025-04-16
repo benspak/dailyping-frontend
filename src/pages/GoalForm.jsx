@@ -329,13 +329,13 @@ export default function GoalForm() {
 
               <div className="mb-3">
                 <label className="form-label fw-bold">Note (optional)</label>
-                <div>
+                {/*<div>
                   {user?.pro === 'active' && (
                     <Button onClick={fetchNoteSuggestion} disabled={!goal || subTasks.every(t => !t.text.trim()) || loadingNote}>
                       {loadingNote ? <Spinner size="sm" animation="border" /> : '🧠 Generate Note'}
                     </Button>
                   )}
-                </div>
+                </div>*/}
                 <textarea
                   className="form-control"
                   rows="2"
