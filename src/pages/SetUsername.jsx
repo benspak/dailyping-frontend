@@ -26,11 +26,21 @@ export default function SetUsername() {
       );
       // console.log(res.data)
       if (res.data.success) {
-        console.log("Successful response ...")
+        console.log("Successful response ...");
         setMessage(`You picked the username: ${username}`);
         setError('');
         await refresh();
-        navigate('/goals'); // now user should be hydrated with username
+
+        // Fetch /api/me to verify username is now set
+        const meRes = await axios.get('https://api.dailyping.org/api/me', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (meRes.data?.user?.username) {
+          navigate('/goals');
+        } else {
+          console.warn('Username not confirmed in /api/me response:', meRes.data);
+        }
       } else {
         console.warn('Unexpected response:', res.data);
         setError(res.data.message || 'Unexpected error occurred.');

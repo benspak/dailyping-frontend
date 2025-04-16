@@ -58,11 +58,11 @@ export function AuthProvider({ children }) {
       });
       setUser(res.data);
     } catch (err) {
-      console.error('❌ Failed to refresh /me:', err.message);
+      console.error('❌ Failed to refresh /api/me:', err.message);
     }
-};
+  };
 
-return (
+  return (
     <AuthContext.Provider value={{ user, setUser, token, setToken: handleSetToken, logout, loading, refresh }}>
       {children}
     </AuthContext.Provider>
