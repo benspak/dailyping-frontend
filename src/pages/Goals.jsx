@@ -219,7 +219,7 @@ export default function Goals() {
     <div className="container py-5">
 
       {/* Header */}
-      <div className="card shadow-sm mb-4">
+      <div className="card bg-light shadow-sm p-4 mb-4">
         <div className="row align-items-center">
           <div className="col-md-auto text-center mt-3 mt-md-0">
             {goals.filter(g => g.date > todayDate).length > 0 && (
@@ -250,12 +250,12 @@ export default function Goals() {
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
             </div>
-            <div className="mt-3">
+            {/*<div className="mt-3">
               <p className="mb-1 fw-bold text-muted">Goals Completed Today</p>
               <span className="badge bg-info fs-6">
               {goalsCompletedToday !== null ? goalsCompletedToday : "…"}
               </span>
-            </div>
+            </div>*/}
             <div>
               <p className="mb-1 fw-bold text-muted">Pro Status</p>
               <span className={`badge fs-6 ${user.pro === 'active' ? "bg-primary" : "bg-secondary"}`}>
@@ -274,7 +274,7 @@ export default function Goals() {
         <>
           <h4 className="mb-3">Today's Goals</h4>
           {activeGoals.map((todayGoal) => (
-            <div className="card border-success mb-4" key={todayGoal._id}>
+            <div className="card bg-light border-dark mb-4" key={todayGoal._id}>
               <div className="card-body">
                 <h5 className="card-title">
                   {taskState[todayGoal._id]?.goalCompleted ? (
