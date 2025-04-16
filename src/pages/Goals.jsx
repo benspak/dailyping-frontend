@@ -294,7 +294,7 @@ export default function Goals() {
                   <a href={`/goals/form?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
                     Edit
                   </a>
-                    {!taskState[todayGoal._id]?.goalCompleted && (
+                  {!taskState[todayGoal._id]?.goalCompleted && (
                     <button
                       className="btn btn-sm btn-outline-success ms-2"
                       onClick={() => toggleTask(todayGoal._id, "goalCompleted")}
