@@ -116,15 +116,7 @@ export default function Goals() {
       );
       setGoals(prevGoals =>
         prevGoals.map(g =>
-          g._id === goalId
-            ? {
-                ...g,
-                completed:
-                  g.date === todayDate && !showCompleted
-                    ? updated[goalId][index]
-                    : g.completed || updated[goalId][index]
-              }
-            : g
+          g._id === goalId ? { ...g, completed: updated[goalId][index] } : g
         )
       );
       setTaskState(prev => ({
