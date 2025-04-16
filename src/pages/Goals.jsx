@@ -12,6 +12,7 @@ export default function Goals() {
   const [taskState, setTaskState] = useState({});
   const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
   const [activePastAccordion, setActivePastAccordion] = useState(null);
+  const [showCompleted, setShowCompleted] = useState(false);
   const userTimezone = user?.timezone || process.env.SERVER_TIMEZONE || "America/New_York";
   const now = moment().tz(userTimezone);
   const todayDate = now.format("YYYY-MM-DD");
@@ -175,8 +176,8 @@ export default function Goals() {
   }
 
   const oneWeekAgo = now.clone().subtract(6, "days").format("YYYY-MM-DD");
-  const activeResponses = goals.filter((r) => !r.completed);
-  const activeGoals = activeResponses.filter((r) => r.date === todayDate);
+  const activeResponses = goals.filter((r) => showCompleted || !r.completed);
+  const activeGoals = activeResponses.filter((r) => r.date === todayDate && (showCompleted || !r.completed));
   const weeklyGoals = activeResponses.filter((r) => r.date > oneWeekAgo && r.date < todayDate);
   const olderGoals = activeResponses.filter((r) => r.date <= oneWeekAgo);
 
@@ -213,7 +214,14 @@ export default function Goals() {
         <div className="col-md-auto text-center mt-3 mt-md-0">
             <div className="mb-2">
               <p className="mb-1 fw-bold text-muted">Goal Streak</p>
-              <span className="badge bg-success fs-6">🔥 {user.streak?.current ?? 0} days</span>
+              <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
+            </div>
+            <div className="mt-3">
+              <p className="mb-1 fw-bold text-muted">Tasks Completed Today</p>
+              <span className="badge bg-info fs-6">
+                {activeGoals.reduce((sum, g) =>
+                  g.subTasks?.filter(t => t.completed).length || (g.subTasks?.length === 0 && g.completed ? 1 : 0) + sum, 0)}
+              </span>
             </div>
             <div>
               <p className="mb-1 fw-bold text-muted">Pro Status</p>
@@ -226,6 +234,15 @@ export default function Goals() {
 
       <div className="mb-4 text-end">
         <a href="/goals/form" className="btn btn-primary">+ New Goal</a>
+      </div>
+
+      <div className="mb-3 text-end">
+        <button
+          className="btn btn-sm btn-outline-secondary"
+          onClick={() => setShowCompleted(!showCompleted)}
+        >
+          {showCompleted ? "Hide Completed" : "Show Completed"}
+        </button>
       </div>
 
       {/* Today's Goals */}
