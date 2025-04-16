@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { registerPush } from "../utils/registerPush";
 import { useAuth } from "../context/AuthContext";
@@ -19,15 +19,15 @@ export default function Goals() {
   const todayDate = now.format("YYYY-MM-DD");
   const navigate = useNavigate();
 
+  const hasFired = useRef({});
+
   useEffect(() => {
     if (!user) return;
 
-    // Redirect if username needs to be set.
     if (user && !user.username) {
       navigate('/setup-username');
     }
 
-    // Logged in status check
     if(user) {
       refresh;
     }
@@ -50,6 +50,11 @@ export default function Goals() {
             ...subTaskStates,
             goalCompleted: r.completed === true
           };
+
+          // prevent confetti on first load for already-completed goals
+          if (r.completed === true) {
+            hasFired.current[r._id] = true;
+          }
         });
 
         setGoals(res.data);
@@ -61,6 +66,7 @@ export default function Goals() {
     };
 
     fetchData();
+
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -76,23 +82,32 @@ export default function Goals() {
   }, [user, refresh, navigate]);
 
   useEffect(() => {
-    goals.forEach((goal) => {
-      if (goal.subTasks?.length > 0 && taskState[goal._id]) {
+    const completeGoals = async () => {
+      const token = localStorage.getItem("token");
+
+      for (const goal of goals) {
         const states = taskState[goal._id];
+        if (!goal.subTasks?.length || !states || states.goalCompleted) continue;
+
         const allComplete = goal.subTasks.every((_, idx) => states[idx]);
 
-        if (allComplete && !states.goalCompleted) {
-          const token = localStorage.getItem("token");
-          axios.post(
-            "https://api.dailyping.org/api/goal/toggle-goal",
-            { goalId: goal._id, completed: true },
-            { headers: { Authorization: `Bearer ${token}` } }
-          ).then(() => {
-            const updated = {
-              ...taskState,
-              [goal._id]: { ...states, goalCompleted: true }
-            };
-            setTaskState(updated);
+        if (allComplete && !states.goalCompleted && !hasFired.current[goal._id]) {
+          try {
+            await axios.post(
+              "https://api.dailyping.org/api/goal/toggle-goal",
+              { goalId: goal._id, completed: true },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            hasFired.current[goal._id] = true;
+            setTaskState(prev => ({
+              ...prev,
+              [goal._id]: {
+                ...states,
+                goalCompleted: true
+              }
+            }));
+
             const audio = new Audio("/Done.mp3");
             audio.play().catch(err => console.warn("Unable to autoplay sound:", err));
             confetti({
@@ -100,12 +115,14 @@ export default function Goals() {
               spread: 70,
               origin: { y: 0.6 }
             });
-          }).catch(err => {
+          } catch (err) {
             console.error("Failed to mark goal complete:", err);
-          });
+          }
         }
       }
-    });
+    };
+
+    completeGoals();
   }, [goals]);
 
   const toggleTask = async (goalId, index) => {
