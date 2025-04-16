@@ -20,6 +20,7 @@ import Projects from './pages/Projects'
 import ProjectForm from './pages/ProjectForm'
 import ProjectView from './pages/ProjectView'
 import Backlog from './pages/Backlog'
+import FAQ from './pages/FAQ'
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
