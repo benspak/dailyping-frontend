@@ -277,7 +277,7 @@ export default function Goals() {
             <div className="card bg-light border-dark mb-4" key={todayGoal._id}>
               <div className="card-body">
                 <h5 className="card-title">
-                  {taskState[todayGoal._id]?.goalCompleted ? (
+                  {todayGoal.completed ? (
                     <s className="text-muted">{todayGoal.content}</s>
                   ) : (
                     todayGoal.content
@@ -294,7 +294,7 @@ export default function Goals() {
                   <a href={`/goals/form?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
                     Edit
                   </a>
-                    {!todayGoal.subTasks?.length && !taskState[todayGoal._id]?.goalCompleted && (
+                    {!todayGoal.subTasks?.length && !todayGoal.completed && (
                     <button
                       className="btn btn-sm btn-outline-success ms-2"
                       onClick={() => toggleTask(todayGoal._id, "goalCompleted")}
@@ -352,8 +352,8 @@ export default function Goals() {
                     type="button"
                     onClick={() => setActiveWeeklyAccordion(activeWeeklyAccordion === index ? null : index)}
                   >
-                    <span className={taskState[r._id]?.goalCompleted ? "text-decoration-line-through text-muted" : ""}>
-                      <strong>{taskState[r._id]?.goalCompleted ? '✅ ' : ''}{r.date}</strong>: {r.content}
+                    <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
+                      <strong>{r.completed ? '✅ ' : ''}{r.date}</strong>: {r.content}
                     </span>
                   </button>
                 </h2>
@@ -373,7 +373,7 @@ export default function Goals() {
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
-                      {!taskState[r._id]?.goalCompleted && (
+                      {!r.completed && (
                         <button className="btn btn-sm btn-outline-success ms-2" onClick={() => toggleTask(r._id, "goalCompleted")}>
                           Complete
                         </button>
@@ -423,8 +423,8 @@ export default function Goals() {
                     type="button"
                     onClick={() => setActivePastAccordion(activePastAccordion === index ? null : index)}
                   >
-                    <span className={taskState[r._id]?.goalCompleted ? "text-decoration-line-through text-muted" : ""}>
-                      <strong>{taskState[r._id]?.goalCompleted ? '✅ ' : ''}{r.date}</strong>: {r.content}
+                    <span className={r.completed ? "text-decoration-line-through text-muted" : ""}>
+                      <strong>{r.completed ? '✅ ' : ''}{r.date}</strong>: {r.content}
                     </span>
                   </button>
                 </h2>
@@ -439,7 +439,7 @@ export default function Goals() {
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
-                      {!r.subTasks?.length && !taskState[r._id]?.goalCompleted && (
+                      {!r.subTasks?.length && !r.completed && (
                         <button
                           className="btn btn-sm btn-outline-success ms-2"
                           onClick={() => toggleTask(r._id, "goalCompleted")}
