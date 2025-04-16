@@ -139,6 +139,13 @@ export default function Goals() {
           goalCompleted: updated[goalId][index]
         }
       }));
+      const audio = new Audio("/Done.mp3");
+      audio.play().catch(err => console.warn("Unable to autoplay sound:", err));
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
     } else {
         await axios.post(
           "https://api.dailyping.org/api/goal/toggle-subtask",
@@ -201,7 +208,9 @@ export default function Goals() {
   }
 
   const oneWeekAgo = now.clone().subtract(6, "days").format("YYYY-MM-DD");
-  const activeResponses = goals.filter((r) => showCompleted || !r.completed);
+  const activeResponses = goals.filter((r) =>
+    r.date === todayDate ? (showCompleted || !r.completed) : true
+  );
   const activeGoals = activeResponses.filter((r) => r.date === todayDate && (showCompleted || !r.completed));
   const weeklyGoals = activeResponses.filter((r) => r.date > oneWeekAgo && r.date < todayDate);
   const olderGoals = activeResponses.filter((r) => r.date <= oneWeekAgo);
