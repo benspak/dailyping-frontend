@@ -31,9 +31,8 @@ export default function Footer() {
             <h6 className="text-dark">Links</h6>
             <ul className="list-unstyled">
               <li><Link to="/faq" className="text-reset text-decoration-none">FAQ</Link></li>
-              <li><Link to="/projects" className="text-reset text-decoration-none">Projects</Link></li>
-              <li><Link to="/dashboard" className="text-reset text-decoration-none">Dashboard</Link></li>
-              <li><Link to="/settings" className="text-reset text-decoration-none">Settings</Link></li>
+              <li><Link to="/privacy" className="text-reset text-decoration-none">Privacy Policy</Link></li>
+              {/*<li><Link to="/terms" className="text-reset text-decoration-none">Terms of Service</Link></li>*/}
             </ul>
           </div>
 
@@ -41,9 +40,8 @@ export default function Footer() {
           <div className="col-md-4 mb-3">
             <h6 className="text-dark">Connect</h6>
             <ul className="list-unstyled">
-              <li><a href="mailto:support@dailyping.org" className="text-reset text-decoration-none">Email Support</a></li>
-              <li><a href="https://twitter.com/dailypingapp" target="_blank" rel="noopener noreferrer" className="text-reset text-decoration-none">Twitter</a></li>
-              <li><a href="https://github.com/dailyping" target="_blank" rel="noopener noreferrer" className="text-reset text-decoration-none">GitHub</a></li>
+              <li><a href="https://x.com/benvspak" target="_blank" rel="noopener noreferrer" className="text-reset text-decoration-none">X</a></li>
+              <li><a href="https://github.com/benspak" target="_blank" rel="noopener noreferrer" className="text-reset text-decoration-none">GitHub</a></li>
             </ul>
           </div>
         </div>

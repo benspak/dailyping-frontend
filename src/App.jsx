@@ -21,6 +21,7 @@ import ProjectForm from './pages/ProjectForm'
 import ProjectView from './pages/ProjectView'
 import Backlog from './pages/Backlog'
 import FAQ from './pages/FAQ'
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 function PrivateRoute({ children, proOnly = false }) {
   const { user, loading } = useAuth();
@@ -110,6 +111,7 @@ function App() {
           {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/faq" element={<FAQ />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/login" element={<Login />} />
           <Route path="/auth/verify" element={<Verify />} />
           <Route path="/user/:username/:date" element={<PublicGoal />} />
