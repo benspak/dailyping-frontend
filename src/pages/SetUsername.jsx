@@ -1,50 +1,66 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 export default function SetUsername() {
+  const { user, refresh } = useAuth();
   const [username, setUsername] = useState('');
-  const [status, setStatus] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus('Saving...');
+    if (!username.trim()) {
+      setError('Username cannot be empty');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://api.dailyping.org/api/set-username', { username }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axios.post(
+        'https://api.dailyping.org/api/user/set-username',
+        { username },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      // ✅ Redirect to goals after success
-      navigate('/goals');
+      if (res.data.success) {
+        setMessage(`You picked the username: ${username}`);
+        setError('');
+        await refresh();
+        setTimeout(() => {
+          navigate('/goals');
+        }, 1500); // Wait a moment so user can see the success message
+      } else {
+        setError(res.data.message || 'Something went wrong.');
+      }
     } catch (err) {
-      setStatus(err.response?.data?.error || '❌ Error saving username');
+      console.error(err);
+      setError('Username may already be taken or server error.');
     }
   };
 
   return (
-    <div className="container py-5 d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
-      <div className="card shadow-sm p-4 w-100" style={{ maxWidth: '500px' }}>
-        <h2 className="mb-3 text-center">Pick your username</h2>
-        <p className="text-muted text-center mb-4">
-          This will be used for sharing your goals publicly (e.g. <code>dailyping.org/user/yourname</code>).
-        </p>
-
-        <form onSubmit={handleSubmit}>
+    <div className="container mt-5">
+      <h2>Choose a Username</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
           <input
+            className="form-control"
             type="text"
-            className="form-control mb-3"
-            placeholder="e.g. yourname123"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
+            placeholder="Enter your username"
           />
-          <button className="btn btn-dark w-100" type="submit">Save and continue</button>
-        </form>
+        </div>
+        <button className="btn btn-primary mt-2" type="submit">
+          Save Username
+        </button>
+      </form>
 
-        {status && <p className="mt-3 text-center text-muted">{status}</p>}
-      </div>
+      {message && <div className="alert alert-success mt-3">{message}</div>}
+      {error && <div className="alert alert-danger mt-3">{error}</div>}
     </div>
   );
 }
