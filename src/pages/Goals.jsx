@@ -46,10 +46,9 @@ export default function Goals() {
             subTaskStates[i] = t.completed;
           });
 
-          const allSubTasksComplete = r.subTasks?.length > 0 && r.subTasks.every(t => t.completed);
           updatedState[r._id] = {
             ...subTaskStates,
-            goalCompleted: r.completed || allSubTasksComplete
+            goalCompleted: r.completed === true
           };
         });
 
