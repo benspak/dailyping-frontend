@@ -47,13 +47,17 @@ export default function Goals() {
           });
 
           const allSubTasksComplete = r.subTasks?.length > 0 && r.subTasks.every(t => t.completed);
+          const goalCompleted = r.completed || allSubTasksComplete;
           updatedState[r._id] = {
             ...subTaskStates,
-            goalCompleted: r.completed || allSubTasksComplete
+            goalCompleted
           };
         });
 
-        setGoals(res.data);
+        setGoals(prevGoals => res.data.map(r => {
+          const prev = prevGoals.find(g => g._id === r._id);
+          return { ...r, completed: r.completed || prev?.completed };
+        }));
         setTaskState(updatedState);
         await registerPush();
       } catch {
