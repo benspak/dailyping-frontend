@@ -20,6 +20,7 @@ export default function Goals() {
   const navigate = useNavigate();
 
   const hasFired = useRef({});
+  const initialLoad = useRef(true);
 
   useEffect(() => {
     if (!user) return;
@@ -51,7 +52,6 @@ export default function Goals() {
             goalCompleted: r.completed === true
           };
 
-          // prevent confetti on first load for already-completed goals
           if (r.completed === true) {
             hasFired.current[r._id] = true;
           }
@@ -82,6 +82,11 @@ export default function Goals() {
   }, [user, refresh, navigate]);
 
   useEffect(() => {
+    if (initialLoad.current) {
+      initialLoad.current = false;
+      return;
+    }
+
     const completeGoals = async () => {
       const token = localStorage.getItem("token");
 
@@ -124,6 +129,7 @@ export default function Goals() {
 
     completeGoals();
   }, [goals]);
+
 
   const toggleTask = async (goalId, index) => {
     const token = localStorage.getItem("token");
