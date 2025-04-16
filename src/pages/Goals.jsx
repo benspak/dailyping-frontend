@@ -355,7 +355,7 @@ export default function Goals() {
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
-                      {!r.subTasks?.length && !r.completed && (
+                      {!r.completed && (
                         <button
                           className="btn btn-sm btn-outline-success ms-2"
                           onClick={() => toggleTask(r._id, "goalCompleted")}
