@@ -12,6 +12,7 @@ export default function Goals() {
   const [taskState, setTaskState] = useState({});
   const [activeWeeklyAccordion, setActiveWeeklyAccordion] = useState(null);
   const [activePastAccordion, setActivePastAccordion] = useState(null);
+  const [goalsCompletedToday, setGoalsCompletedToday] = useState(null);
   const [showCompleted, setShowCompleted] = useState(false);
   const userTimezone = user?.timezone || process.env.SERVER_TIMEZONE || "America/New_York";
   const now = moment().tz(userTimezone);
@@ -61,6 +62,18 @@ export default function Goals() {
     };
 
     fetchData();
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("https://api.dailyping.org/api/stats/today", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setGoalsCompletedToday(res.data.goalsCompleted);
+      } catch (err) {
+        console.error("❌ Failed to fetch goals completed today:", err);
+      }
+    };
+    fetchStats();
   }, [user, refresh, navigate]);
 
   useEffect(() => {
@@ -231,7 +244,7 @@ export default function Goals() {
             <div className="mt-3">
               <p className="mb-1 fw-bold text-muted">Goals Completed Today</p>
               <span className="badge bg-info fs-6">
-              {goals.filter(g => g.date === todayDate && g.completed).length}
+              {goalsCompletedToday !== null ? goalsCompletedToday : "…"}
               </span>
             </div>
             <div>
