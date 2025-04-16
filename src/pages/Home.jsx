@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer'
 
 export default function Home() {
   const navigate = useNavigate();
@@ -120,9 +121,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="text-center border-top pt-3">
-        <p className="text-muted">Built indie-style with ❤️ by <a href="https://benjaminspak.com" target="_blank">Ben Spak</a></p>
-      </footer>
+      <Footer />
     </div>
   );
 }
