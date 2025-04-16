@@ -28,16 +28,38 @@ export default function SetUsername() {
       if (res.data.success) {
         setMessage(`You picked the username: ${username}`);
         setError('');
-        await refresh();
+
+        await refresh(); // Wait for context to refresh with new username
         setTimeout(() => {
           navigate('/goals');
-        }, 1500); // Wait a moment so user can see the success message
+        }, 300); // Slight delay so state finishes updating
       } else {
-        setError(res.data.message || 'Something went wrong.');
+        console.warn('Unexpected response:', res.data);
+        setError(res.data.message || 'Unexpected error occurred.');
       }
     } catch (err) {
-      console.error(err);
-      setError('Username may already be taken or server error.');
+      console.error('Username submission failed:', err);
+
+      if (err.response) {
+        const status = err.response.status;
+        const serverMessage = err.response.data?.message;
+
+        if (status === 409) {
+          setError('That username is already taken. Try something else.');
+        } else if (status === 400) {
+          setError(serverMessage || 'Invalid input.');
+        } else {
+          setError('A server error occurred. Please try again.');
+        }
+
+        console.warn('Server responded with:', status, serverMessage);
+      } else if (err.request) {
+        setError('No response from server. Please check your connection.');
+        console.warn('No response received:', err.request);
+      } else {
+        setError('An unexpected error occurred.');
+        console.warn('Error config:', err.config);
+      }
     }
   };
 
