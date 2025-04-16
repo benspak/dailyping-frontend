@@ -116,7 +116,15 @@ export default function Goals() {
       );
       setGoals(prevGoals =>
         prevGoals.map(g =>
-          g._id === goalId ? { ...g, completed: updated[goalId][index] } : g
+          g._id === goalId
+            ? {
+                ...g,
+                completed:
+                  g.date === todayDate && !showCompleted
+                    ? updated[goalId][index]
+                    : g.completed || updated[goalId][index]
+              }
+            : g
         )
       );
       setTaskState(prev => ({
@@ -229,13 +237,9 @@ export default function Goals() {
               <span className="badge bg-success fs-6">{user.streak?.current ?? 0} days</span>
             </div>
             <div className="mt-3">
-              <p className="mb-1 fw-bold text-muted">Tasks Completed Today</p>
+              <p className="mb-1 fw-bold text-muted">Goals Completed Today</p>
               <span className="badge bg-info fs-6">
-              {activeGoals.reduce((sum, g) => {
-                const subtaskCount = g.subTasks?.filter(t => t.completed).length || 0;
-                const goalOnly = (!g.subTasks?.length && g.completed) ? 1 : 0;
-                return sum + subtaskCount + goalOnly;
-              }, 0)}
+              {goals.filter(g => g.date === todayDate && g.completed).length}
               </span>
             </div>
             <div>
