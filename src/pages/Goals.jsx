@@ -224,8 +224,11 @@ export default function Goals() {
             <div className="mt-3">
               <p className="mb-1 fw-bold text-muted">Tasks Completed Today</p>
               <span className="badge bg-info fs-6">
-                {activeGoals.reduce((sum, g) =>
-                  g.subTasks?.filter(t => t.completed).length || (g.subTasks?.length === 0 && g.completed ? 1 : 0) + sum, 0)}
+              {activeGoals.reduce((sum, g) => {
+                const subtaskCount = g.subTasks?.filter(t => t.completed).length || 0;
+                const goalOnly = (!g.subTasks?.length && g.completed) ? 1 : 0;
+                return sum + subtaskCount + goalOnly;
+              }, 0)}
               </span>
             </div>
             <div>
