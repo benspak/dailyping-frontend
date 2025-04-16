@@ -28,11 +28,8 @@ export default function SetUsername() {
       if (res.data.success) {
         setMessage(`You picked the username: ${username}`);
         setError('');
-
-        await refresh(); // Wait for context to refresh with new username
-        setTimeout(() => {
-          navigate('/goals');
-        }, 300); // Slight delay so state finishes updating
+        await refresh();
+        navigate('/goals'); // now user should be hydrated with username
       } else {
         console.warn('Unexpected response:', res.data);
         setError(res.data.message || 'Unexpected error occurred.');
