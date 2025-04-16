@@ -253,6 +253,14 @@ export default function Goals() {
                   <a href={`/goals/form?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
                     Edit
                   </a>
+                  {!todayGoal.subTasks?.length && !todayGoal.completed && (
+                    <button
+                      className="btn btn-sm btn-outline-success ms-2"
+                      onClick={() => toggleTask(todayGoal._id, "goalCompleted")}
+                    >
+                      Complete
+                    </button>
+                  )}
                 </div>
                 {(todayGoal.subTasks || []).map((task, idx) => (
                   <div key={idx} className="mb-3">
@@ -315,6 +323,14 @@ export default function Goals() {
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
+                      {!r.subTasks?.length && !r.completed && (
+                        <button
+                          className="btn btn-sm btn-outline-success ms-2"
+                          onClick={() => toggleTask(r._id, "goalCompleted")}
+                        >
+                          Complete
+                        </button>
+                      )}
                     </div>
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">
@@ -376,6 +392,14 @@ export default function Goals() {
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
+                      {!r.subTasks?.length && !r.completed && (
+                        <button
+                          className="btn btn-sm btn-outline-success ms-2"
+                          onClick={() => toggleTask(r._id, "goalCompleted")}
+                        >
+                          Complete
+                        </button>
+                      )}
                     </div>
                     {(r.subTasks || []).map((task, idx) => (
                       <div key={idx} className="mb-3">

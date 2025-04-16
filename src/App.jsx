@@ -59,10 +59,6 @@ function App() {
               <ProjectForm />
             </PrivateRoute>
             } />
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/auth/verify" element={<Verify />} />
-          <Route path="/user/:username/:date" element={<PublicGoal />} />
           <Route path="/goals/form" element={
             <PrivateRoute>
               <GoalForm />
@@ -99,7 +95,6 @@ function App() {
               <SetUsername />
             </PrivateRoute>
           } />
-          <Route path="/user/:username" element={<PublicProfile />} />
           <Route path="/projects/:projectId" element={
           <PrivateRoute>
             <ProjectView />
@@ -110,6 +105,16 @@ function App() {
             <Backlog />
           </PrivateRoute>
           } />
+
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/auth/verify" element={<Verify />} />
+          <Route path="/user/:username/:date" element={<PublicGoal />} />
+          <Route path="/user/:username" element={<PublicProfile />} />
+
+          {/* Catch All */}
         <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </>

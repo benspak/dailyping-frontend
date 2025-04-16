@@ -36,6 +36,7 @@ export default function SetUsername() {
           headers: { Authorization: `Bearer ${token}` }
         });
 
+        console.log(meRes.data.user.username)
         if (meRes.data?.user?.username) {
           navigate('/goals');
         } else {
