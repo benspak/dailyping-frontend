@@ -114,6 +114,11 @@ export default function Goals() {
           { goalId, completed: updated[goalId][index] },
           { headers: { Authorization: `Bearer ${token}` } }
         );
+        setGoals(prevGoals =>
+          prevGoals.map(g =>
+            g._id === goalId ? { ...g, completed: updated[goalId][index] } : g
+          )
+        );
       } else {
         await axios.post(
           "https://api.dailyping.org/api/goal/toggle-subtask",
@@ -236,15 +241,6 @@ export default function Goals() {
         <a href="/goals/form" className="btn btn-primary">+ New Goal</a>
       </div>
 
-      <div className="mb-3 text-end">
-        <button
-          className="btn btn-sm btn-outline-secondary"
-          onClick={() => setShowCompleted(!showCompleted)}
-        >
-          {showCompleted ? "Hide Completed" : "Show Completed"}
-        </button>
-      </div>
-
       {/* Today's Goals */}
       {activeGoals.length > 0 && (
         <>
@@ -305,6 +301,15 @@ export default function Goals() {
           ))}
         </>
       )}
+
+      <div className="mb-3 text-end">
+        <button
+          className="btn btn-sm btn-outline-secondary"
+          onClick={() => setShowCompleted(!showCompleted)}
+        >
+          {showCompleted ? "Hide Completed" : "Show Completed"}
+        </button>
+      </div>
 
       {/* Weekly Goals */}
       {weeklyGoals.length > 0 && (
