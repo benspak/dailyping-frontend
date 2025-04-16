@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { registerPush } from "../utils/registerPush";
 import { useAuth } from "../context/AuthContext";
@@ -19,16 +19,15 @@ export default function Goals() {
   const todayDate = now.format("YYYY-MM-DD");
   const navigate = useNavigate();
 
-  const hasFired = useRef({});
-  const initialLoad = useRef(true);
-
   useEffect(() => {
     if (!user) return;
 
+    // Redirect if username needs to be set.
     if (user && !user.username) {
       navigate('/setup-username');
     }
 
+    // Logged in status check
     if(user) {
       refresh;
     }
@@ -47,14 +46,11 @@ export default function Goals() {
             subTaskStates[i] = t.completed;
           });
 
+          const allSubTasksComplete = r.subTasks?.length > 0 && r.subTasks.every(t => t.completed);
           updatedState[r._id] = {
             ...subTaskStates,
-            goalCompleted: r.completed === true
+            goalCompleted: r.completed || allSubTasksComplete
           };
-
-          if (r.completed === true) {
-            hasFired.current[r._id] = true;
-          }
         });
 
         setGoals(res.data);
@@ -66,7 +62,6 @@ export default function Goals() {
     };
 
     fetchData();
-
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -82,37 +77,23 @@ export default function Goals() {
   }, [user, refresh, navigate]);
 
   useEffect(() => {
-    if (initialLoad.current) {
-      initialLoad.current = false;
-      return;
-    }
-
-    const completeGoals = async () => {
-      const token = localStorage.getItem("token");
-
-      for (const goal of goals) {
+    goals.forEach((goal) => {
+      if (goal.subTasks?.length > 0 && taskState[goal._id]) {
         const states = taskState[goal._id];
-        if (!goal.subTasks?.length || !states || states.goalCompleted) continue;
-
         const allComplete = goal.subTasks.every((_, idx) => states[idx]);
 
-        if (allComplete && !states.goalCompleted && !hasFired.current[goal._id]) {
-          try {
-            await axios.post(
-              "https://api.dailyping.org/api/goal/toggle-goal",
-              { goalId: goal._id, completed: true },
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            hasFired.current[goal._id] = true;
-            setTaskState(prev => ({
-              ...prev,
-              [goal._id]: {
-                ...states,
-                goalCompleted: true
-              }
-            }));
-
+        if (allComplete && !states.goalCompleted) {
+          const token = localStorage.getItem("token");
+          axios.post(
+            "https://api.dailyping.org/api/goal/toggle-goal",
+            { goalId: goal._id, completed: true },
+            { headers: { Authorization: `Bearer ${token}` } }
+          ).then(() => {
+            const updated = {
+              ...taskState,
+              [goal._id]: { ...states, goalCompleted: true }
+            };
+            setTaskState(updated);
             const audio = new Audio("/Done.mp3");
             audio.play().catch(err => console.warn("Unable to autoplay sound:", err));
             confetti({
@@ -120,16 +101,13 @@ export default function Goals() {
               spread: 70,
               origin: { y: 0.6 }
             });
-          } catch (err) {
+          }).catch(err => {
             console.error("Failed to mark goal complete:", err);
-          }
+          });
         }
       }
-    };
-
-    completeGoals();
-  }, [goals]);
-
+    });
+  }, [taskState, goals]);
 
   const toggleTask = async (goalId, index) => {
     const token = localStorage.getItem("token");
@@ -316,7 +294,7 @@ export default function Goals() {
                   <a href={`/goals/form?id=${todayGoal._id}`} className="btn btn-sm btn-outline-secondary">
                     Edit
                   </a>
-                  {!taskState[todayGoal._id]?.goalCompleted && (
+                    {!todayGoal.subTasks?.length && !taskState[todayGoal._id]?.goalCompleted && (
                     <button
                       className="btn btn-sm btn-outline-success ms-2"
                       onClick={() => toggleTask(todayGoal._id, "goalCompleted")}
@@ -461,7 +439,7 @@ export default function Goals() {
                       <a href={`/goals/form?id=${r._id}`} className="btn btn-sm btn-outline-secondary">
                         Edit
                       </a>
-                      {!taskState[r._id]?.goalCompleted && (
+                      {!r.subTasks?.length && !taskState[r._id]?.goalCompleted && (
                         <button
                           className="btn btn-sm btn-outline-success ms-2"
                           onClick={() => toggleTask(r._id, "goalCompleted")}
