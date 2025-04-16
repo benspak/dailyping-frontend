@@ -24,7 +24,7 @@ export default function SetUsername() {
         { username },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+      console.log(res.data)
       if (res.data.success) {
         setMessage(`You picked the username: ${username}`);
         setError('');
