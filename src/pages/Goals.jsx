@@ -108,18 +108,25 @@ export default function Goals() {
     setTaskState(updated);
 
     try {
-      if (index === "goalCompleted") {
-        await axios.post(
-          "https://api.dailyping.org/api/goal/toggle-goal",
-          { goalId, completed: updated[goalId][index] },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        setGoals(prevGoals =>
-          prevGoals.map(g =>
-            g._id === goalId ? { ...g, completed: updated[goalId][index] } : g
-          )
-        );
-      } else {
+    if (index === "goalCompleted") {
+      await axios.post(
+        "https://api.dailyping.org/api/goal/toggle-goal",
+        { goalId, completed: updated[goalId][index] },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setGoals(prevGoals =>
+        prevGoals.map(g =>
+          g._id === goalId ? { ...g, completed: updated[goalId][index] } : g
+        )
+      );
+      setTaskState(prev => ({
+        ...prev,
+        [goalId]: {
+          ...prev[goalId],
+          goalCompleted: updated[goalId][index]
+        }
+      }));
+    } else {
         await axios.post(
           "https://api.dailyping.org/api/goal/toggle-subtask",
           { goalId, index, completed: updated[goalId][index] },
