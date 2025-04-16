@@ -106,7 +106,7 @@ export default function Goals() {
         }
       }
     });
-  }, [taskState, goals]);
+  }, [goals]);
 
   const toggleTask = async (goalId, index) => {
     const token = localStorage.getItem("token");
